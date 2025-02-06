@@ -1,12 +1,17 @@
 
-# 🌟 IA Recruiter
+#  IA Recruiter 
+
+<div align="center">
+    <img src="logoNFQ.png" alt="Logo de IA Recruiter" />
+</div>
+
 
 ## Descripción de la Aplicación
 **IA Recruiter** es una innovadora aplicación basada en Inteligencia Artificial que revoluciona el proceso de selección de talento. Diseñada para ayudar a empresas y reclutadores a encontrar al candidato ideal, la aplicación analiza y clasifica automáticamente un conjunto de perfiles profesionales para determinar cuáles se ajustan mejor a una vacante específica.
 
 ---
 
-## Funcionalidades Clave
+## 🌟 Funcionalidades Clave
 
 ### 🔍 Análisis y Clasificación de Candidatos
 - Evaluación de **20 CVs** proporcionados, utilizando algoritmos de IA Generativa para identificar el grado de adecuación de cada perfil a una vacante.
