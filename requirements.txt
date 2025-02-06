@@ -1,0 +1,8 @@
+streamlit
+pandas
+openai
+asyncio
+aiofiles
+numpy
+python-dotenv
+matplotlib

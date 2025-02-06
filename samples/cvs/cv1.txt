@@ -1,0 +1,38 @@
+CV 1 - Data Scientist
+María Sánchez García
+madrid@email.com | +34 612 345 678
+LinkedIn: linkedin.com/in/mariasanchezgarcia
+Perfil Profesional
+Data Scientist con 5 años de experiencia en el análisis de datos masivos y desarrollo de modelos predictivos. Especializada en machine learning y visualización de datos.
+Experiencia Profesional
+Senior Data Scientist - TechCorp España
+2022 - Presente
+
+Desarrollo de modelos de ML para predicción de comportamiento de usuarios
+Liderazgo de equipo de 4 científicos de datos
+Implementación de pipeline de datos usando Python y Apache Spark
+
+Data Scientist - DataTech Solutions
+2019 - 2022
+
+Análisis de datos de cliente y creación de dashboards
+Desarrollo de algoritmos de clasificación
+Optimización de procesos de ETL
+
+Formación Académica
+
+Máster en Data Science, Universidad Politécnica de Madrid (2019)
+Grado en Matemáticas, Universidad Complutense de Madrid (2017)
+
+Habilidades Técnicas
+
+Python, R, SQL
+TensorFlow, PyTorch, scikit-learn
+Tableau, Power BI
+Git, Docker
+
+Idiomas
+
+Español: Nativo
+Inglés: C1
+Francés: B2
