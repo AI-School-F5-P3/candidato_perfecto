@@ -1,0 +1,41 @@
+CV 3 - Python Backend Developer
+Información Personal
+Laura Gómez Torres
+Valencia, España
+lgomez@email.com | +34 634 567 890
+Resumen
+Desarrolladora Python con 4 años de experiencia en desarrollo backend y APIs REST. Apasionada por el código limpio y las buenas prácticas de programación.
+Habilidades
+
+Lenguajes: Python, JavaScript
+Frameworks: Django, Flask, FastAPI
+Bases de datos: MongoDB, PostgreSQL
+Herramientas: Git, Docker, AWS
+Testing: pytest, unittest
+Metodologías: Scrum, Kanban
+
+Experiencia
+Backend Developer - CloudTech Solutions
+2022 - Presente
+
+Desarrollo de APIs RESTful con FastAPI
+Implementación de microservicios
+Optimización de rendimiento de bases de datos
+
+Python Developer - WebDev España
+2020 - 2022
+
+Desarrollo de aplicaciones web con Django
+Integración con servicios de terceros
+Mantenimiento y mejora de código legacy
+
+Formación
+
+Grado en Ingeniería del Software, Universidad Politécnica de Valencia (2020)
+Bootcamp Full Stack Development, CodeHouse (2019)
+
+Idiomas
+
+Español: Lengua materna
+Inglés: C1
+Valenciano: Nativo

@@ -1,0 +1,42 @@
+CV 2 - Java Developer
+Alberto Ruiz Martín
+Barcelona, España
+aruiz@email.com
+Tel: +34 623 456 789
+Habilidades Técnicas
+
+Java SE/EE
+Spring Framework
+Hibernate
+MySQL, PostgreSQL
+Docker, Kubernetes
+Git, Jenkins
+
+Experiencia Laboral
+Tech Lead - InnovaSoft
+2021 - Presente
+
+Arquitectura y desarrollo de aplicaciones empresariales
+Gestión de equipo de 6 desarrolladores
+Implementación de metodologías ágiles
+
+Senior Java Developer - Software Solutions
+2018 - 2021
+
+Desarrollo de microservicios con Spring Boot
+Optimización de rendimiento de aplicaciones
+Mentoring de desarrolladores junior
+
+Java Developer - TechStart
+2016 - 2018
+
+Desarrollo full-stack con Java y Angular
+Mantenimiento de aplicaciones legacy
+
+Educación
+
+Ingeniería Informática, Universidad de Barcelona (2016)
+Certificación Oracle Certified Professional Java SE 11 Developer
+
+Idiomas
+Español (Nativo), Inglés (B2), Catalán (Nativo)
