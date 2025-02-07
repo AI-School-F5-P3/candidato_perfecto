@@ -27,18 +27,24 @@ logging.basicConfig(
 class HRAnalysisApp:
     def __init__(self):
         try:
-            # Initialize OpenAI API key from Streamlit secrets
-            self.api_key = st.secrets["openai"]["api_key"]
-            logging.info("API key obtained successfully.")
+            # Initialize Ollama API URL (you might want to make this configurable)
+            self.api_url = "http://localhost:11434"
+            logging.info("Using Ollama API URL: %s", self.api_url)
 
             # Initialize analysis components
-            self.analyzer = SemanticAnalyzer(self.api_key)
+            self.analyzer = SemanticAnalyzer(self.api_url)
             self.matching_engine = MatchingEngine(self.analyzer)
             self.ranking_system = RankingSystem(self.matching_engine)
             logging.info("Analysis components initialized.")
         except Exception as e:
             logging.error(f"Error during HRAnalysisApp initialization: {str(e)}")
             raise e
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self.analyzer.close()
 
     async def read_file_content(self, uploaded_file) -> str:
         """Read content from an uploaded file (TXT or PDF)"""
@@ -123,7 +129,6 @@ class HRAnalysisApp:
             logging.error(f"Error creating ranking DataFrame: {str(e)}")
             raise e
 
-# Modified main() function in Spanish
 async def main():
     st.title("Sistema de Análisis de CVs")
     st.write("""
@@ -132,7 +137,6 @@ async def main():
     """)
     logging.info("Application started.")
 
-    app = HRAnalysisApp()
     job_col, prefs_col = st.columns(2)
 
     with job_col:
@@ -168,42 +172,41 @@ async def main():
     if st.button("Analizar Candidatos") and job_file and resume_files:
         try:
             with st.spinner("Analizando candidatos..."):
-                logging.info("Candidate analysis started.")
-                hiring_preferences = {
-                    "minimum_experience": min_experience,
-                    "education_level": education_level,
-                    "important_skills": [
-                        skill.strip() 
-                        for skill in important_skills.split('\n') 
-                        if skill.strip()
-                    ]
-                }
-                job_profile = await app.process_job_description(job_file, hiring_preferences)
-                candidate_profiles = await app.process_resumes(resume_files)
-                rankings = await app.ranking_system.rank_candidates(job_profile, candidate_profiles)
-                logging.info("Candidate ranking completed.")
+                async with HRAnalysisApp() as app:
+                    logging.info("Candidate analysis started.")
+                    hiring_preferences = {
+                        "minimum_experience": min_experience,
+                        "education_level": education_level,
+                        "important_skills": [
+                            skill.strip() 
+                            for skill in important_skills.split('\n') 
+                            if skill.strip()
+                        ]
+                    }
+                    job_profile = await app.process_job_description(job_file, hiring_preferences)
+                    candidate_profiles = await app.process_resumes(resume_files)
+                    rankings = await app.ranking_system.rank_candidates(job_profile, candidate_profiles)
+                    logging.info("Candidate ranking completed.")
 
-                st.subheader("Ranking de Candidatos")
-                styled_df = app.create_ranking_dataframe(rankings)
-                st.dataframe(styled_df, use_container_width=True)
+                    st.subheader("Ranking de Candidatos")
+                    styled_df = app.create_ranking_dataframe(rankings)
+                    st.dataframe(styled_df, use_container_width=True)
 
-                with st.expander("Ver Requisitos del Puesto"):
-                    st.json({
-                        "título": job_profile.title,
-                        "habilidades_requeridas": job_profile.required_skills,
-                        "habilidades_preferentes": job_profile.preferred_skills,
-                        "años_de_experiencia": job_profile.experience_years,
-                        "nivel_educativo": job_profile.education_level,
-                        "responsabilidades": job_profile.responsibilities,
-                        "conocimientos_industria": job_profile.industry_knowledge
-                    })
+                    with st.expander("Ver Requisitos del Puesto"):
+                        st.json({
+                            "título": job_profile.title,
+                            "habilidades_requeridas": job_profile.required_skills,
+                            "habilidades_preferentes": job_profile.preferred_skills,
+                            "años_de_experiencia": job_profile.experience_years,
+                            "nivel_educativo": job_profile.education_level,
+                            "responsabilidades": job_profile.responsibilities,
+                            "conocimientos_industria": job_profile.industry_knowledge
+                        })
         except Exception as e:
             logging.error(f"Error during candidate analysis: {str(e)}")
             st.error(f"Ocurrió un error: {str(e)}")
             raise e
 
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except Exception as e:
-        logging.critical(f"Fatal error in main: {str(e)}")
+    import asyncio
+    asyncio.run(main())

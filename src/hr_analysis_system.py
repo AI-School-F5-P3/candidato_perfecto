@@ -1,9 +1,8 @@
-from openai import AsyncOpenAI  # Add this import at the top
-import openai
 from typing import Dict, List, Tuple
 import numpy as np
 from dataclasses import dataclass
 import json
+import httpx
 
 @dataclass
 class JobProfile:
@@ -27,24 +26,52 @@ class CandidateProfile:
     industry_experience: List[str]
 
 class SemanticAnalyzer:
-    def __init__(self, api_key: str):
-        """Initialize the semantic analyzer with OpenAI API key"""
-        self.client = AsyncOpenAI(api_key=api_key)
-        self.model = "gpt-3.5-turbo"
+    def __init__(self, api_url: str = "http://localhost:11434"):
+        """Initialize the semantic analyzer with Ollama API URL"""
+        self.api_url = api_url
+        self.model = "llama2"
+        self.client = httpx.AsyncClient()
 
     async def get_embedding(self, text: str) -> List[float]:
-        """Get embedding vector for text using OpenAI's embedding model"""
-        response = await self.client.embeddings.create(
-            model="text-embedding-3-small",
-            input=text
+        """Get embedding vector for text using Ollama's embedding endpoint"""
+        response = await self.client.post(
+            f"{self.api_url}/api/embeddings",
+            json={
+                "model": self.model,
+                "prompt": text
+            }
         )
-        return response.data[0].embedding
+        return response.json()["embedding"]
+
+    async def _generate_json_response(self, prompt: str) -> dict:
+        """Helper method to generate JSON responses from Mistral"""
+        response = await self.client.post(
+            f"{self.api_url}/api/generate",
+            json={
+                "model": self.model,
+                "prompt": f"{prompt}\nResponde SOLO en formato JSON válido.",
+                "stream": False
+            },
+            timeout=120
+        )
+        # Extract the response text and parse as JSON
+        try:
+            response_text = response.json()["response"]
+            # Find JSON content between curly braces
+            start = response_text.find('{')
+            end = response_text.rfind('}') + 1
+            if start >= 0 and end > start:
+                json_str = response_text[start:end]
+                return json.loads(json_str)
+            raise ValueError("No valid JSON found in response")
+        except Exception as e:
+            raise ValueError(f"Failed to parse JSON response: {str(e)}")
 
     async def standardize_job_description(self, description: str, preferences: Dict) -> JobProfile:
         """Convert raw job description and preferences into standardized format"""
         prompt = f"""
-        Analyze this job description and hiring preferences and extract key components.
-        Format the output as JSON with the following structure:
+        Analiza esta descripción de trabajo y preferencias de contratación y extrae los componentes clave.
+        Debes responder en formato JSON con exactamente esta estructura:
         {{
             "title": "job title",
             "required_skills": ["skill1", "skill2"],
@@ -55,27 +82,21 @@ class SemanticAnalyzer:
             "industry_knowledge": ["domain1", "domain2"]
         }}
 
-        Job Description:
+        Descripción del trabajo:
         {description}
 
-        Hiring Preferences:
+        Preferencias de contratación:
         {json.dumps(preferences, indent=2)}
         """
         
-        response = await self.client.chat.completions.create(
-            model=self.model,
-            messages=[{"role": "user", "content": prompt}],
-            response_format={ "type": "json_object" }
-        )
-        
-        profile_data = json.loads(response.choices[0].message.content)
+        profile_data = await self._generate_json_response(prompt)
         return JobProfile(**profile_data)
 
     async def standardize_resume(self, resume_text: str) -> CandidateProfile:
         """Convert raw resume text into standardized format"""
         prompt = f"""
-        Analyze this resume and extract key components.
-        Format the output as JSON with the following structure:
+        Analiza este CV y extrae los componentes clave.
+        Debes responder en formato JSON con exactamente esta estructura:
         {{
             "name": "candidate name",
             "skills": ["skill1", "skill2"],
@@ -85,18 +106,16 @@ class SemanticAnalyzer:
             "industry_experience": ["industry1", "industry2"]
         }}
 
-        Resume:
+        CV:
         {resume_text}
         """
         
-        response = await self.client.chat.completions.create(
-            model=self.model,
-            messages=[{"role": "user", "content": prompt}],
-            response_format={ "type": "json_object" }
-        )
-        
-        profile_data = json.loads(response.choices[0].message.content)
+        profile_data = await self._generate_json_response(prompt)
         return CandidateProfile(**profile_data)
+
+    async def close(self):
+        """Close the HTTP client"""
+        await self.client.aclose()
 
 class MatchingEngine:
     def __init__(self, analyzer: SemanticAnalyzer):
@@ -139,7 +158,7 @@ class MatchingEngine:
         )
         
         # Experience score (simplified)
-        experience_score = min(1.0, candidate.experience_years / job.experience_years)
+        experience_score = min(1.0, candidate.experience_years / job.experience_years) if job.experience_years > 0 else 1.0
         
         # Education match (simplified)
         education_levels = {
