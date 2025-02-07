@@ -1,0 +1,244 @@
+2025-02-07 01:49:02,194 INFO: Application started.
+2025-02-07 01:49:27,698 INFO: Application started.
+2025-02-07 01:49:34,663 INFO: Application started.
+2025-02-07 01:49:34,800 INFO: Application started.
+2025-02-07 01:49:40,802 INFO: Application started.
+2025-02-07 01:50:08,312 INFO: Application started.
+2025-02-07 01:50:18,501 INFO: Application started.
+2025-02-07 01:50:20,330 INFO: Application started.
+2025-02-07 01:50:20,349 INFO: Using Ollama API URL: http://localhost:11434
+2025-02-07 01:50:20,861 INFO: Analysis components initialized.
+2025-02-07 01:50:20,864 INFO: Candidate analysis started.
+2025-02-07 01:50:20,864 INFO: Reading file: Job_Post.pdf with extension pdf
+2025-02-07 01:50:20,866 ERROR: Error reading file Job_Post.pdf: No module named 'PyPDF2'
+2025-02-07 01:50:20,875 ERROR: Error processing job description: No module named 'PyPDF2'
+2025-02-07 01:50:20,904 ERROR: Error during candidate analysis: No module named 'PyPDF2'
+2025-02-07 01:50:20,908 CRITICAL: Fatal error in main: No module named 'PyPDF2'
+2025-02-07 01:50:45,919 INFO: Application started.
+2025-02-07 01:50:45,937 INFO: Using Ollama API URL: http://localhost:11434
+2025-02-07 01:50:46,386 INFO: Analysis components initialized.
+2025-02-07 01:50:46,393 INFO: Candidate analysis started.
+2025-02-07 01:50:46,393 INFO: Reading file: Job_Post.pdf with extension pdf
+2025-02-07 01:50:47,922 INFO: Extracted text from PDF: Job_Post.pdf
+2025-02-07 01:50:47,924 INFO: Processing job description.
+2025-02-07 01:50:53,200 ERROR: Error processing job description: 
+2025-02-07 01:50:53,200 ERROR: Error during candidate analysis: 
+2025-02-07 01:50:53,208 CRITICAL: Fatal error in main: 
+2025-02-07 01:51:22,826 INFO: Application started.
+2025-02-07 01:51:34,472 INFO: Application started.
+2025-02-07 01:52:35,531 INFO: Application started.
+2025-02-07 01:52:37,628 INFO: Application started.
+2025-02-07 01:52:45,418 INFO: Application started.
+2025-02-07 01:52:46,803 INFO: Application started.
+2025-02-07 01:52:46,809 INFO: Using Ollama API URL: http://localhost:11434
+2025-02-07 01:52:47,174 INFO: Analysis components initialized.
+2025-02-07 01:52:47,174 INFO: Candidate analysis started.
+2025-02-07 01:52:47,174 INFO: Reading file: Job_Post.pdf with extension pdf
+2025-02-07 01:52:47,217 INFO: Extracted text from PDF: Job_Post.pdf
+2025-02-07 01:52:47,217 INFO: Processing job description.
+2025-02-07 01:52:49,499 ERROR: Error processing job description: All connection attempts failed
+2025-02-07 01:52:49,500 ERROR: Error during candidate analysis: All connection attempts failed
+2025-02-07 01:52:49,502 CRITICAL: Fatal error in main: All connection attempts failed
+2025-02-07 02:00:27,066 INFO: Application started.
+2025-02-07 02:01:09,499 INFO: Application started.
+2025-02-07 02:01:16,638 INFO: Application started.
+2025-02-07 02:01:29,791 INFO: Application started.
+2025-02-07 02:01:33,196 INFO: Application started.
+2025-02-07 02:01:34,809 INFO: Application started.
+2025-02-07 02:01:34,824 INFO: Using Ollama API URL: http://localhost:11434
+2025-02-07 02:01:35,602 INFO: Analysis components initialized.
+2025-02-07 02:01:35,602 INFO: Candidate analysis started.
+2025-02-07 02:01:35,602 INFO: Reading file: Job_Post.pdf with extension pdf
+2025-02-07 02:01:35,832 INFO: Extracted text from PDF: Job_Post.pdf
+2025-02-07 02:01:35,833 INFO: Processing job description.
+2025-02-07 02:01:41,129 ERROR: Error processing job description: 
+2025-02-07 02:01:41,130 ERROR: Error during candidate analysis: 
+2025-02-07 02:01:41,133 CRITICAL: Fatal error in main: 
+2025-02-07 02:02:05,720 INFO: Application started.
+2025-02-07 02:02:08,150 INFO: Application started.
+2025-02-07 02:02:09,451 INFO: Application started.
+2025-02-07 02:02:10,488 INFO: Application started.
+2025-02-07 02:02:19,750 INFO: Application started.
+2025-02-07 02:02:29,959 INFO: Application started.
+2025-02-07 02:02:45,344 INFO: Application started.
+2025-02-07 02:02:49,793 INFO: Application started.
+2025-02-07 02:02:49,815 INFO: Using Ollama API URL: http://localhost:11434
+2025-02-07 02:02:50,221 INFO: Analysis components initialized.
+2025-02-07 02:02:50,224 INFO: Candidate analysis started.
+2025-02-07 02:02:50,224 INFO: Reading file: Job_Post.pdf with extension pdf
+2025-02-07 02:02:50,263 INFO: Extracted text from PDF: Job_Post.pdf
+2025-02-07 02:02:50,265 INFO: Processing job description.
+2025-02-07 02:02:55,541 ERROR: Error processing job description: 
+2025-02-07 02:02:55,543 ERROR: Error during candidate analysis: 
+2025-02-07 02:02:55,549 CRITICAL: Fatal error in main: 
+2025-02-07 02:17:02,922 INFO: Application started.
+2025-02-07 02:17:02,943 INFO: Using Ollama API URL: http://localhost:11434
+2025-02-07 02:17:03,655 INFO: Analysis components initialized.
+2025-02-07 02:17:03,655 INFO: Candidate analysis started.
+2025-02-07 02:17:03,664 INFO: Reading file: Job_Post.pdf with extension pdf
+2025-02-07 02:17:03,747 INFO: Extracted text from PDF: Job_Post.pdf
+2025-02-07 02:17:03,747 INFO: Processing job description.
+2025-02-07 02:17:09,028 ERROR: Error processing job description: 
+2025-02-07 02:17:09,029 ERROR: Error during candidate analysis: 
+2025-02-07 02:17:09,034 CRITICAL: Fatal error in main: 
+2025-02-07 02:20:47,488 INFO: Application started.
+2025-02-07 02:21:00,342 INFO: Application started.
+2025-02-07 02:21:10,692 INFO: Application started.
+2025-02-07 02:21:18,144 INFO: Application started.
+2025-02-07 02:21:19,475 INFO: Application started.
+2025-02-07 02:21:19,497 INFO: Using Ollama API URL: http://localhost:11434
+2025-02-07 02:21:20,262 INFO: Analysis components initialized.
+2025-02-07 02:21:20,262 INFO: Candidate analysis started.
+2025-02-07 02:21:20,262 INFO: Reading file: Job_Post.pdf with extension pdf
+2025-02-07 02:21:20,358 INFO: Extracted text from PDF: Job_Post.pdf
+2025-02-07 02:21:20,359 INFO: Processing job description.
+2025-02-07 02:21:25,630 ERROR: Error processing job description: 
+2025-02-07 02:21:25,632 ERROR: Error during candidate analysis: 
+2025-02-07 02:21:25,641 CRITICAL: Fatal error in main: 
+2025-02-07 03:16:48,677 INFO: Application started.
+2025-02-07 03:16:48,686 CRITICAL: Fatal error in main: 'st.session_state has no key "$$WIDGET_ID-2f5762ae6e10351466c9739489b5fbd7-None". Did you forget to initialize it? More info: https://docs.streamlit.io/develop/concepts/architecture/session-state#initialization'
+2025-02-07 03:16:50,667 INFO: Application started.
+2025-02-07 03:17:31,369 INFO: Application started.
+2025-02-07 03:17:36,969 INFO: Application started.
+2025-02-07 03:17:37,118 INFO: Application started.
+2025-02-07 03:20:02,888 INFO: Application started.
+2025-02-07 03:20:04,421 INFO: Application started.
+2025-02-07 03:20:04,443 INFO: Using Ollama API URL: http://localhost:11434
+2025-02-07 03:20:05,196 INFO: Analysis components initialized.
+2025-02-07 03:20:05,196 INFO: Candidate analysis started.
+2025-02-07 03:20:05,197 INFO: Reading file: Job_Post.pdf with extension pdf
+2025-02-07 03:20:06,790 INFO: Extracted text from PDF: Job_Post.pdf
+2025-02-07 03:20:06,791 INFO: Processing job description.
+2025-02-07 03:20:12,097 ERROR: Error processing job description: 
+2025-02-07 03:20:12,099 ERROR: Error during candidate analysis: 
+2025-02-07 03:20:12,104 CRITICAL: Fatal error in main: 
+2025-02-07 03:23:46,332 INFO: Application started.
+2025-02-07 03:23:55,937 INFO: Application started.
+2025-02-07 03:24:02,672 INFO: Application started.
+2025-02-07 03:24:03,802 INFO: Application started.
+2025-02-07 03:24:03,826 INFO: Using Ollama API URL: http://localhost:11434
+2025-02-07 03:24:04,545 INFO: Analysis components initialized.
+2025-02-07 03:24:04,545 INFO: Candidate analysis started.
+2025-02-07 03:24:04,545 INFO: Reading file: Job_Post.pdf with extension pdf
+2025-02-07 03:24:04,619 INFO: Extracted text from PDF: Job_Post.pdf
+2025-02-07 03:24:04,619 INFO: Processing job description.
+2025-02-07 03:24:09,905 ERROR: Error processing job description: 
+2025-02-07 03:24:09,906 ERROR: Error during candidate analysis: 
+2025-02-07 03:30:37,869 INFO: Application started.
+2025-02-07 03:30:47,671 INFO: Application started.
+2025-02-07 03:30:53,986 INFO: Application started.
+2025-02-07 03:30:57,841 INFO: Application started.
+2025-02-07 03:30:57,962 INFO: Application started.
+2025-02-07 03:30:57,970 INFO: Using Ollama API URL: http://localhost:11434
+2025-02-07 03:30:58,600 INFO: Analysis components initialized.
+2025-02-07 03:30:58,600 INFO: Candidate analysis started.
+2025-02-07 03:30:58,600 INFO: Reading file: Job_Post.pdf with extension pdf
+2025-02-07 03:30:58,676 INFO: Extracted text from PDF: Job_Post.pdf
+2025-02-07 03:30:58,676 INFO: Processing job description.
+2025-02-07 03:31:58,950 ERROR: Error processing job description: 
+2025-02-07 03:31:58,951 ERROR: Error during candidate analysis: 
+2025-02-07 03:32:14,476 INFO: Application started.
+2025-02-07 03:32:14,495 INFO: Using Ollama API URL: http://localhost:11434
+2025-02-07 03:32:14,936 INFO: Analysis components initialized.
+2025-02-07 03:32:14,937 INFO: Candidate analysis started.
+2025-02-07 03:32:14,937 INFO: Reading file: Job_Post.pdf with extension pdf
+2025-02-07 03:32:14,978 INFO: Extracted text from PDF: Job_Post.pdf
+2025-02-07 03:32:14,983 INFO: Processing job description.
+2025-02-07 03:33:45,218 INFO: HTTP Request: POST http://localhost:11434/api/generate "HTTP/1.1 200 OK"
+2025-02-07 03:33:45,221 INFO: Job description processed successfully.
+2025-02-07 03:33:45,222 INFO: Reading file: cv1.txt with extension txt
+2025-02-07 03:33:45,223 INFO: Read text file: cv1.txt
+2025-02-07 03:33:45,224 INFO: Processing resume: cv1.txt
+2025-02-07 03:34:55,696 INFO: HTTP Request: POST http://localhost:11434/api/generate "HTTP/1.1 200 OK"
+2025-02-07 03:34:55,697 INFO: Resume processed: cv1.txt
+2025-02-07 03:34:55,698 INFO: Reading file: cv2.txt with extension txt
+2025-02-07 03:34:55,698 INFO: Read text file: cv2.txt
+2025-02-07 03:34:55,698 INFO: Processing resume: cv2.txt
+2025-02-07 03:36:01,328 INFO: HTTP Request: POST http://localhost:11434/api/generate "HTTP/1.1 200 OK"
+2025-02-07 03:36:01,330 INFO: Resume processed: cv2.txt
+2025-02-07 03:36:01,331 INFO: Reading file: cv3.txt with extension txt
+2025-02-07 03:36:01,331 INFO: Read text file: cv3.txt
+2025-02-07 03:36:01,332 INFO: Processing resume: cv3.txt
+2025-02-07 03:36:59,120 INFO: HTTP Request: POST http://localhost:11434/api/generate "HTTP/1.1 200 OK"
+2025-02-07 03:36:59,121 INFO: Resume processed: cv3.txt
+2025-02-07 03:36:59,646 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:00,514 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:01,517 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:02,701 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:03,492 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:04,363 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:04,977 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:05,499 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:06,145 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:07,038 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:07,878 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:09,030 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:09,854 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:10,720 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:11,533 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:13,398 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:15,414 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:16,203 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:17,072 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:17,694 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:18,210 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:18,721 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:19,749 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:20,596 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:21,599 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:22,393 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:23,260 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:23,879 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:24,765 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:25,775 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:26,950 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:27,954 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:28,749 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:29,390 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:29,915 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:30,786 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:31,406 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:32,108 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:32,738 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:33,264 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:34,103 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:35,835 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:37,827 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:38,970 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:39,784 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:40,288 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:40,792 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:41,668 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:42,278 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:43,124 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:43,626 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:44,148 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:44,791 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:45,682 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:46,836 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:48,024 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:48,649 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:49,160 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:49,663 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:50,342 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:51,166 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:51,672 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:52,531 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:53,155 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:53,677 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:54,182 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:55,015 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:56,742 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:58,741 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:59,350 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:37:59,875 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:38:00,372 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:38:01,200 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:38:02,036 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:38:02,548 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:38:03,412 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:38:04,031 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:38:04,552 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:38:05,055 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 03:38:05,099 INFO: Candidate ranking completed.
+2025-02-07 03:38:10,142 INFO: Ranking DataFrame created successfully.
