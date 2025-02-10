@@ -242,3 +242,133 @@
 2025-02-07 03:38:05,055 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
 2025-02-07 03:38:05,099 INFO: Candidate ranking completed.
 2025-02-07 03:38:10,142 INFO: Ranking DataFrame created successfully.
+2025-02-07 08:14:25,256 INFO: Application started.
+2025-02-07 08:15:13,629 INFO: Application started.
+2025-02-07 08:15:25,253 INFO: Application started.
+2025-02-07 08:15:27,559 INFO: Application started.
+2025-02-07 08:15:42,889 INFO: Application started.
+2025-02-07 08:15:45,227 INFO: Application started.
+2025-02-07 08:15:45,234 INFO: Using Ollama API URL: http://localhost:11434
+2025-02-07 08:15:45,614 INFO: Analysis components initialized.
+2025-02-07 08:15:45,615 INFO: Candidate analysis started.
+2025-02-07 08:15:45,615 INFO: Reading file: Job_Post.pdf with extension pdf
+2025-02-07 08:15:46,726 INFO: Extracted text from PDF: Job_Post.pdf
+2025-02-07 08:15:46,726 INFO: Processing job description.
+2025-02-07 08:17:30,664 INFO: HTTP Request: POST http://localhost:11434/api/generate "HTTP/1.1 200 OK"
+2025-02-07 08:17:30,665 INFO: Job description processed successfully.
+2025-02-07 08:17:30,666 INFO: Reading file: cv1.txt with extension txt
+2025-02-07 08:17:30,666 INFO: Read text file: cv1.txt
+2025-02-07 08:17:30,666 INFO: Processing resume: cv1.txt
+2025-02-07 08:18:33,175 INFO: HTTP Request: POST http://localhost:11434/api/generate "HTTP/1.1 200 OK"
+2025-02-07 08:18:33,178 INFO: Resume processed: cv1.txt
+2025-02-07 08:18:33,179 INFO: Reading file: cv2.txt with extension txt
+2025-02-07 08:18:33,180 INFO: Read text file: cv2.txt
+2025-02-07 08:18:33,180 INFO: Processing resume: cv2.txt
+2025-02-07 08:19:29,639 INFO: HTTP Request: POST http://localhost:11434/api/generate "HTTP/1.1 200 OK"
+2025-02-07 08:19:29,643 INFO: Resume processed: cv2.txt
+2025-02-07 08:19:29,644 INFO: Reading file: cv3.txt with extension txt
+2025-02-07 08:19:29,645 INFO: Read text file: cv3.txt
+2025-02-07 08:19:29,645 INFO: Processing resume: cv3.txt
+2025-02-07 08:20:27,820 INFO: HTTP Request: POST http://localhost:11434/api/generate "HTTP/1.1 200 OK"
+2025-02-07 08:20:27,825 INFO: Resume processed: cv3.txt
+2025-02-07 08:20:27,826 INFO: Reading file: Elena Petrov.pdf with extension pdf
+2025-02-07 08:20:27,966 INFO: Extracted text from PDF: Elena Petrov.pdf
+2025-02-07 08:20:27,968 INFO: Processing resume: Elena Petrov.pdf
+2025-02-07 08:21:11,706 INFO: HTTP Request: POST http://localhost:11434/api/generate "HTTP/1.1 200 OK"
+2025-02-07 08:21:11,707 INFO: Resume processed: Elena Petrov.pdf
+2025-02-07 08:21:11,707 INFO: Reading file: James Kim.pdf with extension pdf
+2025-02-07 08:21:11,736 INFO: Extracted text from PDF: James Kim.pdf
+2025-02-07 08:21:11,737 INFO: Processing resume: James Kim.pdf
+2025-02-07 08:21:48,742 INFO: HTTP Request: POST http://localhost:11434/api/generate "HTTP/1.1 200 OK"
+2025-02-07 08:21:48,743 INFO: Resume processed: James Kim.pdf
+2025-02-07 08:21:49,233 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:21:49,805 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:21:50,622 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:21:51,059 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:21:51,639 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:21:52,280 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:21:52,748 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:21:53,244 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:21:53,605 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:21:54,245 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:21:55,353 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:21:55,960 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:21:56,667 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:21:57,495 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:21:58,106 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:21:58,623 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:21:59,151 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:21:59,787 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:00,512 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:01,356 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:02,202 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:03,014 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:03,516 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:03,889 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:04,715 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:05,326 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:06,200 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:06,682 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:07,003 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:07,642 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:08,919 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:09,884 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:10,527 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:11,003 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:11,500 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:12,063 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:12,509 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:13,044 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:13,355 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:13,677 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:14,184 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:14,764 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:15,746 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:16,069 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:16,538 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:17,023 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:17,564 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:18,120 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:18,700 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:19,419 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:19,877 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:20,393 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:20,894 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:21,650 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:22,663 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:23,259 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:23,735 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:24,232 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:25,100 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:25,941 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:26,590 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:27,317 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:27,926 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:28,440 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:28,881 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:29,445 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:30,169 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:31,168 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:31,996 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:32,825 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:33,854 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:34,873 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:36,548 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:37,355 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:38,187 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:39,218 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:39,823 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:40,694 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:41,863 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:42,713 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:43,555 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:44,511 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:45,586 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:47,596 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:48,566 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:49,565 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:50,543 INFO: HTTP Request: POST http://localhost:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-07 08:22:50,559 INFO: Candidate ranking completed.
+2025-02-07 08:22:56,287 INFO: Ranking DataFrame created successfully.
+2025-02-07 10:51:03,574 INFO: Application started.
+2025-02-10 11:02:27,671 INFO: Application started.
