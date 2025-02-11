@@ -133,7 +133,7 @@ async def main():
     logging.info("Application started.")
 
     app = HRAnalysisApp()
-    job_col, prefs_col = st.columns(2)
+    job_col, skills_col = st.columns(2)
 
     with job_col:
         st.subheader("Descripción del Puesto")
@@ -142,19 +142,11 @@ async def main():
             type=['txt', 'pdf']
         )
 
-    with prefs_col:
-        st.subheader("Preferencias de Contratación")
-        min_experience = st.number_input(
-            "Años mínimos de experiencia", 
-            min_value=0, 
-            value=3
-        )
-        education_level = st.selectbox(
-            "Nivel educativo requerido",
-            ["High School", "Bachelor", "Master", "PhD"]
-        )
+    # Additional skills section
+    with skills_col:
+        st.subheader("Aptitudes añadidas por el empleador")
         important_skills = st.text_area(
-            "Habilidades importantes (una por línea, mínimo una)",
+            "Aptitudes adicionales (una por línea)",
             height=100
         )
 
@@ -169,14 +161,20 @@ async def main():
         try:
             with st.spinner("Analizando candidatos..."):
                 logging.info("Candidate analysis started.")
+                # Create a more detailed hiring preferences structure
+                skills_list = [skill.strip() for skill in important_skills.split('\n') if skill.strip()]
                 hiring_preferences = {
-                    "minimum_experience": min_experience,
-                    "education_level": education_level,
-                    "important_skills": [
-                        skill.strip() 
-                        for skill in important_skills.split('\n') 
-                        if skill.strip()
-                    ]
+                    "important_skills": skills_list,
+                    "preferences_priority": """
+                        Las habilidades especificadas en estas preferencias de contratación tienen 
+                        prioridad sobre las mencionadas en la descripción del puesto. En caso de 
+                        ambigüedad o conflicto entre los requisitos del puesto y estas preferencias, 
+                        las preferencias prevalecerán. Estas habilidades se consideran críticas 
+                        para el éxito en el puesto y deben tener un peso significativo en la 
+                        evaluación de los candidatos.
+                    """,
+                    "skills_importance": "critical",
+                    "override_job_description": True
                 }
                 job_profile = await app.process_job_description(job_file, hiring_preferences)
                 candidate_profiles = await app.process_resumes(resume_files)

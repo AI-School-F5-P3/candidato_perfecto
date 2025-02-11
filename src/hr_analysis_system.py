@@ -31,6 +31,7 @@ class SemanticAnalyzer:
         """Initialize the semantic analyzer with OpenAI API key"""
         self.client = AsyncOpenAI(api_key=api_key)
         self.model = "gpt-3.5-turbo"
+        #self.model = "gpt-4o"
 
     async def get_embedding(self, text: str) -> List[float]:
         """Get embedding vector for text using OpenAI's embedding model"""
@@ -43,8 +44,12 @@ class SemanticAnalyzer:
     async def standardize_job_description(self, description: str, preferences: Dict) -> JobProfile:
         """Convert raw job description and preferences into standardized format"""
         prompt = f"""
-        Analyze this job description and hiring preferences and extract key components.
-        Format the output as JSON with the following structure:
+        Analyze this job description and hiring preferences. The hiring preferences take precedence 
+        over the job description requirements. If there is any conflict or ambiguity, the preferences 
+        should be considered the primary source of truth.
+
+        Please extract and merge the requirements, giving priority to the preferences, and format 
+        the output as JSON with the following structure:
         {{
             "title": "job title",
             "required_skills": ["skill1", "skill2"],
@@ -54,6 +59,9 @@ class SemanticAnalyzer:
             "responsibilities": ["resp1", "resp2"],
             "industry_knowledge": ["domain1", "domain2"]
         }}
+
+        Important: Any skills listed in the hiring preferences must be included in the required_skills 
+        section, even if they were not mentioned in the original job description.
 
         Job Description:
         {description}
