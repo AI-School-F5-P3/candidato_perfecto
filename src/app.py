@@ -131,6 +131,7 @@ class HRAnalysisApp:
             return content
         except Exception as e:
             logging.error(f"Error reading file {uploaded_file.name}: {str(e)}")
+            st.error(f"Error reading file {uploaded_file.name}: {str(e)}")
             raise e
 
     async def process_job_description(self, job_file, hiring_preferences: dict) -> JobProfile:
@@ -143,6 +144,7 @@ class HRAnalysisApp:
             return job_profile
         except Exception as e:
             logging.error(f"Error processing job description: {str(e)}")
+            st.error(f"Error processing job description: {str(e)}")
             raise e
 
     async def process_resumes(self, resume_files) -> List[CandidateProfile]:
@@ -157,6 +159,7 @@ class HRAnalysisApp:
                 logging.info(f"Resume processed: {resume_file.name}")
             except Exception as e:
                 logging.error(f"Error processing resume {resume_file.name}: {str(e)}")
+                st.error(f"Error processing resume {resume_file.name}: {str(e)}")
         return candidate_profiles
 
     def render_sidebar(self):
@@ -176,21 +179,49 @@ class HRAnalysisApp:
             st.markdown("---")
             st.markdown("### Configuración")
             
-            # Ajustes de puntuación
+            # Scoring adjustments
             st.markdown("#### Pesos de evaluación")
-            weights = {
-                "killer_skills": st.slider("Killer Skills", 0.0, 1.0, 0.4, 0.1),
-                "no_killer_skills": st.slider("No Killer Skills", 0.0, 1.0, 0.2, 0.1),
-                "education": st.slider("Educación", 0.0, 1.0, 0.2, 0.1),
-                "specific_requirements": st.slider("Requisitos Específicos", 0.0, 1.0, 0.2, 0.1)
-            }
             
-            # Normalizar pesos
-            total = sum(weights.values())
-            if total > 0:
-                weights = {k: v/total for k, v in weights.items()}
+            # Initialize weights
+            if 'weights' not in st.session_state:
+                st.session_state.weights = {
+                    "no_killer_skills": 0.4,
+                    "education": 0.3,
+                    "specific_requirements": 0.3
+                }
             
-            st.session_state.weights = weights
+            # Adjust weights
+            def adjust_weights():
+                total = st.session_state.no_killer_skills + st.session_state.education + st.session_state.specific_requirements
+                st.session_state.weights = {
+                    "no_killer_skills": st.session_state.no_killer_skills / total,
+                    "education": st.session_state.education / total,
+                    "specific_requirements": st.session_state.specific_requirements / total
+                }
+            
+            st.session_state.no_killer_skills = st.slider(
+                "No Killer Skills", 
+                0.0, 1.0, 
+                st.session_state.weights["no_killer_skills"], 
+                0.01, 
+                on_change=adjust_weights
+            )
+            
+            st.session_state.education = st.slider(
+                "Educación", 
+                0.0, 1.0, 
+                st.session_state.weights["education"], 
+                0.01, 
+                on_change=adjust_weights
+            )
+            
+            st.session_state.specific_requirements = st.slider(
+                "Requisitos Específicos", 
+                0.0, 1.0, 
+                st.session_state.weights["specific_requirements"], 
+                0.01, 
+                on_change=adjust_weights
+            )
 
     def render_job_section(self):
         """Render job description and requirements section"""
@@ -338,11 +369,12 @@ class HRAnalysisApp:
     def create_ranking_dataframe(self, rankings) -> pd.DataFrame:
         """Create and style rankings DataFrame"""
         try:
+            PUNTUACION_TOTAL = 'Puntuación Total'
             data = []
             for candidate, scores in rankings:
                 row = {
                     'Nombre Candidato': candidate.name,
-                    'Puntuación Total': scores['final_score'],
+                    PUNTUACION_TOTAL: scores['final_score'],
                     'Killer Skills': scores['component_scores']['killer_skills'],
                     'No Killer Skills': scores['component_scores']['no_killer_skills'],
                     'Educación': scores['component_scores']['education'],
@@ -355,9 +387,9 @@ class HRAnalysisApp:
             df = pd.DataFrame(data)
             
             # Aplicar estilos
-            percentage_cols = ['Puntuación Total', 'Killer Skills', 'No Killer Skills', 'Educación', 'Requisitos Específicos']
+            percentage_cols = [PUNTUACION_TOTAL, 'Killer Skills', 'No Killer Skills', 'Educación', 'Requisitos Específicos']
             styled_df = df.style.background_gradient(
-                subset=['Puntuación Total'],
+                subset=[PUNTUACION_TOTAL],
                 cmap='RdYlGn'
             ).format({
                 col: '{:.1%}' for col in percentage_cols
