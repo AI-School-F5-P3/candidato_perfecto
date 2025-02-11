@@ -147,20 +147,27 @@ class HRAnalysisApp:
             st.error(f"Error processing job description: {str(e)}")
             raise e
 
-    async def process_resumes(self, resume_files) -> List[CandidateProfile]:
+    async def process_resumes(self, resume_files, killer_skills: List[str]) -> List[CandidateProfile]:
         """Process multiple resume files"""
         candidate_profiles = []
         for resume_file in resume_files:
             try:
                 resume_content = await self.read_file_content(resume_file)
                 logging.info(f"Processing resume: {resume_file.name}")
+                
+                # Check killer skills
+                has_all_killer_skills = await self.analyzer.check_killer_skills(resume_content, killer_skills)
+                if not has_all_killer_skills:
+                    logging.info(f"Resume {resume_file.name} does not have all killer skills. Skipping.")
+                    continue
+                
                 profile = await self.analyzer.standardize_resume(resume_content)
                 candidate_profiles.append(profile)
                 logging.info(f"Resume processed: {resume_file.name}")
             except Exception as e:
                 logging.error(f"Error processing resume {resume_file.name}: {str(e)}")
                 st.error(f"Error processing resume {resume_file.name}: {str(e)}")
-        return candidate_profiles
+        return candidate_profile
 
     def render_sidebar(self):
         """Render sidebar with information and settings"""
@@ -238,11 +245,6 @@ class HRAnalysisApp:
                     help="Sube un archivo con la descripción detallada del puesto"
                 )
                 
-                education_level = st.selectbox(
-                    "Nivel educativo requerido",
-                    ["High School", "Bachelor", "Master", "PhD"],
-                    help="Selecciona el nivel mínimo de educación requerido"
-                )
 
             with col2:
                 if job_file:
@@ -286,7 +288,7 @@ class HRAnalysisApp:
             help="Otros requisitos importantes como ubicación, disponibilidad, idiomas, etc."
         )
 
-        return job_file, education_level, killer_skills, no_killer_skills, specific_requirements
+        return job_file, killer_skills, no_killer_skills, specific_requirements
 
     def render_candidates_section(self):
         """Render candidates upload section"""
@@ -375,10 +377,9 @@ class HRAnalysisApp:
                 row = {
                     'Nombre Candidato': candidate.name,
                     PUNTUACION_TOTAL: scores['final_score'],
-                    'Killer Skills': scores['component_scores']['killer_skills'],
-                    'No Killer Skills': scores['component_scores']['no_killer_skills'],
-                    'Educación': scores['component_scores']['education'],
-                    'Requisitos Específicos': scores['component_scores']['specific_requirements'],
+                    'No Killer Skills': scores['component_scores'].get('no_killer_skills', 0),
+                    'Educación': scores['component_scores'].get('education', 0),
+                    'Requisitos Específicos': scores['component_scores'].get('specific_requirements', 0),
                     'Habilidades': ', '.join(candidate.skills[:5]) + ('...' if len(candidate.skills) > 5 else ''),
                     'Educación (Descripcion)': candidate.education_level
                 }
@@ -387,7 +388,7 @@ class HRAnalysisApp:
             df = pd.DataFrame(data)
             
             # Aplicar estilos
-            percentage_cols = [PUNTUACION_TOTAL, 'Killer Skills', 'No Killer Skills', 'Educación', 'Requisitos Específicos']
+            percentage_cols = [PUNTUACION_TOTAL, 'No Killer Skills', 'Educación', 'Requisitos Específicos']
             styled_df = df.style.background_gradient(
                 subset=[PUNTUACION_TOTAL],
                 cmap='RdYlGn'
@@ -419,7 +420,7 @@ async def main():
 
     try:
         # Secciones principales
-        job_file, education_level, killer_skills, no_killer_skills, specific_requirements = app.render_job_section()
+        job_file, killer_skills, no_killer_skills, specific_requirements = app.render_job_section()
         resume_files = app.render_candidates_section()
 
         # Botón de análisis
@@ -431,17 +432,14 @@ async def main():
         if analyze_button:
             with st.spinner("⏳ Analizando candidatos..."):
                 async with app as analysis_app:
-                    # Preparar preferencias
-                    hiring_preferences = {
-                        "education_level": education_level,
+                    # Procesar datos
+                    job_content = await analysis_app.read_file_content(job_file)
+                    job_profile = await analysis_app.analyzer.standardize_job_description(job_content, {
                         "killer_skills": [s.strip() for s in killer_skills.split('\n') if s.strip()],
                         "no_killer_skills": [s.strip() for s in no_killer_skills.split('\n') if s.strip()],
                         "specific_requirements": [s.strip() for s in specific_requirements.split('\n') if s.strip()]
-                    }
-                    
-                    # Procesar datos
-                    job_profile = await analysis_app.process_job_description(job_file, hiring_preferences)
-                    candidate_profiles = await analysis_app.process_resumes(resume_files)
+                    })
+                    candidate_profiles = await analysis_app.process_resumes(resume_files, [s.strip() for s in killer_skills.split('\n') if s.strip()])
                     rankings = await analysis_app.ranking_system.rank_candidates(job_profile, candidate_profiles)
                     
                     # Guardar resultados en session_state

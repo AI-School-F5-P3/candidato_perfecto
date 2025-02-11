@@ -46,7 +46,7 @@ class SemanticAnalyzer:
         return response.json()["embedding"]
 
     async def _generate_json_response(self, prompt: str) -> dict:
-        """Helper method to generate JSON responses from Mistral"""
+        """Helper method to generate JSON responses from LLM"""
         response = await self.client.post(
             f"{self.api_url}/api/generate",
             json={
@@ -56,10 +56,8 @@ class SemanticAnalyzer:
             },
             timeout=120
         )
-        # Extract the response text and parse as JSON
         try:
             response_text = response.json()["response"]
-            # Find JSON content between curly braces
             start = response_text.find('{')
             end = response_text.rfind('}') + 1
             if start >= 0 and end > start:
@@ -69,57 +67,115 @@ class SemanticAnalyzer:
         except Exception as e:
             raise ValueError(f"Failed to parse JSON response: {str(e)}")
 
+    async def check_killer_skills(self, resume_text: str, killer_skills: List[str]) -> Dict:
+        """Check if resume contains all required killer skills"""
+        prompt = f"""
+        Eres un asistente experto en análisis de recursos humanos. Tu tarea es analizar este CV y verificar si contiene todas las killer skills requeridas: {killer_skills}. 
+        Si no tiene TODAS las killer_skills, el CV no es válido y no puede pasar al resto del proceso de selección.
+
+        Ten en cuenta las variaciones comunes para cada skill. Por ejemplo:
+        - "Python": "python programming", "python developer", "python development"
+        - "SQL": "MySQL", "PostgreSQL", "SQL Server", "database management"
+        - "Docker": "containerization", "docker containers", "docker-compose"
+
+        Considera también las versiones y niveles:
+        - "Python 3.x" es compatible con "Python"
+        - "Advanced SQL" cumple con "SQL"
+        - "Docker expert" cumple con "Docker"
+
+        CV para analizar:
+        {resume_text}
+
+        Responde en el siguiente formato JSON:
+        {{
+            "has_all_killer_skills": true/false,
+            "found_skills": ["skill1", "skill2", ...],
+            "missing_skills": ["skill3", "skill4", ...],
+        }}
+        """
+        response = await self._generate_json_response(prompt)
+        return response["has_all_killer_skills"]
+
     async def standardize_job_description(self, description: str, preferences: Dict) -> JobProfile:
         """Convert raw job description and preferences into standardized format"""
         prompt = f"""
-        Analiza esta descripción de trabajo y preferencias de contratación y extrae los componentes clave.
-        Debes responder en formato JSON con exactamente esta estructura:
-        {{
-            "title": "job title",
-            "killer_skills": ["skill1", "skill2"],
-            "no_killer_skills": ["skill1", "skill2"],
-            "education_level": "level",
-            "specific_requirements": ["req1", "req2"],
-            "responsibilities": ["resp1", "resp2"],
-            "industry_knowledge": ["domain1", "domain2"]
-        }}
+        Eres un asistente experto en análisis de recursos humanos. Tu tarea es analizar esta descripción de puesto y generar la información estructurada.
+
+        Ten en cuenta las variaciones en educación, te pongo unos ejemplos:
+        - "Grado universitario" = "Bachelor's degree"
+        - "Licenciatura" = "Bachelor's degree"
+        - "Máster" = "Master's degree"
+        - "Postgrado" = "Master's degree"
+        - "Doctorado" = "PhD"
+        
+        Asegúrate de normalizar la educación a uno de estos valores exactos:
+        - "High School"
+        - "Bachelor"
+        - "Master"
+        - "PhD"
 
         Descripción del trabajo:
         {description}
 
         Preferencias de contratación:
         {json.dumps(preferences, indent=2)}
+
+        Responde EXACTAMENTE en este formato JSON:
+        {{
+            "title": "string",
+            "killer_skills": ["skill1", "skill2"],
+            "no_killer_skills": ["skill1", "skill2"],
+            "education_level": "High School/Bachelor/Master/PhD",
+            "specific_requirements": ["requirement1", "requirement2"],
+            "responsibilities": ["resp1", "resp2"],
+            "industry_knowledge": ["knowledge1", "knowledge2"]
+        }}
         """
         
         profile_data = await self._generate_json_response(prompt)
-        
-        profile_data.setdefault("responsibilities", [])
-        profile_data.setdefault("industry_knowledge", [])
-        
         return JobProfile(**profile_data)
 
     async def standardize_resume(self, resume_text: str) -> CandidateProfile:
         """Convert raw resume text into standardized format"""
         prompt = f"""
-        Analiza este CV y extrae los componentes clave.
-        Debes responder en formato JSON con exactamente esta estructura:
+        Eres un asistente experto en análisis de recursos humanos. Tu tarea es analizar este CV y extraer la información en un formato estandarizado.
+
+        Considera las variaciones en la información, por ejemplo:
+
+        Educación:
+        - "Ingeniero en..." = "Bachelor"
+        - "Graduado en..." = "Bachelor"
+        - "MSc/MS/M.S." = "Master"
+        - "MBA" = "Master"
+        - "Doctorado/PhD" = "PhD"
+        
+        Asegúrate de normalizar la educación a uno de estos valores exactos:
+        - "High School"
+        - "Bachelor"
+        - "Master"
+        - "PhD"
+
+        Experiencia:
+        - "X años de experiencia" = incluir en past_roles
+        - "Desde 20XX" = calcular años y añadir al rol correspondiente
+
+        CV para analizar:
+        {resume_text}
+
+        Responde EXACTAMENTE en este formato JSON:
         {{
-            "name": "candidate name",
+            "name": "string",
             "skills": ["skill1", "skill2"],
-            "education_level": "level",
+            "education_level": "High School/Bachelor/Master/PhD",
             "past_roles": ["role1", "role2"],
             "industry_experience": ["industry1", "industry2"],
-            "location": "city, country",
+            "location": "string",
             "languages": ["language1", "language2"],
-            "availability": "immediate/2 weeks/etc"
+            "availability": "string"
         }}
-
-        CV:
-        {resume_text}
         """
-        
-        profile_data = await self._generate_json_response(prompt)
-        return CandidateProfile(**profile_data)
+        response = await self._generate_json_response(prompt)
+        return CandidateProfile(**response)
 
     async def close(self):
         """Close the HTTP client"""
@@ -171,7 +227,7 @@ class MatchingEngine:
                 # Check language requirements
                 required_langs = [lang.strip() for lang in req.split(":")[1].split(",")]
                 lang_match = any(lang.lower() in [cl.lower() for cl in candidate.languages] 
-                               for lang in required_langs)
+                            for lang in required_langs)
                 scores.append(1.0 if lang_match else 0.0)
             elif "disponibilidad" in req_lower:
                 avail_match = await self.analyzer.get_embedding(req)
@@ -218,14 +274,12 @@ class MatchingEngine:
         
         # Calculate weighted final score
         weights = {
-            "killer_skills": 0.4,
             "no_killer_skills": 0.2,
             "education": 0.2,
             "specific_requirements": 0.2
         }
         
         final_score = (
-            weights["killer_skills"] * killer_skills_score +
             weights["no_killer_skills"] * no_killer_skills_score +
             weights["education"] * education_score +
             weights["specific_requirements"] * specific_requirements_score
@@ -234,7 +288,6 @@ class MatchingEngine:
         return {
             "final_score": final_score,
             "component_scores": {
-                "killer_skills": killer_skills_score,
                 "no_killer_skills": no_killer_skills_score,
                 "education": education_score,
                 "specific_requirements": specific_requirements_score
