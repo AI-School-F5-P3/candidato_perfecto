@@ -15,6 +15,7 @@ class JobProfile:
     education_level: str
     responsibilities: List[str]
     industry_knowledge: List[str]
+    preferences: Dict = None  # Added to store weights and other preferences
     
 @dataclass
 class CandidateProfile:
@@ -25,6 +26,7 @@ class CandidateProfile:
     education_level: str
     past_roles: List[str]
     industry_experience: List[str]
+    raw_data: Dict = None  # Store the original JSON data for debugging
 
 class SemanticAnalyzer:
     def __init__(self, api_key: str):
@@ -77,6 +79,8 @@ class SemanticAnalyzer:
         )
         
         profile_data = json.loads(response.choices[0].message.content)
+        # Add preferences to the profile data
+        profile_data['preferences'] = preferences
         return JobProfile(**profile_data)
 
     async def standardize_resume(self, resume_text: str) -> CandidateProfile:
@@ -104,6 +108,9 @@ class SemanticAnalyzer:
         )
         
         profile_data = json.loads(response.choices[0].message.content)
+        # Store raw data in the profile
+        raw_data = profile_data.copy()
+        profile_data['raw_data'] = raw_data
         return CandidateProfile(**profile_data)
 
 class MatchingEngine:
@@ -162,13 +169,13 @@ class MatchingEngine:
             education_levels.get(job.education_level.lower(), 1)
         )
         
-        # Calculate weighted final score
-        weights = {
+        # Get weights from preferences or use defaults
+        weights = getattr(job, 'preferences', {}).get('weights', {
             "required_skills": 0.4,
             "preferred_skills": 0.2,
             "experience": 0.25,
             "education": 0.15
-        }
+        })
         
         final_score = (
             weights["required_skills"] * required_skills_score +

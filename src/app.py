@@ -13,6 +13,13 @@ from hr_analysis_system import (
     JobProfile,
     CandidateProfile
 )
+from frontend.ui import (
+    load_custom_css,
+    setup_page_config,
+    create_weight_sliders,
+    create_main_sections,
+    display_ranking
+)
 
 # Configure logging
 logging.basicConfig(
@@ -106,58 +113,56 @@ class HRAnalysisApp:
                     'Educación': scores['component_scores']['education'],
                     'Habilidades': ', '.join(candidate.skills[:5]) + ('...' if len(candidate.skills) > 5 else ''),
                     'Experiencia (Años)': candidate.experience_years,
-                    'Educación (Descripcion)': candidate.education_level
+                    'Educación (Descripcion)': candidate.education_level,
+                    'raw_data': candidate.raw_data  # Add raw data to DataFrame
                 }
                 data.append(row)
+            
             df = pd.DataFrame(data)
-            percentage_cols = ['Puntuación Total', 'Habilidades Requeridas', 'Habilidades Preferentes', 'Experiencia', 'Educación']
-            styled_df = df.style.background_gradient(
+            
+            # Create a copy without raw_data for styling
+            display_cols = [col for col in df.columns if col != 'raw_data']
+            styled_df = df[display_cols].style.background_gradient(
                 subset=['Puntuación Total'],
                 cmap='RdYlGn'
             )
+            
+            # Format percentage columns
+            percentage_cols = ['Puntuación Total', 'Habilidades Requeridas', 'Habilidades Preferentes', 'Experiencia', 'Educación']
             for col in percentage_cols:
                 styled_df = styled_df.format({col: '{:.2%}'})
+            
+            # Attach the original DataFrame with raw_data to the styled DataFrame
+            styled_df.data = df
+            
             logging.info("Ranking DataFrame created successfully.")
             return styled_df
         except Exception as e:
             logging.error(f"Error creating ranking DataFrame: {str(e)}")
             raise e
 
-# Modified main() function in Spanish
 async def main():
-    st.title("Sistema de Análisis de CVs")
+    # Initialize page configuration and styling
+    setup_page_config()
+    load_custom_css()
+    
+    # Title with custom CSS class
+    st.markdown('<h1 class="title">Sistema de Análisis de CVs</h1>', unsafe_allow_html=True)
     st.write("""
     Este sistema analiza descripciones de trabajo y CVs para encontrar las mejores coincidencias basadas en habilidades, 
-    experiencia y educación. Por favor, suba los archivos requeridos y proporcione las preferencias de contratación.
+    experiencia, educación y preferencias del reclutador.
     """)
     logging.info("Application started.")
 
     app = HRAnalysisApp()
-    job_col, skills_col = st.columns(2)
+    
+    # Create UI components using the new frontend functions
+    weights = create_weight_sliders()
+    
+    # Create all main sections in vertical layout
+    job_file, important_skills, resume_files = create_main_sections()
 
-    with job_col:
-        st.subheader("Descripción del Puesto")
-        job_file = st.file_uploader(
-            "Suba la descripción del puesto (TXT o PDF)", 
-            type=['txt', 'pdf']
-        )
-
-    # Additional skills section
-    with skills_col:
-        st.subheader("Aptitudes añadidas por el empleador")
-        important_skills = st.text_area(
-            "Aptitudes adicionales (una por línea)",
-            height=100
-        )
-
-    st.subheader("CVs de Candidatos")
-    resume_files = st.file_uploader(
-        "Suba los CVs de los candidatos (TXT o PDF)", 
-        type=['txt', 'pdf'],
-        accept_multiple_files=True
-    )
-
-    if st.button("Analizar Candidatos") and job_file and resume_files:
+    if st.button("Analizar Candidatos") and job_file and resume_files and weights["total_weight"] == 1.0:
         try:
             with st.spinner("Analizando candidatos..."):
                 logging.info("Candidate analysis started.")
@@ -174,31 +179,27 @@ async def main():
                         evaluación de los candidatos.
                     """,
                     "skills_importance": "critical",
-                    "override_job_description": True
+                    "override_job_description": True,
+                    "weights": {
+                        "required_skills": weights["skills_weight"],
+                        "preferred_skills": weights["preferences_weight"],
+                        "experience": weights["experience_weight"],
+                        "education": weights["education_weight"]
+                    }
                 }
                 job_profile = await app.process_job_description(job_file, hiring_preferences)
                 candidate_profiles = await app.process_resumes(resume_files)
                 rankings = await app.ranking_system.rank_candidates(job_profile, candidate_profiles)
                 logging.info("Candidate ranking completed.")
 
-                st.subheader("Ranking de Candidatos")
                 styled_df = app.create_ranking_dataframe(rankings)
-                st.dataframe(styled_df, use_container_width=True)
-
-                with st.expander("Ver Requisitos del Puesto"):
-                    st.json({
-                        "título": job_profile.title,
-                        "habilidades_requeridas": job_profile.required_skills,
-                        "habilidades_preferentes": job_profile.preferred_skills,
-                        "años_de_experiencia": job_profile.experience_years,
-                        "nivel_educativo": job_profile.education_level,
-                        "responsabilidades": job_profile.responsibilities,
-                        "conocimientos_industria": job_profile.industry_knowledge
-                    })
+                display_ranking(styled_df, job_profile)
+                
         except Exception as e:
             logging.error(f"Error during candidate analysis: {str(e)}")
-            st.error(f"Ocurrió un error: {str(e)}")
-            raise e
+            st.error(f"Ocurrió un error durante el análisis: {str(e)}")
+    elif weights["total_weight"] != 1.0:
+        st.error("Por favor, ajuste los pesos para que sumen exactamente 1.0 antes de continuar.")
 
 if __name__ == "__main__":
     try:

@@ -1,0 +1,146 @@
+/* Global styles */
+.main {
+    padding: 1rem 2rem;
+}
+
+/* Title styling */
+.title {
+    color: #1E3D59;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #E8E8E8;
+    margin-bottom: 1.5rem;
+}
+
+/* Sidebar styling - more compact */
+[data-testid="stSidebar"] > div:first-child {
+    padding: 0.5rem !important;
+    background-color: #F7F7F7;
+}
+
+.weights-container {
+    background-color: #F7F7F7;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-bottom: 0.25rem;
+}
+
+/* Super compact slider styling */
+.weights-container .stSlider {
+    padding: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.weights-container .stSlider > div {
+    margin: 0 !important;
+    padding-bottom: 0.25rem !important;
+}
+
+[data-testid="stSlider"] {
+    padding: 0.25rem 0 !important;
+}
+
+/* Slider customization for better vertical space usage */
+[data-testid="stSlider"] > div > div > div {
+    height: 0.5rem !important;
+}
+
+[data-testid="stSlider"] > div > div > div > div {
+    width: 0.75rem !important;
+    height: 0.75rem !important;
+}
+
+[data-testid="stSlider"] [data-baseweb="slider"] div[role="slider"] {
+    height: 0.75rem !important;
+    width: 0.75rem !important;
+}
+
+/* Slider value text */
+[data-testid="stMarkdownContainer"] p {
+    font-size: 0.75rem !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+}
+
+/* Reduce slider markers size */
+[data-testid="stSlider"] div[data-baseweb="slider"] div[role="slider"]::after {
+    width: 0.75rem !important;
+    height: 0.75rem !important;
+}
+
+/* Compact slider track */
+[data-testid="stSlider"] div[data-baseweb="slider"] div[role="slider"]::before {
+    height: 0.25rem !important;
+}
+
+/* Reduce space between slider and its label */
+.element-container {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* Ensure slider container is compact */
+.stSlider > div {
+    min-height: unset !important;
+}
+
+/* More compact section headers */
+.section-header {
+    color: #1E3D59;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0.5rem 0 0.25rem 0;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid #E8E8E8;
+}
+
+/* File uploader styling */
+.stFileUploader {
+    border: 2px dashed #CCC;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+}
+
+/* Cleaner text area styling */
+.stTextArea textarea {
+    border-color: #E8E8E8;
+    border-radius: 4px;
+}
+
+/* Button styling */
+.stButton>button {
+    width: 100%;
+    background-color: #1E3D59;
+    color: white;
+    border: none;
+    padding: 0.5rem 2rem;
+    border-radius: 4px;
+    font-weight: 500;
+    margin-top: 1rem;
+}
+
+.stButton>button:hover {
+    background-color: #2E4D69;
+}
+
+/* Warning/Error message styling */
+.stAlert {
+    padding: 0.5rem !important;
+    margin: 0.5rem 0 !important;
+}
+
+/* DataFrame styling */
+.dataframe {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 1rem 0;
+}
+
+/* Section spacing */
+.main-section {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
