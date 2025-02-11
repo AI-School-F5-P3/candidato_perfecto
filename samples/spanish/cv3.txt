@@ -1,0 +1,48 @@
+# Laura Sánchez Navarro
+### Ingeniera de IA / MLOps
+Valencia, España  
+laura.sanchez@email.com  
++34 634 567 890  
+linkedin.com/in/laurasanchezn
+
+### Perfil Profesional
+Ingeniera de IA con 5 años de experiencia especializada en MLOps y desarrollo de infraestructura para sistemas de IA. Experta en diseño e implementación de pipelines de machine learning escalables y automatizados.
+
+### Experiencia Profesional
+
+**MLOps Engineer Senior** | AI Solutions Corp | 2021 - Presente
+* Diseño e implementación de infraestructura MLOps end-to-end
+* Automatización de pipelines de training y deployment reduciendo tiempo de desarrollo en 60%
+* Implementación de monitorización de modelos en producción
+* Liderazgo en la migración a arquitectura de microservicios
+
+**Machine Learning Engineer** | Data Systems SA | 2018 - 2021
+* Desarrollo de sistemas de ML para análisis de datos financieros
+* Implementación de CI/CD para modelos de ML
+* Optimización de costes de infraestructura cloud en un 45%
+
+### Formación Académica
+* Máster en Big Data y Machine Learning | Universidad Politécnica de Valencia | 2018
+* Grado en Ingeniería Informática | Universidad de Valencia | 2016
+
+### Habilidades Técnicas
+* Lenguajes: Python, Go, Shell Script
+* MLOps: Docker, Kubernetes, Airflow, MLflow
+* Cloud: AWS, GCP, Azure
+* Monitoring: Prometheus, Grafana
+* CI/CD: Jenkins, GitHub Actions
+* IaC: Terraform, Ansible
+
+### Certificaciones
+* Google Cloud Professional Machine Learning Engineer
+* AWS Solutions Architect Professional
+* Kubernetes Administrator (CKA)
+
+### Idiomas
+* Español: Nativo
+* Inglés: C1
+* Alemán: B1
+
+### Conferencias y Charlas
+* "MLOps Best Practices" - DevOps Spain 2023
+* "Scaling ML in Production" - AI Conference Madrid 2022

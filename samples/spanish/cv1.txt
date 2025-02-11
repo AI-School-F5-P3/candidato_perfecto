@@ -1,0 +1,47 @@
+# Ana Martínez Rodríguez
+### Ingeniera de Inteligencia Artificial
+Madrid, España  
+ana.martinez@email.com  
++34 612 345 678  
+linkedin.com/in/anamartinezr
+
+### Perfil Profesional
+Ingeniera de IA con 6 años de experiencia en el desarrollo e implementación de soluciones de aprendizaje automático y deep learning. Especializada en procesamiento de lenguaje natural y sistemas de recomendación. Comprometida con la excelencia técnica y la innovación continua.
+
+### Experiencia Profesional
+
+**Senior Machine Learning Engineer** | TechSolutions España | 2022 - Presente
+* Liderazgo técnico de un equipo de 5 ingenieros en el desarrollo de un sistema de procesamiento de lenguaje natural para atención al cliente
+* Implementación de modelos transformer con PyTorch, logrando una mejora del 35% en la precisión
+* Diseño e implementación de pipeline de MLOps utilizando Azure ML y GitHub Actions
+* Optimización de modelos que resultó en una reducción del 40% en costos de inferencia
+
+**Machine Learning Engineer** | DataCorp | 2019 - 2022
+* Desarrollo de sistemas de recomendación para e-commerce utilizando técnicas de deep learning
+* Implementación de feature engineering que mejoró la precisión de recomendaciones en un 25%
+* Colaboración en el diseño de arquitectura de microservicios para deployment de modelos
+
+**Data Scientist** | AI Startups SL | 2017 - 2019
+* Desarrollo de modelos de clasificación de texto utilizando BERT y transformers
+* Implementación de pipelines de procesamiento de datos en Python y PySpark
+
+### Formación Académica
+* Doctorado en Inteligencia Artificial | Universidad Politécnica de Madrid | 2017
+* Máster en Computer Science | Universidad Complutense de Madrid | 2014
+* Grado en Ingeniería Informática | Universidad Carlos III de Madrid | 2012
+
+### Habilidades Técnicas
+* Lenguajes: Python, R, SQL, Java
+* Frameworks ML: TensorFlow, PyTorch, scikit-learn, Keras
+* Cloud: AWS, Azure, Google Cloud
+* MLOps: Docker, Kubernetes, MLflow, DVC
+* Herramientas: Git, Linux, Jupyter, VS Code
+
+### Idiomas
+* Español: Nativo
+* Inglés: C1
+* Francés: B2
+
+### Publicaciones y Conferencias
+* "Advances in NLP for Spanish Language Processing" - NLP Conference 2023
+* "Optimizing Transformer Models for Production" - ML Summit Madrid 2022
