@@ -242,11 +242,6 @@ class MatchingEngine:
         candidate: CandidateProfile
     ) -> Dict[str, float]:
         """Calculate overall match score between job and candidate"""
-        # Calculate different components of the match
-        killer_skills_score = await self.calculate_skill_match_score(
-            job.killer_skills, 
-            candidate.skills
-        )
         
         no_killer_skills_score = await self.calculate_skill_match_score(
             job.no_killer_skills, 
