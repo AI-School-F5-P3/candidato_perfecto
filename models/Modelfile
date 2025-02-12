@@ -1,0 +1,1 @@
+FROM distilbert-base-multilingual-cased
