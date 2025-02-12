@@ -104,39 +104,36 @@ class HRAnalysisApp:
         try:
             data = []
             for candidate, scores in rankings:
+                # Pre-format all score values at creation time
                 row = {
-                    'Nombre Candidato': candidate.name,
-                    'Puntuación Total': scores['final_score'],
-                    'Habilidades Requeridas': scores['component_scores']['required_skills'],
-                    'Habilidades Preferentes': scores['component_scores']['preferred_skills'],
-                    'Experiencia': scores['component_scores']['experience'],
-                    'Educación': scores['component_scores']['education'],
-                    'Habilidades': ', '.join(candidate.skills[:5]) + ('...' if len(candidate.skills) > 5 else ''),
-                    'Experiencia (Años)': candidate.experience_years,
-                    'Educación (Descripcion)': candidate.education_level,
-                    'raw_data': candidate.raw_data  # Add raw data to DataFrame
+                    'Nombre Candidato': candidate.nombre_candidato,
+                    'Estado': 'Descalificado' if scores.get('disqualified', False) else 'Calificado',
+                    'Score Final': f"{scores['final_score']:.1%}",
+                    'Score Habilidades': f"{scores['component_scores']['habilidades']:.1%}",
+                    'Score Experiencia': f"{scores['component_scores']['experiencia']:.1%}",
+                    'Score Formación': f"{scores['component_scores']['formacion']:.1%}",
+                    'Score Preferencias': f"{scores['component_scores']['preferencias_reclutador']:.1%}",
+                    'Habilidades': ', '.join(candidate.habilidades[:5]) + ('...' if len(candidate.habilidades) > 5 else ''),
+                    'Experiencia': ', '.join(candidate.experiencia[:3]) + ('...' if len(candidate.experiencia) > 3 else ''),
+                    'Formación': ', '.join(candidate.formacion[:2]) + ('...' if len(candidate.formacion) > 2 else ''),
+                    'Razones Descalificación': ', '.join(scores.get('disqualification_reasons', [])) or 'N/A',
+                    'raw_data': candidate.raw_data
                 }
                 data.append(row)
             
             df = pd.DataFrame(data)
             
-            # Create a copy without raw_data for styling
-            display_cols = [col for col in df.columns if col != 'raw_data']
-            styled_df = df[display_cols].style.background_gradient(
-                subset=['Puntuación Total'],
-                cmap='RdYlGn'
+            # Sort by Estado (qualified first) and then by Score Final
+            df['Sort Score'] = df['Score Final'].str.rstrip('%').astype('float')
+            df = df.sort_values(
+                by=['Estado', 'Sort Score'], 
+                ascending=[True, False],  # True for Estado to put 'Calificado' first
+                key=lambda x: x if x.name != 'Estado' else pd.Categorical(x, ['Calificado', 'Descalificado'])
             )
-            
-            # Format percentage columns
-            percentage_cols = ['Puntuación Total', 'Habilidades Requeridas', 'Habilidades Preferentes', 'Experiencia', 'Educación']
-            for col in percentage_cols:
-                styled_df = styled_df.format({col: '{:.2%}'})
-            
-            # Attach the original DataFrame with raw_data to the styled DataFrame
-            styled_df.data = df
+            df = df.drop('Sort Score', axis=1)
             
             logging.info("Ranking DataFrame created successfully.")
-            return styled_df
+            return df
         except Exception as e:
             logging.error(f"Error creating ranking DataFrame: {str(e)}")
             raise e
@@ -150,7 +147,7 @@ async def main():
     st.markdown('<h1 class="title">Sistema de Análisis de CVs</h1>', unsafe_allow_html=True)
     st.write("""
     Este sistema analiza descripciones de trabajo y CVs para encontrar las mejores coincidencias basadas en habilidades, 
-    experiencia, educación y preferencias del reclutador.
+    experiencia y conocimiento, y formación.
     """)
     logging.info("Application started.")
 
@@ -159,37 +156,39 @@ async def main():
     # Create UI components using the new frontend functions
     weights = create_weight_sliders()
     
-    # Create all main sections in vertical layout
-    job_file, important_skills, resume_files = create_main_sections()
+    # Create all main sections in vertical layout and get killer criteria
+    job_file, important_skills, resume_files, killer_criteria = create_main_sections()
 
     if st.button("Analizar Candidatos") and job_file and resume_files and weights["total_weight"] == 1.0:
         try:
             with st.spinner("Analizando candidatos..."):
                 logging.info("Candidate analysis started.")
-                # Create a more detailed hiring preferences structure
-                skills_list = [skill.strip() for skill in important_skills.split('\n') if skill.strip()]
+                # Create a simplified hiring preferences structure with safe handling of empty inputs
+                skills_list = [skill.strip() for skill in (important_skills or "").split('\n') if skill.strip()]
                 hiring_preferences = {
-                    "important_skills": skills_list,
-                    "preferences_priority": """
-                        Las habilidades especificadas en estas preferencias de contratación tienen 
-                        prioridad sobre las mencionadas en la descripción del puesto. En caso de 
-                        ambigüedad o conflicto entre los requisitos del puesto y estas preferencias, 
-                        las preferencias prevalecerán. Estas habilidades se consideran críticas 
-                        para el éxito en el puesto y deben tener un peso significativo en la 
-                        evaluación de los candidatos.
-                    """,
-                    "skills_importance": "critical",
-                    "override_job_description": True,
+                    "habilidades_preferidas": skills_list,
                     "weights": {
-                        "required_skills": weights["skills_weight"],
-                        "preferred_skills": weights["preferences_weight"],
-                        "experience": weights["experience_weight"],
-                        "education": weights["education_weight"]
+                        "habilidades": weights["habilidades"],
+                        "experiencia": weights["experiencia"],
+                        "formacion": weights["formacion"],
+                        "preferencias_reclutador": weights["preferencias_reclutador"]
                     }
                 }
+                
+                # Store killer criteria and log if any were provided
+                if any(killer_criteria.values()):
+                    logging.info(f"Killer criteria received: {json.dumps(killer_criteria, indent=2)}")
+                else:
+                    logging.info("No killer criteria provided")
+                
                 job_profile = await app.process_job_description(job_file, hiring_preferences)
                 candidate_profiles = await app.process_resumes(resume_files)
-                rankings = await app.ranking_system.rank_candidates(job_profile, candidate_profiles)
+                # Pass killer_criteria to rank_candidates
+                rankings = await app.ranking_system.rank_candidates(
+                    job_profile, 
+                    candidate_profiles,
+                    killer_criteria if any(killer_criteria.values()) else None
+                )
                 logging.info("Candidate ranking completed.")
 
                 styled_df = app.create_ranking_dataframe(rankings)
