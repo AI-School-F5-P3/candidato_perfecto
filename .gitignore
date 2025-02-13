@@ -2,3 +2,4 @@ src/.streamlit/
 src/__pycache__/
 src/app.log
 old/
+app.log
