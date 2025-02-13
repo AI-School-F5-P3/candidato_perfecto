@@ -1,8 +1,23 @@
-streamlit
-pandas
-openai
-asyncio
-aiofiles
-numpy
-python-dotenv
-matplotlib
+# Core dependencies
+streamlit>=1.29.0
+pandas>=2.0.0
+numpy>=1.24.0
+
+# OpenAI
+openai>=1.0.0
+
+# Async support
+asyncio>=3.4.3
+aiofiles>=23.2.1
+
+# File handling
+PyPDF2>=3.0.0
+
+# Environment and configuration
+python-dotenv>=1.0.0
+
+# Visualization
+matplotlib>=3.7.0
+
+# Type hints support
+typing-extensions>=4.8.0

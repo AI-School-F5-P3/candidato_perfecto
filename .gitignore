@@ -2,3 +2,5 @@ src/.streamlit/
 src/__pycache__/
 src/app.log
 old/
+models/
+docs/diagrams
