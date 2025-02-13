@@ -1,0 +1,277 @@
+2025-02-13 12:45:02,536 INFO: Application started.
+2025-02-13 12:45:02,537 ERROR: Error during HRAnalysisApp initialization: No secrets found. Valid paths for a secrets.toml file or secret directories are: C:\Users\Administrator\.streamlit\secrets.toml, C:\Users\Administrator\Desktop\F5\candidato_perfecto\.streamlit\secrets.toml
+2025-02-13 12:45:02,538 CRITICAL: Fatal error in main: No secrets found. Valid paths for a secrets.toml file or secret directories are: C:\Users\Administrator\.streamlit\secrets.toml, C:\Users\Administrator\Desktop\F5\candidato_perfecto\.streamlit\secrets.toml
+2025-02-13 12:45:32,934 INFO: Application started.
+2025-02-13 12:45:33,340 INFO: API key obtained successfully.
+2025-02-13 12:45:33,592 INFO: Analysis components initialized.
+2025-02-13 12:55:49,936 INFO: Application started.
+2025-02-13 12:55:49,937 INFO: API key obtained successfully.
+2025-02-13 12:55:50,201 INFO: Analysis components initialized.
+2025-02-13 12:55:52,101 INFO: Application started.
+2025-02-13 12:55:52,101 INFO: API key obtained successfully.
+2025-02-13 12:55:52,363 INFO: Analysis components initialized.
+2025-02-13 12:55:55,498 INFO: Application started.
+2025-02-13 12:55:55,499 INFO: API key obtained successfully.
+2025-02-13 12:55:55,749 INFO: Analysis components initialized.
+2025-02-13 12:55:57,056 INFO: Application started.
+2025-02-13 12:55:57,057 INFO: API key obtained successfully.
+2025-02-13 12:55:57,313 INFO: Analysis components initialized.
+2025-02-13 12:56:56,724 INFO: Application started.
+2025-02-13 12:56:56,725 INFO: API key obtained successfully.
+2025-02-13 12:56:57,016 INFO: Analysis components initialized.
+2025-02-13 12:57:09,703 INFO: Application started.
+2025-02-13 12:57:09,703 INFO: API key obtained successfully.
+2025-02-13 12:57:09,959 INFO: Analysis components initialized.
+2025-02-13 12:57:13,912 INFO: Application started.
+2025-02-13 12:57:13,912 INFO: API key obtained successfully.
+2025-02-13 12:57:14,188 INFO: Analysis components initialized.
+2025-02-13 12:57:16,121 INFO: Application started.
+2025-02-13 12:57:16,122 INFO: API key obtained successfully.
+2025-02-13 12:57:16,402 INFO: Analysis components initialized.
+2025-02-13 12:57:16,465 INFO: Application started.
+2025-02-13 12:57:16,466 INFO: API key obtained successfully.
+2025-02-13 12:57:16,726 INFO: Analysis components initialized.
+2025-02-13 12:57:17,229 INFO: Application started.
+2025-02-13 12:57:17,230 INFO: API key obtained successfully.
+2025-02-13 12:57:17,498 INFO: Analysis components initialized.
+2025-02-13 12:57:18,778 INFO: Application started.
+2025-02-13 12:57:18,778 INFO: API key obtained successfully.
+2025-02-13 12:57:19,038 INFO: Analysis components initialized.
+2025-02-13 12:57:19,719 INFO: Application started.
+2025-02-13 12:57:19,719 INFO: API key obtained successfully.
+2025-02-13 12:57:19,969 INFO: Analysis components initialized.
+2025-02-13 12:57:20,281 INFO: Application started.
+2025-02-13 12:57:20,282 INFO: API key obtained successfully.
+2025-02-13 12:57:20,547 INFO: Analysis components initialized.
+2025-02-13 12:57:21,893 INFO: Application started.
+2025-02-13 12:57:21,894 INFO: API key obtained successfully.
+2025-02-13 12:57:22,150 INFO: Analysis components initialized.
+2025-02-13 12:57:22,422 INFO: Application started.
+2025-02-13 12:57:22,423 INFO: API key obtained successfully.
+2025-02-13 12:57:22,677 INFO: Analysis components initialized.
+2025-02-13 12:57:31,057 INFO: Application started.
+2025-02-13 12:57:31,058 INFO: API key obtained successfully.
+2025-02-13 12:57:31,322 INFO: Analysis components initialized.
+2025-02-13 12:57:48,432 INFO: Application started.
+2025-02-13 12:57:48,433 INFO: API key obtained successfully.
+2025-02-13 12:57:48,689 INFO: Analysis components initialized.
+2025-02-13 12:57:52,195 INFO: Application started.
+2025-02-13 12:57:52,196 INFO: API key obtained successfully.
+2025-02-13 12:57:52,447 INFO: Analysis components initialized.
+2025-02-13 12:57:52,455 INFO: Candidate analysis started.
+2025-02-13 12:57:52,456 INFO: Killer criteria received: {
+  "killer_habilidades": [
+    "Python"
+  ],
+  "killer_experiencia": []
+}
+2025-02-13 12:57:52,458 INFO: Reading file: Job_Post.pdf with extension pdf
+2025-02-13 12:57:52,884 INFO: Extracted text from PDF: Job_Post.pdf
+2025-02-13 12:57:52,885 INFO: Processing job description.
+2025-02-13 12:57:55,122 INFO: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-13 12:57:55,127 INFO: Job description processed successfully.
+2025-02-13 12:57:55,128 INFO: Reading file: cv1.txt with extension txt
+2025-02-13 12:57:55,128 INFO: Read text file: cv1.txt
+2025-02-13 12:57:55,129 INFO: Processing resume: cv1.txt
+2025-02-13 12:57:57,325 INFO: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-13 12:57:57,331 INFO: Resume processed: cv1.txt
+2025-02-13 12:57:57,332 INFO: Reading file: cv2.txt with extension txt
+2025-02-13 12:57:57,333 INFO: Read text file: cv2.txt
+2025-02-13 12:57:57,335 INFO: Processing resume: cv2.txt
+2025-02-13 12:57:59,459 INFO: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-13 12:57:59,464 INFO: Resume processed: cv2.txt
+2025-02-13 12:57:59,465 INFO: Reading file: cv3.txt with extension txt
+2025-02-13 12:57:59,466 INFO: Read text file: cv3.txt
+2025-02-13 12:57:59,467 INFO: Processing resume: cv3.txt
+2025-02-13 12:58:01,853 INFO: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-13 12:58:01,857 INFO: Resume processed: cv3.txt
+2025-02-13 12:58:01,859 INFO: Reading file: Elena Petrov.pdf with extension pdf
+2025-02-13 12:58:01,884 INFO: Extracted text from PDF: Elena Petrov.pdf
+2025-02-13 12:58:01,885 INFO: Processing resume: Elena Petrov.pdf
+2025-02-13 12:58:03,959 INFO: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-13 12:58:03,964 INFO: Resume processed: Elena Petrov.pdf
+2025-02-13 12:58:03,965 INFO: Reading file: James Kim.pdf with extension pdf
+2025-02-13 12:58:03,987 INFO: Extracted text from PDF: James Kim.pdf
+2025-02-13 12:58:03,987 INFO: Processing resume: James Kim.pdf
+2025-02-13 12:58:05,249 INFO: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-13 12:58:05,254 INFO: Resume processed: James Kim.pdf
+2025-02-13 12:58:05,255 INFO: Reading file: Michael Rodriguez.pdf with extension pdf
+2025-02-13 12:58:05,278 INFO: Extracted text from PDF: Michael Rodriguez.pdf
+2025-02-13 12:58:05,279 INFO: Processing resume: Michael Rodriguez.pdf
+2025-02-13 12:58:06,774 INFO: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-13 12:58:06,784 INFO: Resume processed: Michael Rodriguez.pdf
+2025-02-13 12:58:06,785 INFO: Reading file: Sarah Chen.pdf with extension pdf
+2025-02-13 12:58:06,815 INFO: Extracted text from PDF: Sarah Chen.pdf
+2025-02-13 12:58:06,815 INFO: Processing resume: Sarah Chen.pdf
+2025-02-13 12:58:08,665 INFO: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-13 12:58:08,670 INFO: Resume processed: Sarah Chen.pdf
+2025-02-13 12:58:09,214 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:09,856 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:11,841 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:13,177 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:13,793 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:14,132 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:14,448 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:14,974 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:15,191 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:15,396 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:16,136 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:16,514 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:16,913 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:17,282 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:17,619 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:18,132 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:18,404 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:19,049 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:19,469 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:19,703 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:19,952 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:20,205 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:20,545 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:21,223 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:21,883 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:22,272 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:22,495 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:23,001 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:23,440 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:23,801 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:24,007 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:24,255 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:24,577 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:24,986 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:25,461 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:25,685 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:26,266 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:26,615 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:26,953 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:27,162 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:27,485 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:27,861 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:28,065 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:28,414 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:28,663 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:28,881 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:29,225 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:29,612 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:35,918 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:36,633 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:36,945 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:37,339 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:37,662 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:37,944 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:38,303 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:38,529 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:38,757 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:39,117 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:39,535 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:40,274 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:40,610 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:41,002 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:41,222 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:41,564 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:41,960 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:42,172 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:42,556 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:42,783 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:43,095 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:43,382 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:43,683 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:43,913 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:44,347 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:44,771 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:45,677 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:46,033 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:46,260 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:46,457 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:46,809 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:47,233 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:47,609 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:47,872 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:48,158 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:48,536 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:51,851 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:52,058 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:52,643 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:53,037 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:54,372 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:54,726 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:55,196 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:55,534 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:56,072 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:56,413 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:56,675 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:56,923 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:57,258 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:58:59,953 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:00,304 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:00,597 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:01,005 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:01,589 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:01,972 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:02,191 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:02,599 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:02,961 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:03,254 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:03,524 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:06,196 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:06,540 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:06,750 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:07,087 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:07,401 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:07,725 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:07,962 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:08,203 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:08,522 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:08,844 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:09,086 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:09,340 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:10,021 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:10,386 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:10,617 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:11,036 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:11,306 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:11,563 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:11,820 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:12,063 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:12,424 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:12,744 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:12,961 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:13,291 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:13,497 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:13,758 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:15,141 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:15,444 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:15,785 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:16,177 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:16,518 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:17,771 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:18,141 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:18,906 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:20,389 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:20,731 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:21,093 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:21,531 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:21,909 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:22,183 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:22,392 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:22,772 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:23,058 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:23,458 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:23,828 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:24,388 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:24,659 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:24,938 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:25,159 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:25,370 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:25,849 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:26,245 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:26,603 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:26,971 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:27,342 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:27,770 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:28,115 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:28,321 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:28,531 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:28,867 INFO: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-13 12:59:28,872 INFO: Candidate ranking completed.
+2025-02-13 12:59:28,879 INFO: Ranking DataFrame created successfully.
