@@ -1,0 +1,63 @@
+/* This file contains custom styles for the Streamlit application. */
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+.title {
+    font-size: 2.5em;
+    color: #4a4a4a;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h2 {
+    color: #4a4a4a;
+}
+
+.stButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.stButton:hover {
+    background-color: #0056b3;
+}
+
+.stSpinner {
+    color: #007bff;
+}
+
+.stError {
+    color: #ff4d4d;
+    font-weight: bold;
+}
+
+.dataframe {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.dataframe th, .dataframe td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.dataframe th {
+    background-color: #007bff;
+    color: white;
+}
+
+.dataframe tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.dataframe tr:hover {
+    background-color: #ddd;
+}

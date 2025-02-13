@@ -1,0 +1,8 @@
+streamlit
+# The contents of the file: /candidato_perfecto/candidato_perfecto/requirements.txt
+
+streamlit
+pandas
+PyPDF2
+aiofiles
+```
