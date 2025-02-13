@@ -3,8 +3,12 @@ src/__pycache__/
 src/app.log
 old/
 <<<<<<< HEAD
+<<<<<<< HEAD
 models/
 docs/diagrams
 =======
 app.log
 >>>>>>> 2c40698 (gitignore)
+=======
+app.log
+>>>>>>> f24b0c5b82ab4634455d0fc7c12df3a240263d2c
