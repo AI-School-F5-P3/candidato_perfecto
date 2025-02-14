@@ -1,4 +1,4 @@
-"""Tests for the FileHandler class"""
+"""Pruebas para el módulo file_handler"""
 import pytest
 from unittest.mock import AsyncMock, MagicMock, mock_open, patch
 import io
@@ -6,7 +6,7 @@ from typing import Union
 from src.utils.file_handler import FileHandler
 
 class MockUploadedFile:
-    """Mock class to simulate uploaded files in tests"""
+    """Clase simulada para archivos subidos en pruebas"""
     def __init__(self, name: str, content: Union[str, bytes], is_bytes: bool = False):
         self.name = name
         self._content = content if is_bytes else str(content).encode()
@@ -16,10 +16,12 @@ class MockUploadedFile:
 
 @pytest.fixture
 def file_handler():
+    """Fixture que proporciona una instancia de FileHandler"""
     return FileHandler()
 
 @pytest.fixture
 def mock_text_file():
+    """Fixture que proporciona un archivo de texto simulado"""
     return MockUploadedFile(
         name="test.txt",
         content="This is a test text file\nWith multiple lines\n"
@@ -27,6 +29,7 @@ def mock_text_file():
 
 @pytest.fixture
 def mock_pdf_file():
+    """Fixture que proporciona un archivo PDF simulado"""
     return MockUploadedFile(
         name="test.pdf",
         content=b"%PDF-1.4\nTest PDF content",
@@ -35,7 +38,7 @@ def mock_pdf_file():
 
 @pytest.mark.asyncio
 async def test_read_text_file_content(file_handler, mock_text_file):
-    """Test reading content from a text file"""
+    """Prueba la lectura de contenido de un archivo de texto"""
     content = await file_handler.read_text_content(mock_text_file)
     assert isinstance(content, str)
     assert "This is a test text file" in content
@@ -43,9 +46,9 @@ async def test_read_text_file_content(file_handler, mock_text_file):
 
 @pytest.mark.asyncio
 async def test_read_pdf_content(file_handler, mock_pdf_file):
-    """Test reading content from a PDF file"""
+    """Prueba la lectura de contenido de un archivo PDF"""
     with patch('PyPDF2.PdfReader') as mock_pdf_reader:
-        # Mock PDF pages
+        # Simula una página de PDF con texto
         mock_page = MagicMock()
         mock_page.extract_text.return_value = "Extracted PDF content"
         mock_pdf_reader.return_value.pages = [mock_page]
@@ -58,14 +61,14 @@ async def test_read_pdf_content(file_handler, mock_pdf_file):
 
 @pytest.mark.asyncio
 async def test_read_file_content_txt(file_handler, mock_text_file):
-    """Test read_file_content with a text file"""
+    """Prueba read_file_content con un archivo de texto"""
     content = await file_handler.read_file_content(mock_text_file)
     assert isinstance(content, str)
     assert "This is a test text file" in content
 
 @pytest.mark.asyncio
 async def test_read_file_content_pdf(file_handler, mock_pdf_file):
-    """Test read_file_content with a PDF file"""
+    """Prueba read_file_content con un archivo PDF"""
     with patch('PyPDF2.PdfReader') as mock_pdf_reader:
         mock_page = MagicMock()
         mock_page.extract_text.return_value = "Extracted PDF content"
@@ -78,44 +81,44 @@ async def test_read_file_content_pdf(file_handler, mock_pdf_file):
 
 @pytest.mark.asyncio
 async def test_read_file_content_no_file(file_handler):
-    """Test read_file_content with no file provided"""
+    """Prueba read_file_content sin archivo"""
     with pytest.raises(ValueError) as exc_info:
         await file_handler.read_file_content(None)
     assert "No file provided" in str(exc_info.value)
 
 @pytest.mark.asyncio
 async def test_read_file_content_invalid_extension(file_handler):
-    """Test read_file_content with an invalid file extension"""
+    """Prueba read_file_content con una extensión de archivo inválida"""
     invalid_file = MockUploadedFile(
         name="test.invalid",
         content="Some content"
     )
     
-    # Should default to text file handling
+    # Debería usar el manejo de archivos de texto por defecto
     content = await file_handler.read_file_content(invalid_file)
     assert isinstance(content, str)
     assert "Some content" in content
 
 @pytest.mark.asyncio
 async def test_read_text_content_with_encoding_error(file_handler):
-    """Test reading text content with encoding error"""
-    # Create a file with binary content that would cause a decode error
+    """Prueba la lectura de contenido de texto con error de codificación"""
+    # Crea un archivo con contenido binario que causaría un error de decodificación
     binary_file = MockUploadedFile(
         name="binary.txt",
         content=b'\x80\x81\x82\x83',
         is_bytes=True
     )
     
-    # Should handle the decode error gracefully
+    # Debería manejar el error de decodificación correctamente
     content = await file_handler.read_text_content(binary_file)
     assert isinstance(content, str)
-    assert len(content) > 0  # Content should be decoded with 'ignore' option
+    assert len(content) > 0  # El contenido debería ser decodificado con la opción 'ignore'
 
 @pytest.mark.asyncio
-async def test_read_pdf_content_with_extraction_error(file_handler):
-    """Test reading PDF content when text extraction fails"""
+async def test_read_pdf_content_with_extraction_error(file_handler, mock_pdf_file):
+    """Prueba la lectura de contenido PDF cuando falla la extracción de texto"""
     with patch('PyPDF2.PdfReader') as mock_pdf_reader:
-        # Mock PDF page that fails to extract text
+        # Simula una página de PDF que falla al extraer texto
         mock_page = MagicMock()
         mock_page.extract_text.return_value = None
         mock_pdf_reader.return_value.pages = [mock_page]
@@ -123,4 +126,4 @@ async def test_read_pdf_content_with_extraction_error(file_handler):
         content = await file_handler.read_pdf_content(mock_pdf_file)
         
         assert isinstance(content, str)
-        assert content.strip() == ""  # Should return empty string for failed extraction
+        assert content.strip() == ""  # Debería devolver una cadena vacía en caso de error

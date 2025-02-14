@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 @dataclass
 class WeightSettings:
-    """Represents the weight settings for different scoring components"""
+    """Configuración de pesos para diferentes componentes de puntuación"""
     habilidades: float
     experiencia: float
     formacion: float
@@ -15,7 +15,7 @@ class WeightSettings:
 
 @dataclass
 class UIInputs:
-    """Represents all user inputs from the UI"""
+    """Almacena todos los inputs de usuario de la interfaz"""
     job_file: object
     important_skills: str
     resume_files: List[object]
@@ -23,10 +23,10 @@ class UIInputs:
     weights: WeightSettings
 
 class UIComponents:
-    """Handles all UI component creation and styling"""
+    """Maneja todos los componentes de la interfaz de usuario"""
     @staticmethod
     def load_custom_css() -> None:
-        """Load custom CSS file from frontend directory"""
+        """Carga estilos CSS personalizados"""
         try:
             css_path = Path(__file__).parent / 'style.css'
             with open(css_path) as f:
@@ -36,14 +36,14 @@ class UIComponents:
 
     @staticmethod
     def setup_page_config() -> None:
-        """Initialize page configuration"""
+        """Configura las opciones generales de la página"""
         st.set_page_config(layout="wide", page_title="Sistema de Análisis de CVs")
 
     @staticmethod
     def create_weight_sliders() -> WeightSettings:
-        """Create and manage weight sliders in sidebar"""
+        """Crea y gestiona los deslizadores de peso en la barra lateral"""
         with st.sidebar:
-            # Apply compact sidebar styling
+            # Aplicar estilo compacto a la barra lateral
             st.markdown(
                 """
                 <style>
@@ -116,7 +116,7 @@ class UIComponents:
                 
                 total_weight = round(habilidades + experiencia + formacion + preferencias, 2)
                 
-                # Display total weight
+                # Mostrar el peso total
                 st.markdown(
                     f"""
                     <div style='
@@ -150,9 +150,9 @@ class UIComponents:
 
     @staticmethod
     def create_main_sections() -> UIInputs:
-        """Create all main content sections and return user inputs"""
+        """Crea las secciones principales de la interfaz"""
         with st.container():
-            # Job Description Section
+            # Sección de Descripción del Puesto
             st.markdown('<div class="main-section">', unsafe_allow_html=True)
             st.markdown('<div class="section-header">Descripción del Puesto</div>', unsafe_allow_html=True)
             job_file = st.file_uploader(
@@ -162,7 +162,7 @@ class UIComponents:
             )
             st.markdown('</div>', unsafe_allow_html=True)
             
-            # Recruiter Preferences Section
+            # Sección de Preferencias del Reclutador
             st.markdown('<div class="main-section">', unsafe_allow_html=True)
             st.markdown('<div class="section-header">Preferencias del reclutador (Opcional)</div>', unsafe_allow_html=True)
             important_skills = st.text_area(
@@ -173,7 +173,7 @@ class UIComponents:
             )
             st.markdown('</div>', unsafe_allow_html=True)
             
-            # Killer Criteria Section
+            # Sección de Criterios Eliminatorios
             st.markdown('<div class="main-section">', unsafe_allow_html=True)
             st.markdown('<div class="section-header">Criterios Eliminatorios (Opcional)</div>', unsafe_allow_html=True)
             
@@ -197,7 +197,7 @@ class UIComponents:
                 
             st.markdown('</div>', unsafe_allow_html=True)
             
-            # CV Upload Section
+            # Sección de Subida de CVs
             st.markdown('<div class="main-section">', unsafe_allow_html=True)
             st.markdown('<div class="section-header">CVs de Candidatos</div>', unsafe_allow_html=True)
             resume_files = st.file_uploader(
@@ -208,7 +208,7 @@ class UIComponents:
             )
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # Process killer criteria
+        # Procesar criterios eliminatorios
         killer_criteria = {
             "killer_habilidades": [
                 skill.strip() 
@@ -234,7 +234,7 @@ class UIComponents:
 
     @staticmethod
     def display_ranking(df, job_profile) -> None:
-        """Display ranking results in an organized and styled manner"""
+        """Muestra el ranking de candidatos y el resumen del puesto"""
         try:
             st.markdown('<div class="section-header">Ranking de Candidatos</div>', unsafe_allow_html=True)
             
@@ -262,7 +262,7 @@ class UIComponents:
             styled_df = display_df.style.apply(style_row, axis=1)
             st.dataframe(styled_df, use_container_width=True)
             
-            # Add color legend
+            # Añadir leyenda de colores
             st.markdown("""
             <div style="margin: 10px 0; font-size: 0.8em;">
                 <div style="display: flex; gap: 20px; margin-bottom: 10px;">
@@ -286,7 +286,7 @@ class UIComponents:
             </div>
             """, unsafe_allow_html=True)
             
-            # Detailed candidate information
+            # Información detallada del candidato
             for idx, row in df.iterrows():
                 expander_title = f"Ver datos del candidato: {row['Nombre Candidato']}"
                 if row['Estado'] == 'Descalificado':
@@ -297,7 +297,7 @@ class UIComponents:
                         st.error(f"Razones de descalificación: {row['Razones Descalificación']}")
                     st.json(row['raw_data'])
 
-            # Job requirements details
+            # Detalles de los requisitos del puesto
             with st.expander("Ver Requisitos del Puesto"):
                 st.json({
                     "nombre_vacante": job_profile.nombre_vacante,

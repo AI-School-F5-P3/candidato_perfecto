@@ -1,4 +1,4 @@
-"""Tests for the RankingSystem class"""
+"""Pruebas para el módulo ranking_system"""
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 from src.hr_analysis_system import (
@@ -11,6 +11,7 @@ from src.hr_analysis_system import (
 
 @pytest.fixture
 def mock_matching_engine():
+    """Fixture que proporciona un motor de coincidencia simulado"""
     engine = MagicMock(spec=MatchingEngine)
     engine.calculate_match_score = AsyncMock()
     return engine
@@ -25,7 +26,7 @@ def job_profile(sample_job_profile):
 
 @pytest.fixture
 def candidate_profiles(sample_candidate_profile):
-    # Create multiple candidates with different profiles
+    # Crear múltiples candidatos con diferentes perfiles
     profiles = []
     names = ["John Doe", "Jane Smith", "Bob Wilson"]
     scores = [0.9, 0.7, 0.5]
@@ -45,8 +46,8 @@ async def test_rank_candidates_no_killer_criteria(
     candidate_profiles,
     matching_weights
 ):
-    """Test candidate ranking without killer criteria"""
-    # Mock match scores for different candidates
+    """Prueba la clasificación de candidatos sin criterios eliminatorios"""
+    # Simular puntuaciones de coincidencia para diferentes candidatos
     scores = [
         MatchScore(final_score=0.9, component_scores={"habilidades": 0.9, "experiencia": 0.9, "formacion": 0.9, "preferencias_reclutador": 0.9}),
         MatchScore(final_score=0.7, component_scores={"habilidades": 0.7, "experiencia": 0.7, "formacion": 0.7, "preferencias_reclutador": 0.7}),
@@ -61,7 +62,7 @@ async def test_rank_candidates_no_killer_criteria(
     )
     
     assert len(rankings) == len(candidate_profiles)
-    # Check if sorted in descending order by score
+    # Verificar si están ordenados en orden descendente por puntuación
     assert all(r1[1].final_score >= r2[1].final_score 
               for r1, r2 in zip(rankings, rankings[1:]))
 
@@ -73,8 +74,8 @@ async def test_rank_candidates_with_killer_criteria(
     candidate_profiles,
     killer_criteria
 ):
-    """Test candidate ranking with killer criteria"""
-    # Mock scores including a disqualified candidate
+    """Prueba la clasificación de candidatos con criterios eliminatorios"""
+    # Simular puntuaciones incluyendo un candidato descalificado
     scores = [
         MatchScore(final_score=0.9, component_scores={"habilidades": 0.9, "experiencia": 0.9, "formacion": 0.9, "preferencias_reclutador": 0.9}),
         MatchScore(final_score=0.0, component_scores={"habilidades": 0.0, "experiencia": 0.0, "formacion": 0.0, "preferencias_reclutador": 0.0}, disqualified=True, disqualification_reasons=["No cumple con las habilidades obligatorias"]),
@@ -89,14 +90,14 @@ async def test_rank_candidates_with_killer_criteria(
     )
     
     assert len(rankings) == len(candidate_profiles)
-    # Check if qualified candidates are ranked before disqualified ones
+    # Verificar si los candidatos calificados están clasificados antes que los descalificados
     qualified = [r for r in rankings if not r[1].disqualified]
     disqualified = [r for r in rankings if r[1].disqualified]
     assert all(q[1].final_score > d[1].final_score for q in qualified for d in disqualified)
 
 @pytest.mark.asyncio
 async def test_rank_candidates_empty_list(ranking_system, job_profile):
-    """Test ranking with empty candidate list"""
+    """Prueba la clasificación con una lista vacía de candidatos"""
     rankings = await ranking_system.rank_candidates(job_profile, [])
     assert len(rankings) == 0
 
@@ -107,8 +108,8 @@ async def test_rank_candidates_equal_scores(
     job_profile,
     candidate_profiles
 ):
-    """Test ranking when candidates have equal scores"""
-    # Mock all candidates having the same score
+    """Prueba la clasificación cuando hay puntuaciones iguales"""
+    # Simular que todos los candidatos tienen la misma puntuación
     same_score = MatchScore(
         final_score=0.8,
         component_scores={
@@ -123,5 +124,5 @@ async def test_rank_candidates_equal_scores(
     rankings = await ranking_system.rank_candidates(job_profile, candidate_profiles)
     
     assert len(rankings) == len(candidate_profiles)
-    # Check if all scores are equal
+    # Verificar si todas las puntuaciones son iguales
     assert all(r[1].final_score == 0.8 for r in rankings)

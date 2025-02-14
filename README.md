@@ -1,8 +1,9 @@
 
-#  IA Recruiter 
+#  El Candidato Perfecto
+## PResentación y documentación técnica
 
 <div align="center">
-    <img src="logoNFQ.png" alt="Logo de IA Recruiter" />
+    <img src="docs/logoNFQ.png" alt="Logo de IA Recruiter" />
 </div>
 
 
@@ -50,52 +51,174 @@
 
 **IA Recruiter** es la solución definitiva para empresas que buscan optimizar su proceso de selección con tecnología avanzada. 🚀
 
+
 ---
 
-## Tecnologías y Bibliotecas
-Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas tecnologías y bibliotecas que faciliten la implementación de sus funcionalidades clave. A continuación, se presenta una lista de tecnologías y bibliotecas relevantes:
+# Documentación Técnica del Sistema de Análisis de RRHH
 
-### 💻 Lenguajes de Programación
-- **Python**: Ideal para el desarrollo de aplicaciones de IA y análisis de datos.
-- **JavaScript**: Para el desarrollo del frontend y la interacción con el usuario.
+## Arquitectura del Sistema
 
-### 🤖 Frameworks y Librerías de IA
-- **TensorFlow**: Para construir y entrenar modelos de IA generativa.
-- **PyTorch**: Otra opción popular para el desarrollo de modelos de aprendizaje profundo.
-- **scikit-learn**: Para tareas de análisis de datos y clasificación.
+### Componentes Principales
 
-### 🗣️ Procesamiento de Lenguaje Natural (NLP)
-- **spaCy**: Para el procesamiento de texto y análisis semántico de los CVs.
-- **NLTK**: Otra biblioteca para el procesamiento de lenguaje natural.
-- **Transformers (Hugging Face)**: Para utilizar modelos preentrenados de NLP, como BERT o GPT, que pueden ayudar en la clasificación de textos.
+1. **hr_analysis_system.py**
+   - Contiene la lógica de negocio principal y las estructuras de datos
+   - Componentes clave:
+     - Modelos de datos (`JobProfile`, `CandidateProfile`, `MatchScore`)
+     - Interfaz `IEmbeddingProvider` e implementación `OpenAIEmbeddingProvider`
+     - Clase base `TextAnalyzer` con cálculo de similitud semántica
+     - `SemanticAnalyzer` para procesamiento de texto usando OpenAI
+     - `MatchingEngine` para la lógica de coincidencia candidato-trabajo
+     - `RankingSystem` para clasificación de candidatos
 
-### 📈 Visualización de Datos
-- **Matplotlib**: Para crear gráficos y visualizaciones de datos.
-- **Seaborn**: Para visualizaciones estadísticas más atractivas.
-- **Plotly**: Para gráficos interactivos y dashboards.
+2. **app.py**
+   - Punto de entrada principal de la aplicación
+   - Integra todos los componentes
+   - Maneja el flujo de la aplicación y la interacción del usuario
+   - Componentes:
+     - Clase `HRAnalysisApp` coordinando todas las operaciones
+     - Función principal asíncrona gestionando el ciclo de vida de la aplicación
 
-### 🖥️ Backend y API
-- **Flask**: Un microframework para crear aplicaciones web en Python.
-- **Django**: Un framework más completo para aplicaciones web que puede ser útil si se requiere una estructura más robusta.
+3. **frontend/**
+   - Componentes de UI y estilos
+   - Componentes:
+     - Clase `UIComponents` gestionando todos los elementos de UI
+     - Estilizado CSS personalizado
+     - Estructuras de datos de entrada/salida (`WeightSettings`, `UIInputs`)
 
-### 🌐 Frontend
-- **React**: Para construir interfaces de usuario interactivas.
-- **Vue.js**: Otra opción para el desarrollo de interfaces de usuario.
+4. **utils/**
+   - Funciones de utilidad y ayudantes
+   - Componentes:
+     - `FileHandler` para operaciones con archivos
+     - Utilidades comunes para formateo y procesamiento de datos
+     - Configuración de registro
 
-### 🗄️ Base de Datos
-- **PostgreSQL**: Para almacenar datos de candidatos y vacantes.
-- **MongoDB**: Una base de datos NoSQL que puede ser útil para almacenar datos no estructurados.
+## Flujo de Datos
 
-### ☁️ Integración con Google Drive
-- **Google Drive API**: Para permitir la importación automática de CVs desde Google Drive.
--  Fácil integración con herramientas de almacenamiento en la nube.
+1. **Procesamiento de Entrada**
+   ```
+   Entrada Usuario -> FileHandler -> SemanticAnalyzer -> Perfiles Estandarizados
+   ```
+   - Se cargan la descripción del trabajo y los CVs
+   - Los archivos son procesados por FileHandler
+   - El texto es analizado y estructurado por SemanticAnalyzer 
+   - Produce objetos estandarizados JobProfile y CandidateProfile
 
-### ⚖️ Librerías
+2. **Proceso de Coincidencia**
+   ```
+   Perfiles -> MatchingEngine -> MatchScore
+   ```
+   - Los perfiles se comparan usando similitud semántica
+   - Se verifican los criterios eliminatorios si se proporcionan
+   - Se calculan las puntuaciones por componente (habilidades, experiencia, educación)
+   - Se generan las puntuaciones finales de coincidencia
 
-### Contenedores y Despliegue
-- **Docker**: Para crear contenedores que faciliten el despliegue de la aplicación.
-- **Kubernetes**: Para la orquestación de contenedores en entornos de producción.
+3. **Proceso de Clasificación**
+   ```
+   MatchScores -> RankingSystem -> Resultados Clasificados
+   ```
+   - Los candidatos se ordenan según puntuaciones de coincidencia
+   - Se identifican los candidatos descalificados
+   - Los resultados se formatean para visualización
 
-## Conclusión
-La combinación de estas tecnologías y bibliotecas permitirá desarrollar una aplicación robusta y eficiente que cumpla con los objetivos de **IA Recruiter**, optimizando el proceso de selección de talento mediante el uso de inteligencia artificial y garantizando un enfoque ético y normativo.
+4. **Visualización**
+   ```
+   Resultados Clasificados -> UIComponents -> Interfaz de Usuario
+   ```
+   - Los resultados se convierten a DataFrame
+   - Se aplican estilos basados en puntuaciones
+   - Se crean elementos interactivos
+   - La visualización final se presenta al usuario
 
+## Configuración
+
+El sistema utiliza un módulo de configuración central (`config.py`) con los siguientes componentes:
+
+1. **ModelConfig**
+   - Configuración del modelo LLM
+   - Configuración del modelo de embeddings
+
+2. **MatchingConfig**
+   - Umbrales de coincidencia
+   - Distribuciones de peso por defecto
+
+3. **DisplayConfig**
+   - Configuración de visualización UI
+   - Esquemas de color
+   - Límites de vista previa
+
+## Estructura de Pruebas
+
+El conjunto de pruebas está organizado en los siguientes componentes:
+
+1. **Pruebas Unitarias**
+   - `test_semantic_analyzer.py`: Pruebas para análisis de texto
+   - `test_matching_engine.py`: Pruebas para lógica de coincidencia
+   - `test_ranking_system.py`: Pruebas para funcionalidad de clasificación
+   - `test_file_handler.py`: Pruebas para operaciones con archivos
+   - `test_utilities.py`: Pruebas para funciones de utilidad
+
+2. **Configuración de Pruebas**
+   - `conftest.py`: Fixtures compartidos de prueba
+   - `pyproject.toml`: Configuración de pruebas y cobertura
+
+## Dependencias
+
+Las dependencias clave están organizadas por funcionalidad:
+
+1. **Procesamiento Principal**
+   - streamlit: Framework de UI
+   - pandas: Manipulación de datos
+   - numpy: Operaciones numéricas
+
+2. **IA/ML**
+   - openai: LLM y embeddings
+
+3. **Manejo de Archivos**
+   - PyPDF2: Procesamiento de PDF
+   - aiofiles: Operaciones de archivo asíncronas
+
+4. **Pruebas**
+   - pytest: Framework de pruebas
+   - pytest-asyncio: Soporte de pruebas asíncronas
+   - pytest-cov: Informes de cobertura
+
+## Manejo de Errores
+
+El sistema implementa un manejo integral de errores:
+
+1. **Operaciones de Archivo**
+   - Tipos de archivo inválidos
+   - Problemas de codificación
+   - Errores de extracción PDF
+
+2. **Operaciones de API**
+   - Errores de API de OpenAI
+   - Limitación de tasa
+   - Problemas de conexión
+
+3. **Errores de Procesamiento**
+   - Datos de entrada inválidos
+   - Fallos de análisis
+   - Errores de puntuación
+
+4. **Errores de UI**
+   - Validación de entrada
+   - Formateo de visualización
+   - Gestión de estado
+
+## Consideraciones de Rendimiento
+
+1. **Operaciones Asíncronas**
+   - Lectura de archivos asíncrona
+   - Llamadas API no bloqueantes
+   - UI permanece responsiva
+
+2. **Gestión de Recursos**
+   - Uso eficiente de memoria
+   - Manejo apropiado de archivos
+   - Agrupación de conexiones
+
+3. **Optimización**
+   - Caché de embeddings
+   - Procesamiento por lotes donde sea posible
+   - Operaciones eficientes con DataFrame
