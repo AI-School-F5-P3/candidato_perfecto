@@ -1,23 +1,25 @@
-"""Test configuration and shared fixtures"""
+"""Configuración y fixtures compartidos para pruebas"""
 import pytest
 import os
 from pathlib import Path
 import json
 from typing import Dict
+from unittest.mock import MagicMock
+from src.hr_analysis_system import OpenAIEmbeddingProvider
 
 @pytest.fixture
 def test_data_dir() -> Path:
-    """Get the test data directory path"""
+    """Obtener la ruta del directorio de datos de prueba"""
     return Path(__file__).parent / "test_data"
 
 @pytest.fixture
 def mock_api_key() -> str:
-    """Provide a mock API key for testing"""
+    """Proporcionar una clave API simulada para pruebas"""
     return "test-api-key-12345"
 
 @pytest.fixture
 def sample_job_description() -> str:
-    """Provide a sample job description for testing"""
+    """Proporcionar una descripción de trabajo de muestra para pruebas"""
     return """
     Senior Machine Learning Engineer
     
@@ -30,7 +32,7 @@ def sample_job_description() -> str:
 
 @pytest.fixture
 def sample_resume() -> str:
-    """Provide a sample resume for testing"""
+    """Proporcionar un currículum de muestra para pruebas"""
     return """
     John Doe
     ML Engineer
@@ -46,7 +48,7 @@ def sample_resume() -> str:
 
 @pytest.fixture
 def sample_job_profile() -> Dict:
-    """Provide a sample job profile for testing"""
+    """Proporcionar un perfil de trabajo de muestra para pruebas"""
     return {
         "nombre_vacante": "Senior ML Engineer",
         "habilidades": ["Python", "PyTorch", "TensorFlow", "NLP", "Deep Learning"],
@@ -57,7 +59,7 @@ def sample_job_profile() -> Dict:
 
 @pytest.fixture
 def sample_candidate_profile() -> Dict:
-    """Provide a sample candidate profile for testing"""
+    """Proporcionar un perfil de candidato de muestra para pruebas"""
     return {
         "nombre_candidato": "John Doe",
         "habilidades": ["Python", "PyTorch", "NLP", "Machine Learning"],
@@ -68,7 +70,7 @@ def sample_candidate_profile() -> Dict:
 
 @pytest.fixture
 def killer_criteria() -> Dict:
-    """Provide sample killer criteria for testing"""
+    """Proporcionar criterios eliminatorios de muestra para pruebas"""
     return {
         "killer_habilidades": ["Python", "PyTorch"],
         "killer_experiencia": ["5+ years experience"]
@@ -76,10 +78,17 @@ def killer_criteria() -> Dict:
 
 @pytest.fixture
 def matching_weights() -> Dict:
-    """Provide sample matching weights for testing"""
+    """Proporcionar pesos de coincidencia de muestra para pruebas"""
     return {
         "habilidades": 0.3,
         "experiencia": 0.3,
         "formacion": 0.3,
         "preferencias_reclutador": 0.1
     }
+
+@pytest.fixture
+def mock_embedding_provider():
+    """Fixture que proporciona un proveedor de embeddings simulado"""
+    provider = MagicMock(spec=OpenAIEmbeddingProvider)
+    provider.get_embedding = MagicMock(return_value=[0.1, 0.2, 0.3])
+    return provider

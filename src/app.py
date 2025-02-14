@@ -1,3 +1,4 @@
+"""Módulo principal que coordina todos los componentes del sistema"""
 import logging
 import streamlit as st
 import asyncio
@@ -18,51 +19,54 @@ from src.utils.utilities import setup_logging, create_score_row, sort_ranking_da
 from src.utils.file_handler import FileHandler
 
 class HRAnalysisApp:
-    """Main application class implementing HR analysis functionality"""
+    """Clase principal que orquesta el flujo completo del análisis"""
     def __init__(self, api_key: str):
+        # Inicializa los componentes principales del sistema
         self.embedding_provider = OpenAIEmbeddingProvider(api_key)
         self.analyzer = SemanticAnalyzer(self.embedding_provider)
         self.matching_engine = MatchingEngine(self.embedding_provider)
         self.ranking_system = RankingSystem(self.matching_engine)
         self.file_handler = FileHandler()
-        logging.info("Analysis components initialized.")
+        logging.info("Componentes de análisis inicializados.")
 
     async def process_job_description(
         self, 
         job_file, 
         hiring_preferences: dict
     ) -> JobProfile:
-        """Process the job description file and hiring preferences"""
+        """Procesa la descripción del puesto y las preferencias del reclutador"""
         try:
+            # Extrae el texto del archivo y lo convierte a formato estructurado
             job_content = await self.file_handler.read_file_content(job_file)
-            logging.info("Processing job description.")
+            logging.info("Procesando descripción del trabajo.")
             return await self.analyzer.standardize_job_description(job_content, hiring_preferences)
         except Exception as e:
-            logging.error(f"Error processing job description: {str(e)}")
+            logging.error(f"Error procesando descripción del trabajo: {str(e)}")
             raise
 
     async def process_resumes(
         self, 
         resume_files
     ) -> List[CandidateProfile]:
-        """Process multiple resume files"""
+        """Procesa múltiples CVs y los convierte a perfiles estructurados"""
         candidate_profiles = []
         for resume_file in resume_files:
             try:
                 resume_content = await self.file_handler.read_file_content(resume_file)
-                logging.info(f"Processing resume: {resume_file.name}")
+                logging.info(f"Procesando CV: {resume_file.name}")
                 profile = await self.analyzer.standardize_resume(resume_content)
                 candidate_profiles.append(profile)
             except Exception as e:
-                logging.error(f"Error processing resume {resume_file.name}: {str(e)}")
+                logging.error(f"Error procesando CV {resume_file.name}: {str(e)}")
         return candidate_profiles
 
     @staticmethod
     def create_ranking_dataframe(
         rankings: List[tuple[CandidateProfile, MatchScore]]
     ) -> pd.DataFrame:
-        """Convert ranking results to a pandas DataFrame for visualization"""
+        """Convierte los resultados del ranking en un DataFrame formateado para visualización"""
         try:
+            # Crea filas de datos para cada candidato con sus puntuaciones
             data = []
             for candidate, scores in rankings:
                 row = create_score_row(
@@ -71,17 +75,18 @@ class HRAnalysisApp:
                 )
                 data.append(row)
             
+            # Ordena el DataFrame por puntuación y estado de descalificación
             df = pd.DataFrame(data)
             df = sort_ranking_dataframe(df)
             
-            logging.info("Ranking DataFrame created successfully.")
+            logging.info("DataFrame de ranking creado exitosamente.")
             return df
         except Exception as e:
-            logging.error(f"Error creating ranking DataFrame: {str(e)}")
+            logging.error(f"Error creando DataFrame de ranking: {str(e)}")
             raise
 
 async def main():
-    """Main application entry point"""
+    """Punto de entrada principal que maneja el flujo de la aplicación"""
     setup_logging()
     UIComponents.setup_page_config()
     UIComponents.load_custom_css()
@@ -94,25 +99,28 @@ async def main():
     experiencia y formación. También se identifican los candidatos que no cumplen con los requisitos 
     obligatorios. Los pesos de ponderación pueden ser ajustados si así se requiere.
     """)
-    logging.info("Application started.")
+    logging.info("Aplicación iniciada.")
 
     try:
-        # Override Streamlit's secrets path to look in src/.streamlit
+        # Configura la API key de OpenAI desde los secrets
         os.environ['STREAMLIT_SECRETS_PATH'] = os.path.join(os.path.dirname(__file__), '.streamlit', 'secrets.toml')
         api_key = st.secrets["openai"]["api_key"]
         app = HRAnalysisApp(api_key)
     except Exception as e:
-        logging.error(f"Error initializing application: {str(e)}")
-        st.error("Error initializing the application. Please check your configuration.")
+        logging.error(f"Error inicializando la aplicación: {str(e)}")
+        st.error("Error inicializando la aplicación. Por favor revise su configuración.")
         return
     
+    # Obtiene los inputs del usuario desde la interfaz
     ui_inputs = UIComponents.create_main_sections()
     
+    # Procesa los datos cuando se presiona el botón y los inputs son válidos
     if st.button("Analizar Candidatos") and ui_inputs.job_file and ui_inputs.resume_files and ui_inputs.weights.total_weight == 1.0:
         try:
             with st.spinner("Analizando candidatos..."):
-                logging.info("Candidate analysis started.")
+                logging.info("Análisis de candidatos iniciado.")
                 
+                # Prepara las preferencias y pesos para el análisis
                 hiring_preferences = {
                     "habilidades_preferidas": [
                         skill.strip() 
@@ -127,10 +135,12 @@ async def main():
                     }
                 }
                 
+                # Procesa la descripción del trabajo y los CVs
                 job_profile = await app.process_job_description(ui_inputs.job_file, hiring_preferences)
                 candidate_profiles = await app.process_resumes(ui_inputs.resume_files)
                 
                 if candidate_profiles:
+                    # Realiza el ranking de candidatos
                     rankings = await app.ranking_system.rank_candidates(
                         job_profile, 
                         candidate_profiles,
@@ -138,14 +148,14 @@ async def main():
                         hiring_preferences["weights"]
                     )
                     
-                    logging.info("Candidate ranking completed.")
+                    logging.info("Ranking de candidatos completado.")
                     styled_df = app.create_ranking_dataframe(rankings)
                     UIComponents.display_ranking(styled_df, job_profile)
                 else:
                     st.warning("No se pudieron procesar los CVs. Por favor, verifique los archivos.")
                 
         except Exception as e:
-            logging.error(f"Error during candidate analysis: {str(e)}")
+            logging.error(f"Error durante el análisis de candidatos: {str(e)}")
             st.error(f"Ocurrió un error durante el análisis: {str(e)}")
     elif ui_inputs.weights.total_weight != 1.0:
         st.error("Por favor, ajuste los pesos para que sumen exactamente 1.0 antes de continuar.")
@@ -154,5 +164,5 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except Exception as e:
-        logging.critical(f"Fatal error in main: {str(e)}")
+        logging.critical(f"Error crítico en main: {str(e)}")
         st.error("Se produjo un error crítico en la aplicación.")

@@ -1,36 +1,36 @@
-"""Tests for utility functions"""
+"""Pruebas para funciones utilitarias"""
 import pytest
 import pandas as pd
 from src.utils.utilities import format_list_preview, create_score_row, sort_ranking_dataframe
 
 def test_format_list_preview_under_max():
-    """Test format_list_preview with list shorter than max_items"""
+    """Prueba format_list_preview con una lista más corta que max_items"""
     items = ["A", "B", "C"]
     result = format_list_preview(items, max_items=5)
     assert result == "A, B, C"
     assert "..." not in result
 
 def test_format_list_preview_over_max():
-    """Test format_list_preview with list longer than max_items"""
+    """Prueba format_list_preview con una lista más larga que max_items"""
     items = ["A", "B", "C", "D", "E", "F"]
     result = format_list_preview(items, max_items=3)
     assert result == "A, B, C..."
     assert result.endswith("...")
 
 def test_format_list_preview_empty():
-    """Test format_list_preview with empty list"""
+    """Prueba format_list_preview con una lista vacía"""
     result = format_list_preview([], max_items=5)
     assert result == ""
 
 def test_format_list_preview_exact():
-    """Test format_list_preview with list equal to max_items"""
+    """Prueba format_list_preview con una lista igual a max_items"""
     items = ["A", "B", "C"]
     result = format_list_preview(items, max_items=3)
     assert result == "A, B, C"
     assert "..." not in result
 
 def test_create_score_row():
-    """Test create_score_row function"""
+    """Prueba create_score_row"""
     candidate_data = {
         "nombre_candidato": "John Doe",
         "habilidades": ["Python", "ML", "NLP"],
@@ -66,7 +66,7 @@ def test_create_score_row():
     assert row["raw_data"] == {"original": "data"}
 
 def test_create_score_row_disqualified():
-    """Test create_score_row with disqualified candidate"""
+    """Prueba create_score_row con un candidato descalificado"""
     candidate_data = {
         "nombre_candidato": "John Doe",
         "habilidades": ["Python"],
@@ -93,7 +93,7 @@ def test_create_score_row_disqualified():
     assert row["Score Final"] == "0.0%"
 
 def test_sort_ranking_dataframe():
-    """Test sort_ranking_dataframe function"""
+    """Prueba sort_ranking_dataframe"""
     data = {
         "Nombre Candidato": ["A", "B", "C", "D"],
         "Estado": ["Calificado", "Descalificado", "Calificado", "Descalificado"],
@@ -103,18 +103,18 @@ def test_sort_ranking_dataframe():
     
     sorted_df = sort_ranking_dataframe(df)
     
-    # Check if calificados are first
+    # Verifica si los calificados están primero
     assert sorted_df.iloc[0]["Estado"] == "Calificado"
     assert sorted_df.iloc[1]["Estado"] == "Calificado"
     
-    # Check if sorted by score within each group
+    # Verifica si están ordenados por puntuación dentro de cada grupo
     assert float(sorted_df.iloc[0]["Score Final"].rstrip("%")) > float(sorted_df.iloc[1]["Score Final"].rstrip("%"))
     
-    # Check if temporary column was removed
+    # Verifica si la columna temporal fue eliminada
     assert "Sort Score" not in sorted_df.columns
 
 def test_sort_ranking_dataframe_empty():
-    """Test sort_ranking_dataframe with empty DataFrame"""
+    """Prueba sort_ranking_dataframe con un DataFrame vacío"""
     df = pd.DataFrame(columns=["Nombre Candidato", "Estado", "Score Final"])
     sorted_df = sort_ranking_dataframe(df)
     assert len(sorted_df) == 0

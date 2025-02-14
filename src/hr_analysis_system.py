@@ -1,3 +1,4 @@
+"""Lógica principal del sistema de análisis de candidatos usando NLP y embeddings"""
 from openai import AsyncOpenAI
 from typing import Dict, List, Tuple, Optional
 import numpy as np
@@ -9,18 +10,18 @@ from src.utils.file_handler import FileHandler
 
 @dataclass
 class PreferenciaReclutadorProfile:
-    """Store recruiter preferences"""
+    """Almacena las preferencias del reclutador"""
     habilidades_preferidas: List[str]
 
 @dataclass
 class KillerProfile:
-    """Store killer criteria"""
+    """Almacena los criterios eliminatorios"""
     killer_habilidades: List[str]
     killer_experiencia: List[str]
 
 @dataclass
 class JobProfile:
-    """Standardized job requirement structure"""
+    """Estructura estandarizada de requisitos del puesto"""
     nombre_vacante: str
     habilidades: List[str]
     experiencia: List[str]
@@ -29,7 +30,7 @@ class JobProfile:
 
 @dataclass
 class CandidateProfile:
-    """Standardized resume structure"""
+    """Estructura estandarizada del currículum"""
     nombre_candidato: str
     habilidades: List[str]
     experiencia: List[str]
@@ -38,7 +39,7 @@ class CandidateProfile:
 
 @dataclass
 class MatchScore:
-    """Represents the match scoring results"""
+    """Representa los resultados de puntuación de coincidencia"""
     final_score: float
     component_scores: Dict[str, float]
     disqualified: bool = False
@@ -49,14 +50,14 @@ class MatchScore:
             self.disqualification_reasons = []
 
 class IEmbeddingProvider(ABC):
-    """Abstract interface for embedding providers"""
+    """Interfaz abstracta para proveedores de embeddings"""
     @abstractmethod
     async def get_embedding(self, text: str) -> List[float]:
-        """Get embedding vector for text"""
+        """Obtiene el vector de embedding para el texto"""
         pass
 
 class OpenAIEmbeddingProvider(IEmbeddingProvider):
-    """OpenAI implementation of embedding provider"""
+    """Implementación OpenAI del proveedor de embeddings"""
     def __init__(self, api_key: str):
         self.client = AsyncOpenAI(api_key=api_key)
         self.model = "text-embedding-3-small"
@@ -69,31 +70,34 @@ class OpenAIEmbeddingProvider(IEmbeddingProvider):
         return response.data[0].embedding
 
 class TextAnalyzer:
-    """Base class for text analysis operations"""
+    """Clase base para operaciones de análisis de texto"""
     def __init__(self, embedding_provider: IEmbeddingProvider):
         self.embedding_provider = embedding_provider
 
     async def calculate_semantic_similarity(self, text1: List[str], text2: List[str]) -> float:
-        """Calculate semantic similarity between two lists of text"""
+        """Calcula la similitud semántica entre dos listas de texto usando embeddings"""
+        # Obtiene embeddings para cada elemento de texto
         embeddings1 = [await self.embedding_provider.get_embedding(t) for t in text1]
         embeddings2 = [await self.embedding_provider.get_embedding(t) for t in text2]
         
+        # Calcula matriz de similitud del coseno entre todos los pares de embeddings
         similarities = np.zeros((len(text1), len(text2)))
         for i, emb1 in enumerate(embeddings1):
             for j, emb2 in enumerate(embeddings2):
                 similarities[i, j] = np.dot(emb1, emb2)
         
+        # Retorna el promedio de las mejores coincidencias para cada texto en text1
         return float(np.mean(np.max(similarities, axis=1)))
 
 class SemanticAnalyzer(TextAnalyzer):
-    """Handles semantic analysis of text using LLM"""
+    """Maneja el análisis semántico de texto usando LLM"""
     def __init__(self, embedding_provider: IEmbeddingProvider):
         super().__init__(embedding_provider)
         self.client = AsyncOpenAI(api_key=embedding_provider.client.api_key)
         self.model = "gpt-3.5-turbo"
 
     async def standardize_job_description(self, description: str, preferences: Optional[Dict] = None) -> JobProfile:
-        """Convert raw job description and preferences into standardized format"""
+        """Convierte la descripción del trabajo y preferencias en formato estandarizado usando GPT"""
         prompt = f"""
         Analyze this job description and hiring preferences. Extract and format 
         the output as JSON with the following structure:
@@ -132,7 +136,7 @@ class SemanticAnalyzer(TextAnalyzer):
         return JobProfile(**profile_data)
 
     async def standardize_resume(self, resume_text: str) -> CandidateProfile:
-        """Convert raw resume text into standardized format"""
+        """Convierte el texto del CV en formato estandarizado"""
         prompt = f"""
         Analyze this resume and extract key components.
         Format the output as JSON with the following structure:
@@ -169,9 +173,10 @@ class SemanticAnalyzer(TextAnalyzer):
         return CandidateProfile(**profile_data)
 
 class MatchingEngine(TextAnalyzer):
-    """Handles matching logic between job requirements and candidate profiles"""
+    """Maneja la lógica de coincidencia entre requisitos del trabajo y perfiles de candidatos"""
     def __init__(self, embedding_provider: IEmbeddingProvider):
         super().__init__(embedding_provider)
+        # Umbral mínimo de similitud para considerar que se cumple un criterio eliminatorio
         self.threshold = 0.7
 
     async def check_killer_criteria(
@@ -179,22 +184,25 @@ class MatchingEngine(TextAnalyzer):
         candidate: CandidateProfile,
         killer_criteria: Optional[Dict[str, List[str]]]
     ) -> Tuple[bool, List[str]]:
-        """Check if candidate meets all killer criteria"""
+        """Verifica si el candidato cumple con los criterios eliminatorios mediante análisis semántico"""
         if not killer_criteria or not any(killer_criteria.values()):
             return True, []
             
         disqualification_reasons = []
 
+        # Verifica cada tipo de criterio eliminatorio (habilidades y experiencia)
         for criteria_type, criteria_list in killer_criteria.items():
             if not criteria_list:
                 continue
                 
+            # Determina qué campo del perfil del candidato comparar basado en el tipo de criterio
             candidate_field = 'habilidades' if 'habilidades' in criteria_type else 'experiencia'
             score = await self.calculate_semantic_similarity(
                 criteria_list,
                 getattr(candidate, candidate_field)
             )
             
+            # Si no alcanza el umbral mínimo, se considera que no cumple el criterio
             if score < self.threshold:
                 reason = "No cumple con las habilidades obligatorias" if 'habilidades' in criteria_type else "No cumple con la experiencia obligatoria"
                 disqualification_reasons.append(reason)
@@ -208,8 +216,8 @@ class MatchingEngine(TextAnalyzer):
         killer_criteria: Optional[Dict[str, List[str]]] = None,
         weights: Optional[Dict[str, float]] = None
     ) -> MatchScore:
-        """Calculate overall match score between job and candidate"""
-        # Check killer criteria first if provided
+        """Calcula la puntuación de coincidencia entre un trabajo y un candidato"""
+        # Primero verifica los criterios eliminatorios si existen
         if killer_criteria:
             meets_criteria, reasons = await self.check_killer_criteria(candidate, killer_criteria)
             if not meets_criteria:
@@ -225,6 +233,7 @@ class MatchingEngine(TextAnalyzer):
                     disqualification_reasons=reasons
                 )
 
+        # Pesos por defecto si no se especifican
         weights = weights or {
             "habilidades": 0.3,
             "experiencia": 0.3,
@@ -232,6 +241,7 @@ class MatchingEngine(TextAnalyzer):
             "preferencias_reclutador": 0.1
         }
         
+        # Calcula puntuaciones individuales para cada componente
         component_scores = {
             "habilidades": await self.calculate_semantic_similarity(job.habilidades, candidate.habilidades),
             "experiencia": await self.calculate_semantic_similarity(job.experiencia, candidate.experiencia),
@@ -242,6 +252,7 @@ class MatchingEngine(TextAnalyzer):
             ) if job.habilidades_preferidas else 0.0
         }
         
+        # Calcula puntuación final ponderada
         final_score = sum(
             score * weights[component]
             for component, score in component_scores.items()
@@ -253,7 +264,7 @@ class MatchingEngine(TextAnalyzer):
         )
 
 class RankingSystem:
-    """Handles candidate ranking based on match scores"""
+    """Maneja la clasificación de candidatos basada en puntuaciones de coincidencia"""
     def __init__(self, matching_engine: MatchingEngine):
         self.matching_engine = matching_engine
     
@@ -264,7 +275,8 @@ class RankingSystem:
         killer_criteria: Optional[Dict[str, List[str]]] = None,
         weights: Optional[Dict[str, float]] = None
     ) -> List[Tuple[CandidateProfile, MatchScore]]:
-        """Rank candidates based on their match scores"""
+        """Clasifica candidatos por su puntuación y estado de descalificación"""
+        # Calcula puntuaciones para todos los candidatos
         rankings = []
         for candidate in candidates:
             score = await self.matching_engine.calculate_match_score(
@@ -275,6 +287,7 @@ class RankingSystem:
             )
             rankings.append((candidate, score))
         
+        # Ordena: primero los no descalificados por puntuación, luego los descalificados
         rankings.sort(
             key=lambda x: (not x[1].disqualified, x[1].final_score),
             reverse=True

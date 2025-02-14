@@ -1,10 +1,11 @@
-"""Common utilities and helper functions"""
+"""Funciones de utilidad para el sistema de análisis de RRHH"""
 import logging
 from typing import List, Dict, Any
 import pandas as pd
 
 def setup_logging(log_file: str = "app.log") -> None:
-    """Configure logging settings"""
+    """Configura el sistema de registro para la aplicación"""
+    # Configura el registro tanto en archivo como en consola
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s: %(message)s",
@@ -15,12 +16,14 @@ def setup_logging(log_file: str = "app.log") -> None:
     )
 
 def format_list_preview(items: List[str], max_items: int = 5) -> str:
-    """Format a list with ellipsis if it exceeds max_items"""
+    """Formatea una lista para vista previa, mostrando solo los primeros elementos"""
     preview = items[:max_items]
+    # Agrega "..." si hay más elementos que el máximo mostrado
     return ', '.join(preview) + ('...' if len(items) > max_items else '')
 
 def create_score_row(candidate_data: Dict[str, Any], score_data: Dict[str, Any]) -> Dict[str, Any]:
-    """Create a standardized row for the ranking DataFrame"""
+    """Crea una fila de datos para el DataFrame de resultados"""
+    # Construye un diccionario con los datos formateados para visualización
     return {
         'Nombre Candidato': candidate_data['nombre_candidato'],
         'Estado': 'Descalificado' if score_data['disqualified'] else 'Calificado',
@@ -33,15 +36,18 @@ def create_score_row(candidate_data: Dict[str, Any], score_data: Dict[str, Any])
         'Experiencia': format_list_preview(candidate_data['experiencia'], 3),
         'Formación': format_list_preview(candidate_data['formacion'], 2),
         'Razones Descalificación': ', '.join(score_data.get('disqualification_reasons', [])) or 'N/A',
-        'raw_data': candidate_data.get('raw_data')
+        'raw_data': candidate_data.get('raw_data')  # Mantiene los datos originales para referencia
     }
 
 def sort_ranking_dataframe(df: pd.DataFrame) -> pd.DataFrame:
-    """Sort DataFrame by qualification status and score"""
+    """Ordena el DataFrame de ranking por puntuación y estado de descalificación"""
+    # Convierte las puntuaciones de porcentaje a números para ordenamiento
     df['Sort Score'] = df['Score Final'].str.rstrip('%').astype('float')
+    
+    # Ordena primero por estado (Calificado antes que Descalificado) y luego por puntuación
     df = df.sort_values(
         by=['Estado', 'Sort Score'], 
         ascending=[True, False],
         key=lambda x: x if x.name != 'Estado' else pd.Categorical(x, ['Calificado', 'Descalificado'])
     )
-    return df.drop('Sort Score', axis=1)
+    return df.drop('Sort Score', axis=1)  # Elimina la columna temporal de ordenamiento

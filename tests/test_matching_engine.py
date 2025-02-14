@@ -12,6 +12,7 @@ from src.hr_analysis_system import (
 
 @pytest.fixture
 def mock_embedding_provider():
+    """Fixture que proporciona un proveedor de embeddings simulado"""
     provider = MagicMock(spec=OpenAIEmbeddingProvider)
     provider.get_embedding = AsyncMock(return_value=[0.1, 0.2, 0.3])
     return provider
@@ -30,7 +31,7 @@ def candidate_profile(sample_candidate_profile):
 
 @pytest.mark.asyncio
 async def test_calculate_semantic_similarity(matching_engine):
-    """Test semantic similarity calculation"""
+    """Prueba el cálculo de similitud semántica entre textos"""
     text1 = ["Python", "Machine Learning"]
     text2 = ["Python", "Deep Learning"]
     
@@ -48,7 +49,7 @@ async def test_calculate_semantic_similarity(matching_engine):
 
 @pytest.mark.asyncio
 async def test_check_killer_criteria_pass(matching_engine, candidate_profile):
-    """Test killer criteria check when candidate meets criteria"""
+    """Prueba la verificación de criterios eliminatorios cuando el candidato los cumple"""
     # Mock similarity to return high score
     matching_engine.calculate_semantic_similarity = AsyncMock(return_value=0.8)
     
@@ -67,7 +68,7 @@ async def test_check_killer_criteria_pass(matching_engine, candidate_profile):
 
 @pytest.mark.asyncio
 async def test_check_killer_criteria_fail(matching_engine, candidate_profile):
-    """Test killer criteria check when candidate fails criteria"""
+    """Prueba la verificación de criterios eliminatorios cuando el candidato no los cumple"""
     # Mock similarity to return low score
     matching_engine.calculate_semantic_similarity = AsyncMock(return_value=0.5)
     
@@ -88,7 +89,7 @@ async def test_check_killer_criteria_fail(matching_engine, candidate_profile):
 
 @pytest.mark.asyncio
 async def test_calculate_match_score(matching_engine, job_profile, candidate_profile, matching_weights):
-    """Test match score calculation"""
+    """Prueba el cálculo de puntuación de coincidencia sin criterios eliminatorios"""
     # Mock similarity to return different scores for different components
     similarity_scores = {
         "habilidades": 0.8,
@@ -117,7 +118,7 @@ async def test_calculate_match_score_with_killer_criteria(
     candidate_profile,
     killer_criteria
 ):
-    """Test match score calculation with killer criteria"""
+    """Prueba el cálculo de puntuación de coincidencia con criterios eliminatorios"""
     # Mock similarity to fail killer criteria
     matching_engine.calculate_semantic_similarity = AsyncMock(return_value=0.5)
     
@@ -134,7 +135,7 @@ async def test_calculate_match_score_with_killer_criteria(
 
 @pytest.mark.asyncio
 async def test_empty_killer_criteria(matching_engine, candidate_profile):
-    """Test behavior with empty killer criteria"""
+    """Prueba el comportamiento con criterios eliminatorios vacíos"""
     empty_criteria = {"killer_habilidades": [], "killer_experiencia": []}
     meets_criteria, reasons = await matching_engine.check_killer_criteria(
         candidate_profile, 
@@ -146,7 +147,7 @@ async def test_empty_killer_criteria(matching_engine, candidate_profile):
 
 @pytest.mark.asyncio
 async def test_none_killer_criteria(matching_engine, candidate_profile):
-    """Test behavior with None killer criteria"""
+    """Prueba el comportamiento con criterios eliminatorios nulos"""
     meets_criteria, reasons = await matching_engine.check_killer_criteria(
         candidate_profile, 
         None

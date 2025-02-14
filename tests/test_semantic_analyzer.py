@@ -6,6 +6,7 @@ from src.hr_analysis_system import SemanticAnalyzer, OpenAIEmbeddingProvider, Jo
 
 @pytest.fixture
 def mock_embedding_provider():
+    """Fixture que proporciona un proveedor de embeddings simulado"""
     provider = MagicMock(spec=OpenAIEmbeddingProvider)
     provider.get_embedding = AsyncMock(return_value=[0.1, 0.2, 0.3])
     provider.client = MagicMock()
@@ -18,7 +19,7 @@ def analyzer(mock_embedding_provider):
 
 @pytest.mark.asyncio
 async def test_standardize_job_description(analyzer, sample_job_description, sample_job_profile):
-    """Test job description standardization"""
+    """Prueba la estandarización de la descripción del trabajo"""
     # Mock the OpenAI API response
     mock_response = MagicMock()
     mock_response.choices = [
@@ -39,7 +40,7 @@ async def test_standardize_job_description(analyzer, sample_job_description, sam
 
 @pytest.mark.asyncio
 async def test_standardize_resume(analyzer, sample_resume, sample_candidate_profile):
-    """Test resume standardization"""
+    """Prueba la estandarización del CV"""
     # Mock the OpenAI API response
     mock_response = MagicMock()
     mock_response.choices = [
@@ -58,7 +59,7 @@ async def test_standardize_resume(analyzer, sample_resume, sample_candidate_prof
 
 @pytest.mark.asyncio
 async def test_standardize_job_description_error_handling(analyzer, sample_job_description):
-    """Test error handling in job description standardization"""
+    """Prueba el manejo de errores en la estandarización de la descripción del trabajo"""
     # Mock API error
     analyzer.client.chat.completions.create = AsyncMock(side_effect=Exception("API Error"))
     
@@ -68,7 +69,7 @@ async def test_standardize_job_description_error_handling(analyzer, sample_job_d
 
 @pytest.mark.asyncio
 async def test_standardize_resume_error_handling(analyzer, sample_resume):
-    """Test error handling in resume standardization"""
+    """Prueba el manejo de errores en la estandarización del CV"""
     # Mock API error
     analyzer.client.chat.completions.create = AsyncMock(side_effect=Exception("API Error"))
     

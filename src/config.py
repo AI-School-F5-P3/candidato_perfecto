@@ -1,17 +1,21 @@
-"""Configuration settings and constants for the HR Analysis System"""
+"""Configuración del sistema de análisis de RRHH"""
 from dataclasses import dataclass
 from typing import Dict
 
 @dataclass
 class ModelConfig:
-    """LLM model configuration"""
-    chat_model: str = "gpt-3.5-turbo"
-    embedding_model: str = "text-embedding-3-small"
+    """Configuración de modelos de IA"""
+    # Modelos de OpenAI utilizados para el análisis
+    chat_model: str = "gpt-3.5-turbo"      # Modelo para análisis de texto y extracción de información
+    embedding_model: str = "text-embedding-3-small"  # Modelo para cálculo de similitud semántica
 
 @dataclass
 class MatchingConfig:
-    """Matching engine configuration"""
+    """Configuración de parámetros de coincidencia"""
+    # Umbral de similitud mínima para criterios eliminatorios (70%)
     killer_criteria_threshold: float = 0.7
+    
+    # Distribución por defecto de pesos para cada componente
     default_weights: Dict[str, float] = None
 
     def __post_init__(self):
@@ -25,23 +29,28 @@ class MatchingConfig:
 
 @dataclass
 class DisplayConfig:
-    """UI display configuration"""
+    """Configuración de visualización"""
+    # Límites de elementos a mostrar en las vistas previas
     max_skills_preview: int = 5
     max_experience_preview: int = 3
     max_education_preview: int = 2
+    
+    # Umbrales para categorización de puntuaciones
     score_thresholds = {
-        "high": 0.7,
-        "medium": 0.4
+        "high": 0.7,    # Verde: >= 70%
+        "medium": 0.4   # Amarillo: >= 40%, Rojo: < 40%
     }
+    
+    # Esquema de colores para la interfaz
     colors = {
-        "success": "#e6ffe6",
-        "warning": "#fff3e6",
-        "danger": "#ffe6e6",
-        "disqualified": "#ffebee"
+        "success": "#e6ffe6",      # Verde claro para puntuaciones altas
+        "warning": "#fff3e6",      # Amarillo claro para puntuaciones medias
+        "danger": "#ffe6e6",       # Rojo claro para puntuaciones bajas
+        "disqualified": "#ffebee"  # Rojo muy claro para candidatos descalificados
     }
 
 class Config:
-    """Global configuration container"""
+    """Contenedor de configuración global"""
     MODEL = ModelConfig()
     MATCHING = MatchingConfig()
     DISPLAY = DisplayConfig()
