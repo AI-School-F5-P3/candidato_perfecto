@@ -3,7 +3,8 @@ import streamlit as st
 import asyncio
 import pandas as pd
 from typing import List
-from hr_analysis_system import (
+import os
+from src.hr_analysis_system import (
     SemanticAnalyzer, 
     MatchingEngine,
     RankingSystem,
@@ -12,9 +13,9 @@ from hr_analysis_system import (
     OpenAIEmbeddingProvider,
     MatchScore
 )
-from frontend.ui import UIComponents
-from utils.utilities import setup_logging, create_score_row, sort_ranking_dataframe
-from utils.file_handler import FileHandler
+from src.frontend.ui import UIComponents
+from src.utils.utilities import setup_logging, create_score_row, sort_ranking_dataframe
+from src.utils.file_handler import FileHandler
 
 class HRAnalysisApp:
     """Main application class implementing HR analysis functionality"""
@@ -85,7 +86,7 @@ async def main():
     UIComponents.setup_page_config()
     UIComponents.load_custom_css()
     
-    st.markdown('<h1 class="title">Sistema de Análisis de CVs</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="title">El candidato perfecto</h1>', unsafe_allow_html=True)
     st.write("""
     El sistema recopila información de una vacante junto con las preferencias del equipo reclutador 
     y las características obligatorias a cumplir por los candidatos. Con esta información, se analizan 
@@ -96,6 +97,8 @@ async def main():
     logging.info("Application started.")
 
     try:
+        # Override Streamlit's secrets path to look in src/.streamlit
+        os.environ['STREAMLIT_SECRETS_PATH'] = os.path.join(os.path.dirname(__file__), '.streamlit', 'secrets.toml')
         api_key = st.secrets["openai"]["api_key"]
         app = HRAnalysisApp(api_key)
     except Exception as e:

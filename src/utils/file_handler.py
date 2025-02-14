@@ -11,27 +11,37 @@ class FileHandler:
     async def read_pdf_content(file_obj: BinaryIO) -> str:
         """Extract text content from PDF file"""
         try:
-            pdf_reader = PyPDF2.PdfReader(io.BytesIO(file_obj.read()))
-            content = "\n".join(
-                page.extract_text() or ""
-                for page in pdf_reader.pages
-            )
-            return content
+            if hasattr(file_obj, 'read'):
+                content = file_obj.read()
+            else:
+                content = file_obj
+                
+            pdf_reader = PyPDF2.PdfReader(io.BytesIO(content))
+            text = ""
+            for page in pdf_reader.pages:
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text + "\n"
+            return text.strip()
         except Exception as e:
             logging.error(f"Error reading PDF file: {str(e)}")
-            raise
+            return ""
 
     @staticmethod
     async def read_text_content(file_obj: BinaryIO) -> str:
-        """Read content from text file"""
+        """Extract text content from text file"""
         try:
-            content = file_obj.read()
+            if hasattr(file_obj, 'getvalue'):
+                content = file_obj.getvalue()
+            else:
+                content = file_obj.content if hasattr(file_obj, 'content') else file_obj.read()
+                
             if isinstance(content, bytes):
-                content = content.decode('utf-8', errors='ignore')
-            return content
+                return content.decode('utf-8', errors='replace')
+            return str(content)
         except Exception as e:
             logging.error(f"Error reading text file: {str(e)}")
-            raise
+            return ""
 
     @staticmethod
     async def read_file_content(uploaded_file: Union[BinaryIO, None]) -> str:

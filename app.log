@@ -1,0 +1,4 @@
+2025-02-13 18:22:37,192 INFO: Application started.
+2025-02-13 18:22:37,206 ERROR: Error initializing application: No secrets found. Valid paths for a secrets.toml file or secret directories are: C:\Users\jvazq\.streamlit\secrets.toml, C:\Users\jvazq\Data_Analysis_Tools\projects\candidato_perfecto\.streamlit\secrets.toml
+2025-02-14 08:08:31,788 INFO: Application started.
+2025-02-14 08:08:32,250 INFO: Analysis components initialized.

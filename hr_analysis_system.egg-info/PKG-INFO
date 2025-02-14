@@ -1,0 +1,21 @@
+Metadata-Version: 2.2
+Name: hr_analysis_system
+Version: 0.1.0
+Requires-Dist: streamlit>=1.29.0
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: openai>=1.0.0
+Requires-Dist: asyncio>=3.4.3
+Requires-Dist: aiofiles>=23.2.1
+Requires-Dist: PyPDF2>=3.0.0
+Requires-Dist: python-dotenv>=1.0.0
+Requires-Dist: matplotlib>=3.7.0
+Requires-Dist: typing-extensions>=4.8.0
+Provides-Extra: test
+Requires-Dist: pytest>=7.4.0; extra == "test"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "test"
+Requires-Dist: pytest-cov>=4.1.0; extra == "test"
+Requires-Dist: pytest-mock>=3.11.1; extra == "test"
+Requires-Dist: coverage>=7.3.0; extra == "test"
+Dynamic: provides-extra
+Dynamic: requires-dist

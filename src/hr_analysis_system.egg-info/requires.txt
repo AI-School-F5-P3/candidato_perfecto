@@ -1,0 +1,7 @@
+openai
+numpy
+pandas
+streamlit
+pytest
+pytest-asyncio
+pytest-cov
