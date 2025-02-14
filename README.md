@@ -3,7 +3,7 @@
 ## PResentación y documentación técnica
 
 <div align="center">
-    <img src="docs/logoNFQ.png" alt="Logo de IA Recruiter" />
+    <img src="docs/img/logoNFQ.png" alt="Logo de IA Recruiter" />
 </div>
 
 
@@ -57,6 +57,10 @@
 # Documentación Técnica del Sistema de Análisis de RRHH
 
 ## Arquitectura del Sistema
+
+<div align="center">
+    <img src="docs/img/hr-system-drawio V2.drawio.png" alt="Logo de IA Recruiter" />
+</div>
 
 ### Componentes Principales
 
