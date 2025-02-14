@@ -1,4 +1,4 @@
-src/.streamlit/
+src/.streamlit/secrets.toml
 src/__pycache__/
 src/app.log
 old/
