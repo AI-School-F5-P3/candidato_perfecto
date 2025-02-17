@@ -142,11 +142,13 @@ async def main():
         st.error("Error inicializando la aplicación. Por favor revise su configuración.")
         return
     
-    # --- Nueva Sección para Google Drive ---
-    st.markdown("---")
-    st.subheader("Fuente de CVs")
+    # --- Opción 1: Carga manual de CVs
+    ui_inputs = UIComponents.create_main_sections()
     
-    # Opción 1: Botón para cargar desde Google Drive
+    # --- Opción 2: Carga desde Google Drive ---
+    st.markdown("---")
+    st.subheader("Cargar CVs desde Google Drive")
+    
     if st.button("🔄 Cargar CVs desde Google Drive", key="drive_button"):
         with st.spinner("Descargando CVs desde Google Drive..."):
             try:
@@ -160,9 +162,6 @@ async def main():
             except Exception as e:
                 st.error(f"❌ Error al cargar desde Google Drive: {str(e)}")
                 logging.error(f"Google Drive Error: {str(e)}")
-
-    # Opción 2: Carga manual de CVs
-    ui_inputs = UIComponents.create_main_sections()
     
     # --- Procesamiento Unificado ---
     if st.button("Analizar Candidatos", key="analyze_button"):
