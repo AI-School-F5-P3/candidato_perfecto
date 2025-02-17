@@ -9,3 +9,9 @@ cand/
 .streamlit/secrets.toml
 # Ignorar credenciales de Google
 .streamlit/google_credentials/service-account-key.json
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
