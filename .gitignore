@@ -7,4 +7,5 @@ docs/diagrams
 app.log
 cand/
 .streamlit/secrets.toml
-.streamlit/google_credentials/service-account.json
+# Ignorar credenciales de Google
+.streamlit/google_credentials/service-account-key.json
