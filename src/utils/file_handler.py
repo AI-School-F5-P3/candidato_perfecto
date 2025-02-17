@@ -48,17 +48,20 @@ class FileHandler:
             return ""
 
     @staticmethod
-    async def read_file_content(uploaded_file: Union[BinaryIO, None]) -> str:
-        """Lee contenido de un archivo subido (TXT o PDF)"""
+    async def read_file_content(uploaded_file: Union[BinaryIO, str, None]) -> str:
+        """Lee contenido de un archivo subido (TXT o PDF) o texto directo"""
         if not uploaded_file:
-            raise ValueError("No se proporcionó ningún archivo")
+            raise ValueError("No se proporcionó ningún archivo o contenido")
             
         try:
-            # Determina el tipo de archivo por su extensión
+            # Si es un string, asumimos que ya es el contenido
+            if isinstance(uploaded_file, str):
+                return uploaded_file
+                
+            # Si es un archivo, procesamos según su tipo
             file_extension = uploaded_file.name.lower().split('.')[-1]
             logging.info(f"Leyendo archivo: {uploaded_file.name} con extensión {file_extension}")
 
-            # Procesa el archivo según su tipo
             if file_extension == 'pdf':
                 content = await FileHandler.read_pdf_content(uploaded_file)
                 logging.info(f"Texto extraído del PDF: {uploaded_file.name}")
@@ -68,5 +71,5 @@ class FileHandler:
 
             return content
         except Exception as e:
-            logging.error(f"Error al leer archivo {uploaded_file.name}: {str(e)}")
+            logging.error(f"Error al leer archivo: {str(e)}")
             raise

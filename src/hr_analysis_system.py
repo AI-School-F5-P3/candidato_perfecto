@@ -5,8 +5,8 @@ import numpy as np
 from dataclasses import dataclass
 import json
 from abc import ABC, abstractmethod
-from src.utils.utilities import setup_logging
-from src.utils.file_handler import FileHandler
+from utils.utilities import setup_logging
+from utils.file_handler import FileHandler
 
 @dataclass
 class PreferenciaReclutadorProfile:

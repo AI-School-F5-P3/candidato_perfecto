@@ -5,3 +5,6 @@ old/
 models/
 docs/diagrams
 app.log
+cand/
+.streamlit/secrets.toml
+.streamlit/google_credentials/service-account.json
