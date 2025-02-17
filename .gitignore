@@ -1,5 +1,13 @@
+# Primero ignora todo dentro de .streamlit
+.streamlit/*
+
+# Luego incluye la carpeta y subcarpetas
 !.streamlit/
-!.streamlit/google_credentials/
+!.streamlit/*/
+
+# Finalmente ignora archivos específicos
+.streamlit/secrets.toml
+.streamlit/google_credentials/service-account-key.json
 src/.streamlit/secrets.toml
 src/__pycache__/
 src/app.log
@@ -8,9 +16,6 @@ models/
 docs/diagrams
 app.log
 cand/
-.streamlit/secrets.toml
-# Ignorar credenciales de Google
-.streamlit/google_credentials/service-account-key.json
 # Python cache files
 __pycache__/
 *.pyc
