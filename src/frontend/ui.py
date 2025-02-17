@@ -17,7 +17,7 @@ class WeightSettings:
 class UIInputs:
     """Almacena todos los inputs de usuario de la interfaz"""
     job_file: object
-    important_skills: str
+    recruiter_skills: str
     resume_files: List[object]
     killer_criteria: Dict[str, List[str]]
     weights: WeightSettings
@@ -165,7 +165,7 @@ class UIComponents:
             # Sección de Preferencias del Reclutador
             st.markdown('<div class="main-section">', unsafe_allow_html=True)
             st.markdown('<div class="section-header">Preferencias del reclutador (Opcional)</div>', unsafe_allow_html=True)
-            important_skills = st.text_area(
+            recruiter_skills = st.text_area(
                 "Preferencias del reclutador (una por línea)",
                 height=120,
                 key="skills_input",
@@ -226,15 +226,15 @@ class UIComponents:
         
         return UIInputs(
             job_file=job_file,
-            important_skills=important_skills,
+            recruiter_skills=recruiter_skills,
             resume_files=resume_files,
             killer_criteria=killer_criteria,
             weights=weights
         )
 
     @staticmethod
-    def display_ranking(df, job_profile) -> None:
-        """Muestra el ranking de candidatos y el resumen del puesto"""
+    def display_ranking(df, job_profile, recruiter_preferences, killer_criteria) -> None:
+        """Muestra el ranking de candidatos y detalles de la búsqueda"""
         try:
             st.markdown('<div class="section-header">Ranking de Candidatos</div>', unsafe_allow_html=True)
             
@@ -303,8 +303,20 @@ class UIComponents:
                     "nombre_vacante": job_profile.nombre_vacante,
                     "habilidades": job_profile.habilidades,
                     "experiencia": job_profile.experiencia,
-                    "formacion": job_profile.formacion,
-                    "habilidades_preferidas": job_profile.habilidades_preferidas
+                    "formacion": job_profile.formacion
+                })
+
+            # Detalles de las preferencias del reclutador
+            with st.expander("Ver Preferencias del Reclutador"):
+                st.json({
+                    "habilidades_preferidas": recruiter_preferences.habilidades_preferidas
+                })
+
+            # Detalles de los criterios eliminatorios
+            with st.expander("Ver Criterios Eliminatorios"):
+                st.json({
+                    "habilidades_obligatorias": killer_criteria.get("killer_habilidades", []),
+                    "experiencia_obligatoria": killer_criteria.get("killer_experiencia", [])
                 })
                 
         except Exception as e:

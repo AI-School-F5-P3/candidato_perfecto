@@ -12,7 +12,8 @@ from src.hr_analysis_system import (
     JobProfile,
     CandidateProfile,
     OpenAIEmbeddingProvider,
-    MatchScore
+    MatchScore,
+    PreferenciaReclutadorProfile  # Added this import
 )
 from src.frontend.ui import UIComponents
 from src.utils.utilities import setup_logging, create_score_row, sort_ranking_dataframe
@@ -29,19 +30,23 @@ class HRAnalysisApp:
         self.file_handler = FileHandler()
         logging.info("Componentes de análisis inicializados.")
 
-    async def process_job_description(
-        self, 
-        job_file, 
-        hiring_preferences: dict
-    ) -> JobProfile:
-        """Procesa la descripción del puesto y las preferencias del reclutador"""
+    async def process_job_description(self, job_file) -> JobProfile:
+        """Procesa la descripción del puesto"""
         try:
-            # Extrae el texto del archivo y lo convierte a formato estructurado
             job_content = await self.file_handler.read_file_content(job_file)
             logging.info("Procesando descripción del trabajo.")
-            return await self.analyzer.standardize_job_description(job_content, hiring_preferences)
+            return await self.analyzer.standardize_job_description(job_content)
         except Exception as e:
             logging.error(f"Error procesando descripción del trabajo: {str(e)}")
+            raise
+
+    async def process_preferences(self, preferences_text: str) -> PreferenciaReclutadorProfile:
+        """Procesa las preferencias del reclutador"""
+        try:
+            logging.info("Procesando preferencias del reclutador.")
+            return await self.analyzer.standardize_preferences(preferences_text)
+        except Exception as e:
+            logging.error(f"Error procesando preferencias: {str(e)}")
             raise
 
     async def process_resumes(
@@ -120,37 +125,36 @@ async def main():
             with st.spinner("Analizando candidatos..."):
                 logging.info("Análisis de candidatos iniciado.")
                 
-                # Prepara las preferencias y pesos para el análisis
-                hiring_preferences = {
-                    "habilidades_preferidas": [
-                        skill.strip() 
-                        for skill in (ui_inputs.important_skills or "").split('\n') 
-                        if skill.strip()
-                    ],
-                    "weights": {
-                        "habilidades": ui_inputs.weights.habilidades,
-                        "experiencia": ui_inputs.weights.experiencia,
-                        "formacion": ui_inputs.weights.formacion,
-                        "preferencias_reclutador": ui_inputs.weights.preferencias_reclutador
-                    }
+                weights = {
+                    "habilidades": ui_inputs.weights.habilidades,
+                    "experiencia": ui_inputs.weights.experiencia,
+                    "formacion": ui_inputs.weights.formacion,
+                    "preferencias_reclutador": ui_inputs.weights.preferencias_reclutador
                 }
                 
-                # Procesa la descripción del trabajo y los CVs
-                job_profile = await app.process_job_description(ui_inputs.job_file, hiring_preferences)
+                # Procesa la descripción del trabajo, preferencias y CVs
+                job_profile = await app.process_job_description(ui_inputs.job_file)
+                recruiter_preferences = await app.process_preferences(ui_inputs.recruiter_skills)
                 candidate_profiles = await app.process_resumes(ui_inputs.resume_files)
                 
                 if candidate_profiles:
                     # Realiza el ranking de candidatos
                     rankings = await app.ranking_system.rank_candidates(
-                        job_profile, 
+                        job_profile,
+                        recruiter_preferences, 
                         candidate_profiles,
                         ui_inputs.killer_criteria if any(ui_inputs.killer_criteria.values()) else None,
-                        hiring_preferences["weights"]
+                        weights
                     )
                     
                     logging.info("Ranking de candidatos completado.")
                     styled_df = app.create_ranking_dataframe(rankings)
-                    UIComponents.display_ranking(styled_df, job_profile)
+                    UIComponents.display_ranking(
+                        styled_df, 
+                        job_profile,
+                        recruiter_preferences,
+                        ui_inputs.killer_criteria
+                    )
                 else:
                     st.warning("No se pudieron procesar los CVs. Por favor, verifique los archivos.")
                 

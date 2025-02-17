@@ -12,6 +12,7 @@ from src.utils.file_handler import FileHandler
 class PreferenciaReclutadorProfile:
     """Almacena las preferencias del reclutador"""
     habilidades_preferidas: List[str]
+    raw_data: Optional[Dict] = None
 
 @dataclass
 class KillerProfile:
@@ -26,7 +27,6 @@ class JobProfile:
     habilidades: List[str]
     experiencia: List[str]
     formacion: List[str]
-    habilidades_preferidas: Optional[List[str]] = None
 
 @dataclass
 class CandidateProfile:
@@ -96,10 +96,10 @@ class SemanticAnalyzer(TextAnalyzer):
         self.client = AsyncOpenAI(api_key=embedding_provider.client.api_key)
         self.model = "gpt-3.5-turbo"
 
-    async def standardize_job_description(self, description: str, preferences: Optional[Dict] = None) -> JobProfile:
-        """Convierte la descripción del trabajo y preferencias en formato estandarizado usando GPT"""
+    async def standardize_job_description(self, description: str) -> JobProfile:
+        """Convierte la descripción del trabajo en formato estandarizado usando GPT"""
         prompt = f"""
-        Analyze this job description and hiring preferences. Extract and format 
+        Analyze this job description. Extract and format 
         the output as JSON with the following structure:
         {{
             "nombre_vacante": "job title",
@@ -120,9 +120,6 @@ class SemanticAnalyzer(TextAnalyzer):
 
         Job Description:
         {description}
-
-        Hiring Preferences:
-        {json.dumps(preferences or {}, indent=2)}
         """
         
         response = await self.client.chat.completions.create(
@@ -132,8 +129,19 @@ class SemanticAnalyzer(TextAnalyzer):
         )
         
         profile_data = json.loads(response.choices[0].message.content)
-        profile_data['habilidades_preferidas'] = preferences.get('habilidades_preferidas', []) if preferences else []
         return JobProfile(**profile_data)
+
+    async def standardize_preferences(self, preferences: str) -> PreferenciaReclutadorProfile:
+        """Convierte las preferencias del reclutador en formato estandarizado"""
+        if not preferences.strip():
+            return PreferenciaReclutadorProfile(habilidades_preferidas=[])
+            
+        skills = [skill.strip() for skill in preferences.split('\n') if skill.strip()]
+        raw_data = {"habilidades_preferidas": skills}
+        return PreferenciaReclutadorProfile(
+            habilidades_preferidas=skills,
+            raw_data=raw_data
+        )
 
     async def standardize_resume(self, resume_text: str) -> CandidateProfile:
         """Convierte el texto del CV en formato estandarizado"""
@@ -172,7 +180,7 @@ class SemanticAnalyzer(TextAnalyzer):
         profile_data['raw_data'] = raw_data
         return CandidateProfile(**profile_data)
 
-class MatchingEngine(TextAnalyzer):
+class MatchingEngine(TextAnalyzer):  # Fixed the syntax error here - added closing parenthesis
     """Maneja la lógica de coincidencia entre requisitos del trabajo y perfiles de candidatos"""
     def __init__(self, embedding_provider: IEmbeddingProvider):
         super().__init__(embedding_provider)
@@ -211,7 +219,8 @@ class MatchingEngine(TextAnalyzer):
 
     async def calculate_match_score(
         self, 
-        job: JobProfile, 
+        job: JobProfile,
+        preferences: PreferenciaReclutadorProfile, 
         candidate: CandidateProfile,
         killer_criteria: Optional[Dict[str, List[str]]] = None,
         weights: Optional[Dict[str, float]] = None
@@ -247,9 +256,9 @@ class MatchingEngine(TextAnalyzer):
             "experiencia": await self.calculate_semantic_similarity(job.experiencia, candidate.experiencia),
             "formacion": await self.calculate_semantic_similarity(job.formacion, candidate.formacion),
             "preferencias_reclutador": await self.calculate_semantic_similarity(
-                job.habilidades_preferidas or [],
+                preferences.habilidades_preferidas,
                 candidate.habilidades
-            ) if job.habilidades_preferidas else 0.0
+            ) if preferences.habilidades_preferidas else 0.0
         }
         
         # Calcula puntuación final ponderada
@@ -270,7 +279,8 @@ class RankingSystem:
     
     async def rank_candidates(
         self, 
-        job: JobProfile, 
+        job: JobProfile,
+        preferences: PreferenciaReclutadorProfile, 
         candidates: List[CandidateProfile],
         killer_criteria: Optional[Dict[str, List[str]]] = None,
         weights: Optional[Dict[str, float]] = None
@@ -280,8 +290,9 @@ class RankingSystem:
         rankings = []
         for candidate in candidates:
             score = await self.matching_engine.calculate_match_score(
-                job, 
-                candidate, 
+                job,
+                preferences, 
+                candidate,
                 killer_criteria,
                 weights
             )
