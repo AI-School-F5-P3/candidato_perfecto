@@ -1,20 +1,18 @@
-# Primero incluye las carpetas base
+# Ignora todo en .streamlit
+.streamlit/*
+
+# Incluye la carpeta .streamlit y sus subcarpetas
 !.streamlit/
 !.streamlit/*/
-
-# Incluye archivos específicos
 !.streamlit/**/*.py
 !.streamlit/**/*.yaml
 !.streamlit/.gitkeep
 
-# Incluye la carpeta google_credentials
+# Incluye específicamente google_credentials
 !.streamlit/google_credentials/
 !.streamlit/google_credentials/.gitkeep
 
-# Ignora todos los archivos dentro de .streamlit por defecto
-.streamlit/*
-
-# Ignora archivos específicos que contienen información sensible
+# Ignora específicamente archivos sensibles
 .streamlit/secrets.toml
 .streamlit/google_credentials/service-account-key.json
 
