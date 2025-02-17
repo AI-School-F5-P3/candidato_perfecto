@@ -1,13 +1,18 @@
-# Primero ignora todo dentro de .streamlit
-.streamlit/*
-
-# Luego incluye la carpeta y subcarpetas
-!.streamlit/
-!.streamlit/*/
-
-# Finalmente ignora archivos específicos
+# Primero ignora archivos específicos de .streamlit
 .streamlit/secrets.toml
 .streamlit/google_credentials/service-account-key.json
+
+# Luego ignora todo dentro de .streamlit
+.streamlit/*
+
+# Finalmente incluye la carpeta y subcarpetas
+!.streamlit/
+!.streamlit/*/
+!.streamlit/**/*.py
+!.streamlit/**/*.yaml
+!.streamlit/.gitkeep
+
+# Resto de archivos a ignorar
 src/.streamlit/secrets.toml
 src/__pycache__/
 src/app.log
