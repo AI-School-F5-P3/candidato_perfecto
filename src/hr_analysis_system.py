@@ -361,11 +361,13 @@ class MatchingEngine(TextAnalyzer):
                 "weight": weights.get(comp, 0),
                 "weighted_score": sim * weights.get(comp, 0)
             }
-        # For recruiter preferences (compare preferences.habilidades_preferidas with candidate.habilidades)
-        if preferences.habilidades_preferidas:
-            pref_sim = await self.calculate_semantic_similarity(preferences.habilidades_preferidas, candidate.habilidades)
+        # For recruiter preferences, use 1.0 (100%) if preferences are empty
+        if not preferences.habilidades_preferidas:
+            pref_sim = 1.0  # Perfect score when no preferences specified
+            logging.info("No recruiter preferences specified, using perfect score (1.0)")
         else:
-            pref_sim = 0.0
+            pref_sim = await self.calculate_semantic_similarity(preferences.habilidades_preferidas, candidate.habilidades)
+        
         comp_scores["preferencias_reclutador"] = pref_sim
         debug_data["preferencias_reclutador"] = {
             "candidate": candidate.habilidades,
