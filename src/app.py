@@ -135,6 +135,7 @@ async def main():
                 # Procesa la descripción del trabajo, preferencias y CVs
                 job_profile = await app.process_job_description(ui_inputs.job_file)
                 recruiter_preferences = await app.process_preferences(ui_inputs.recruiter_skills)
+                standardized_killer_criteria = await app.analyzer.standardize_killer_criteria(ui_inputs.killer_criteria)
                 candidate_profiles = await app.process_resumes(ui_inputs.resume_files)
                 
                 if candidate_profiles:
@@ -143,17 +144,26 @@ async def main():
                         job_profile,
                         recruiter_preferences, 
                         candidate_profiles,
-                        ui_inputs.killer_criteria if any(ui_inputs.killer_criteria.values()) else None,
+                        standardized_killer_criteria if any(standardized_killer_criteria.values()) else None,
                         weights
                     )
                     
                     logging.info("Ranking de candidatos completado.")
                     styled_df = app.create_ranking_dataframe(rankings)
+                    
+                    # Store results in session state (without debug_df)
+                    st.session_state['analysis_results'] = {
+                        'df': styled_df,
+                        'job_profile': job_profile,
+                        'recruiter_preferences': recruiter_preferences,
+                        'killer_criteria': standardized_killer_criteria
+                    }
+                    
                     UIComponents.display_ranking(
-                        styled_df, 
-                        job_profile,
-                        recruiter_preferences,
-                        ui_inputs.killer_criteria
+                        df=styled_df,
+                        job_profile=job_profile,
+                        recruiter_preferences=recruiter_preferences,
+                        killer_criteria=standardized_killer_criteria
                     )
                 else:
                     st.warning("No se pudieron procesar los CVs. Por favor, verifique los archivos.")

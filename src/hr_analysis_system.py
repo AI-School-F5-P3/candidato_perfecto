@@ -7,6 +7,10 @@ import json
 from abc import ABC, abstractmethod
 from src.utils.utilities import setup_logging
 from src.utils.file_handler import FileHandler
+from langdetect import detect
+import re
+import logging  # Added this import
+from src.config import Config  # Add this import
 
 @dataclass
 class PreferenciaReclutadorProfile:
@@ -74,20 +78,73 @@ class TextAnalyzer:
     def __init__(self, embedding_provider: IEmbeddingProvider):
         self.embedding_provider = embedding_provider
 
+    def preprocess_text(self, text: str) -> str:
+        """Preprocesa el texto para estandarización"""
+        if not text:
+            return ""
+            
+        # Ensure text is string
+        text = str(text)
+        
+        # Estandariza formatos comunes
+        text = re.sub(r'(\d+)\s*(años?|years?)', r'\1_years_experience', text, flags=re.IGNORECASE)
+        text = re.sub(r'(master|máster|maestría)', 'masters_degree', text, flags=re.IGNORECASE)
+        text = re.sub(r'(licenciatura|grado|degree)', 'bachelors_degree', text, flags=re.IGNORECASE)
+        text = re.sub(r'(programación|programming)', 'programming', text, flags=re.IGNORECASE)
+        text = re.sub(r'(desarrollo|development)', 'development', text, flags=re.IGNORECASE)
+        text = re.sub(r'(gestión|management)', 'management', text, flags=re.IGNORECASE)
+        
+        return text
+
     async def calculate_semantic_similarity(self, text1: List[str], text2: List[str]) -> float:
-        """Calcula la similitud semántica entre dos listas de texto usando embeddings"""
-        # Obtiene embeddings para cada elemento de texto
+        """Calcula la similitud semántica entre dos listas de texto usando embeddings (cosine similarity)"""
+        if not text1 or not text2:
+            logging.warning("Empty text lists provided for similarity calculation")
+            return 0.0
+
+        text1 = [str(t) for t in text1 if t]
+        text2 = [str(t) for t in text2 if t]
+        if not text1 or not text2:
+            return 0.0
+
+        text1 = [self.preprocess_text(t) for t in text1]
+        text2 = [self.preprocess_text(t) for t in text2]
+        logging.debug(f"Preprocessed text1: {text1}")
+        logging.debug(f"Preprocessed text2: {text2}")
+
         embeddings1 = [await self.embedding_provider.get_embedding(t) for t in text1]
         embeddings2 = [await self.embedding_provider.get_embedding(t) for t in text2]
-        
-        # Calcula matriz de similitud del coseno entre todos los pares de embeddings
         similarities = np.zeros((len(text1), len(text2)))
         for i, emb1 in enumerate(embeddings1):
+            norm1 = np.linalg.norm(emb1) + 1e-8
             for j, emb2 in enumerate(embeddings2):
-                similarities[i, j] = np.dot(emb1, emb2)
+                norm2 = np.linalg.norm(emb2) + 1e-8
+                cosine = np.dot(emb1, emb2) / (norm1 * norm2)
+                similarities[i, j] = cosine
+                logging.debug(f"Cosine similarity between '{text1[i]}' and '{text2[j]}': {cosine}")
+        avg_similarity = float(np.mean(np.max(similarities, axis=1)))
+        if avg_similarity < Config.MATCHING.fallback_threshold:
+            logging.warning(f"Low similarity score ({avg_similarity}), attempting fallback matching")
+            fallback_score = self._calculate_fallback_similarity(text1, text2)
+            logging.debug(f"Fallback similarity score: {fallback_score}")
+            return max(avg_similarity, fallback_score)
+        return avg_similarity
+
+    def _calculate_fallback_similarity(self, text1: List[str], text2: List[str]) -> float:
+        """Calcula similitud basada en coincidencia de texto simple"""
+        # Convierte todos los textos a minúsculas para comparación
+        text1_lower = [t.lower() for t in text1]
+        text2_lower = [t.lower() for t in text2]
         
-        # Retorna el promedio de las mejores coincidencias para cada texto en text1
-        return float(np.mean(np.max(similarities, axis=1)))
+        # Cuenta coincidencias exactas o parciales
+        matches = 0
+        for t1 in text1_lower:
+            for t2 in text2_lower:
+                if t1 in t2 or t2 in t1:
+                    matches += 1
+                    break
+        
+        return matches / len(text1) if text1 else 0.0
 
 class SemanticAnalyzer(TextAnalyzer):
     """Maneja el análisis semántico de texto usando LLM"""
@@ -97,88 +154,128 @@ class SemanticAnalyzer(TextAnalyzer):
         self.model = "gpt-3.5-turbo"
 
     async def standardize_job_description(self, description: str) -> JobProfile:
-        """Convierte la descripción del trabajo en formato estandarizado usando GPT"""
+        """Standardize job description into a JSON with these keys: nombre_vacante, habilidades, experiencia, formacion."""
+        processed_text = self.preprocess_text(description)
         prompt = f"""
-        Analyze this job description. Extract and format 
-        the output as JSON with the following structure:
-        {{
-            "nombre_vacante": "job title",
-            "habilidades": ["skill1", "skill2"],
-            "experiencia": [
-                "years of experience required",
-                "industry requirement 1",
-                "domain knowledge 1",
-                "responsibility 1"
-            ],
-            "formacion": [
-                "required education level",
-                "preferred education level",
-                "certification 1",
-                "certification 2"
-            ]
-        }}
-
-        Job Description:
-        {description}
-        """
+        Extract and summarize key information from this job description.
+        For experience requirements:
+        - Condense long descriptions into concise points
+        - Extract years of experience explicitly
+        - Focus on key responsibilities and achievements
+        - Standardize all durations as 'X_years_experience'
         
+        For skills and education:
+        - Use standard terms (e.g., 'masters_degree', 'bachelors_degree')
+        - List only essential requirements
+        
+        Output a focused JSON with exactly these keys:
+        {{
+          "nombre_vacante": "clear job title",
+          "habilidades": ["key technical skills only"],
+          "experiencia": [
+              "condensed experience points",
+              "e.g., '5_years_experience in backend development'",
+              "e.g., 'led_teams of 5-10 developers'"
+          ],
+          "formacion": ["required education levels only"]
+        }}
+        
+        Text: {processed_text}
+        """
         response = await self.client.chat.completions.create(
             model=self.model,
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"}
         )
-        
         profile_data = json.loads(response.choices[0].message.content)
         return JobProfile(**profile_data)
 
     async def standardize_preferences(self, preferences: str) -> PreferenciaReclutadorProfile:
-        """Convierte las preferencias del reclutador en formato estandarizado"""
+        """Standardize recruiter preferences into JSON with the key 'habilidades_preferidas'."""
         if not preferences.strip():
             return PreferenciaReclutadorProfile(habilidades_preferidas=[])
-            
-        skills = [skill.strip() for skill in preferences.split('\n') if skill.strip()]
-        raw_data = {"habilidades_preferidas": skills}
-        return PreferenciaReclutadorProfile(
-            habilidades_preferidas=skills,
-            raw_data=raw_data
-        )
-
-    async def standardize_resume(self, resume_text: str) -> CandidateProfile:
-        """Convierte el texto del CV en formato estandarizado"""
+        processed_text = self.preprocess_text(preferences)
         prompt = f"""
-        Analyze this resume and extract key components.
-        Format the output as JSON with the following structure:
-        {{
-            "nombre_candidato": "candidate name",
-            "habilidades": ["skill1", "skill2"],
-            "experiencia": [
-                "total years of experience",
-                "industry experience 1",
-                "domain knowledge 1",
-                "past role 1"
-            ],
-            "formacion": [
-                "highest education level",
-                "other education",
-                "certification 1",
-                "certification 2"
-            ]
-        }}
-
-        Resume:
-        {resume_text}
+        Extract and normalize skills from the following recruiter preferences.
+        Output a JSON of the form:
+        {{"habilidades_preferidas": [...]}} 
+        Preferences: {processed_text}
         """
-        
         response = await self.client.chat.completions.create(
             model=self.model,
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"}
         )
+        profile_data = json.loads(response.choices[0].message.content)
+        return PreferenciaReclutadorProfile(
+            habilidades_preferidas=profile_data["habilidades_preferidas"],
+            raw_data=profile_data
+        )
+
+    async def standardize_resume(self, resume_text: str) -> CandidateProfile:
+        """Standardize resume text into JSON with keys: nombre_candidato, habilidades, experiencia, formacion."""
+        processed_text = self.preprocess_text(resume_text)
+        prompt = f"""
+        Extract and summarize key information from this resume.
+        For experience section:
+        - Condense lengthy job descriptions into key achievements
+        - Extract and standardize duration as 'X_years_experience'
+        - Focus on quantifiable results and responsibilities
+        - Limit to 2-3 key points per role
+        - Remove unnecessary details while keeping core accomplishments
         
+        For skills and education:
+        - Extract technical skills and tools
+        - Standardize education terms
+        - Focus on relevant certifications
+        
+        Output a focused JSON with exactly these keys:
+        {{
+          "nombre_candidato": "candidate name",
+          "habilidades": ["relevant technical skills only"],
+          "experiencia": [
+              "condensed experience points",
+              "e.g., '3_years_experience leading backend teams'",
+              "e.g., 'increased system performance by 40%'"
+          ],
+          "formacion": ["standardized education and certifications"]
+        }}
+        
+        Resume: {processed_text}
+        """
+        response = await self.client.chat.completions.create(
+            model=self.model,
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"}
+        )
         profile_data = json.loads(response.choices[0].message.content)
         raw_data = profile_data.copy()
         profile_data['raw_data'] = raw_data
         return CandidateProfile(**profile_data)
+
+    async def standardize_killer_criteria(self, criteria: Dict[str, List[str]]) -> Dict[str, List[str]]:
+        """Standardize killer criteria into a JSON with keys: killer_habilidades and killer_experiencia."""
+        if not any(criteria.values()):
+            return {"killer_habilidades": [], "killer_experiencia": []}
+        skills_text = "\n".join(criteria.get("killer_habilidades", []))
+        exp_text = "\n".join(criteria.get("killer_experiencia", []))
+        processed_text = self.preprocess_text(f"Skills:\n{skills_text}\n\nExperience:\n{exp_text}")
+        prompt = f"""
+        Normalize the following mandatory requirements.
+        Convert durations to 'X_years_experience' and standardize technical terms.
+        Output JSON as:
+        {{
+          "killer_habilidades": [...],
+          "killer_experiencia": [...]
+        }}
+        Requirements: {processed_text}
+        """
+        response = await self.client.chat.completions.create(
+            model=self.model,
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"}
+        )
+        return json.loads(response.choices[0].message.content)
 
 class MatchingEngine(TextAnalyzer):  # Fixed the syntax error here - added closing parenthesis
     """Maneja la lógica de coincidencia entre requisitos del trabajo y perfiles de candidatos"""
