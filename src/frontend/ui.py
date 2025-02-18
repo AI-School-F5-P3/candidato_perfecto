@@ -1,8 +1,12 @@
 import streamlit as st
 from pathlib import Path
+from src.hr_analysis_system import JobProfile
 import logging
 from typing import Dict, List, Tuple
 from dataclasses import dataclass
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 @dataclass
 class WeightSettings:
@@ -27,17 +31,29 @@ class UIComponents:
     @staticmethod
     def load_custom_css() -> None:
         """Carga estilos CSS personalizados"""
-        try:
-            css_path = Path(__file__).parent / 'style.css'
-            with open(css_path) as f:
-                st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-        except Exception as e:
-            logging.warning(f"Could not load custom CSS: {str(e)}")
+        st.markdown(
+            """
+            <style>
+            .title {
+                font-size: 2rem;
+                font-weight: bold;
+                margin-bottom: 1rem;
+            }
+            .section-header {
+                font-size: 1.5rem;
+                font-weight: bold;
+                margin-top: 2rem;
+                margin-bottom: 1rem;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
 
     @staticmethod
     def setup_page_config() -> None:
-        """Configura las opciones generales de la página"""
-        st.set_page_config(layout="wide", page_title="Sistema de Análisis de CVs")
+        """Configura la página de Streamlit"""
+        st.set_page_config(page_title="El candidato perfecto", layout="wide")
 
     @staticmethod
     def create_weight_sliders() -> WeightSettings:
@@ -233,80 +249,38 @@ class UIComponents:
         )
 
     @staticmethod
-    def display_ranking(df, job_profile) -> None:
-        """Muestra el ranking de candidatos y el resumen del puesto"""
-        try:
-            st.markdown('<div class="section-header">Ranking de Candidatos</div>', unsafe_allow_html=True)
-            
-            display_df = df.copy()
-            raw_data = display_df.pop('raw_data')
-            
-            def style_row(row):
-                styles = []
-                is_disqualified = row['Estado'] == 'Descalificado'
-                for idx, _ in enumerate(row):
-                    if is_disqualified:
-                        styles.append('background-color: #ffebee')
-                    elif row.index[idx] == 'Score Final':
-                        score = float(row['Score Final'].rstrip('%')) / 100
-                        if score >= 0.7:
-                            styles.append('background-color: #e6ffe6')
-                        elif score >= 0.4:
-                            styles.append('background-color: #fff3e6')
-                        else:
-                            styles.append('background-color: #ffe6e6')
-                    else:
-                        styles.append('')
-                return styles
-            
-            styled_df = display_df.style.apply(style_row, axis=1)
-            st.dataframe(styled_df, use_container_width=True)
-            
-            # Añadir leyenda de colores
-            st.markdown("""
-            <div style="margin: 10px 0; font-size: 0.8em;">
-                <div style="display: flex; gap: 20px; margin-bottom: 10px;">
-                    <div style="display: flex; align-items: center;">
-                        <div style="width: 20px; height: 20px; background-color: #e6ffe6; margin-right: 5px;"></div>
-                        <span>Score ≥ 70%</span>
-                    </div>
-                    <div style="display: flex; align-items: center;">
-                        <div style="width: 20px; height: 20px; background-color: #fff3e6; margin-right: 5px;"></div>
-                        <span>40% ≤ Score < 70%</span>
-                    </div>
-                    <div style="display: flex; align-items: center;">
-                        <div style="width: 20px; height: 20px; background-color: #ffe6e6; margin-right: 5px;"></div>
-                        <span>Score < 40%</span>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center;">
-                    <div style="width: 20px; height: 20px; background-color: #ffebee; margin-right: 5px;"></div>
-                    <span>Candidato descalificado por criterios eliminatorios</span>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # Información detallada del candidato
-            for idx, row in df.iterrows():
-                expander_title = f"Ver datos del candidato: {row['Nombre Candidato']}"
-                if row['Estado'] == 'Descalificado':
-                    expander_title += " (Descalificado)"
-                
-                with st.expander(expander_title):
-                    if row['Estado'] == 'Descalificado':
-                        st.error(f"Razones de descalificación: {row['Razones Descalificación']}")
-                    st.json(row['raw_data'])
+    def display_ranking(df: pd.DataFrame, job_profile: JobProfile) -> None:
+        """Muestra el ranking de candidatos"""
+        st.markdown('<div class="section-header">Ranking de Candidatos</div>', unsafe_allow_html=True)
+        st.dataframe(df, use_container_width=True)
+        
+        # Botón para ir al análisis comparativo
+        if st.button("Ir al análisis comparativo"):
+            st.session_state['page'] = 'comparative_analysis'
+            st.experimental_set_query_params(page='comparative_analysis')
 
-            # Detalles de los requisitos del puesto
-            with st.expander("Ver Requisitos del Puesto"):
-                st.json({
-                    "nombre_vacante": job_profile.nombre_vacante,
-                    "habilidades": job_profile.habilidades,
-                    "experiencia": job_profile.experiencia,
-                    "formacion": job_profile.formacion,
-                    "habilidades_preferidas": job_profile.habilidades_preferidas
-                })
-                
+    @staticmethod
+    def display_comparative_report(df: pd.DataFrame) -> None:
+        """Muestra el informe comparativo de candidatos"""
+        try:
+            st.markdown('<div class="section-header">Informe Comparativo de Candidatos</div>', unsafe_allow_html=True)
+            
+            # Mostrar el DataFrame comparativo
+            st.dataframe(df, use_container_width=True)
+            
+            # Generar gráficos comparativos
+            fig, ax = plt.subplots(figsize=(10, 6))
+            sns.barplot(x='Nombre Candidato', y='Score Final', data=df, ax=ax)  # Cambia a 'Nombre Candidato'
+            ax.set_title('Comparación de Scores entre Candidatos')
+            ax.set_xlabel('Nombre del Candidato')
+            ax.set_ylabel('Score')
+            st.pyplot(fig)
+            
+            # Mostrar el texto generado por el LLM
+            for idx, row in df.iterrows():
+                st.markdown(f"### Análisis para {row['Nombre Candidato']}")
+                st.write(row['analysis_result'])
+            
         except Exception as e:
-            logging.error(f"Error in display_ranking: {str(e)}")
-            st.error("Error al mostrar los resultados. Verifique los datos y vuelva a intentar.")
+            logging.error(f"Error in display_comparative_report: {str(e)}")
+            st.error("Error al mostrar el informe comparativo. Verifique los datos y vuelva a intentar.")

@@ -5,6 +5,8 @@ import asyncio
 import pandas as pd
 from typing import List
 import os
+import matplotlib.pyplot as plt
+import seaborn as sns
 from src.hr_analysis_system import (
     SemanticAnalyzer, 
     MatchingEngine,
@@ -85,6 +87,28 @@ class HRAnalysisApp:
             logging.error(f"Error creando DataFrame de ranking: {str(e)}")
             raise
 
+    async def analyze_text_comparatively(self, df: pd.DataFrame, candidate_names: List[str]) -> None:
+        """Realiza un análisis de texto comparativo utilizando LLM y genera gráficos"""
+        try:
+            comparative_df = df[df['Nombre Candidato'].isin(candidate_names)].copy()
+            
+            # Realiza el análisis de texto comparativo utilizando LLM
+            analysis_results = []
+            for idx, row in comparative_df.iterrows():
+                candidate_text = f"Experiencia: {row['Experiencia']}, Habilidades: {row['Habilidades']}, Formación: {row['Formación']}"
+                analysis_result = await self.embedding_provider.get_embedding(candidate_text)  # Cambia a get_embedding
+                analysis_results.append(analysis_result)
+            
+            comparative_df.loc[:, 'analysis_result'] = analysis_results
+            
+            # Guardar el DataFrame actualizado en el estado de la sesión
+            st.session_state['comparative_df'] = comparative_df
+            
+            logging.info("Análisis comparativo completado exitosamente.")
+        except Exception as e:
+            logging.error(f"Error en el análisis comparativo: {str(e)}")
+            st.error(f"Error en el análisis comparativo: {str(e)}")
+
 async def main():
     """Punto de entrada principal que maneja el flujo de la aplicación"""
     setup_logging()
@@ -151,6 +175,13 @@ async def main():
                     logging.info("Ranking de candidatos completado.")
                     styled_df = app.create_ranking_dataframe(rankings)
                     UIComponents.display_ranking(styled_df, job_profile)
+                    
+                    # Guardar el DataFrame en el estado de la sesión
+                    st.session_state['styled_df'] = styled_df
+
+                    # Navegar a la pantalla de análisis comparativo
+                    st.session_state['page'] = 'comparative_analysis'
+                    st.experimental_set_query_params(page='comparative_analysis')
                 else:
                     st.warning("No se pudieron procesar los CVs. Por favor, verifique los archivos.")
                 
@@ -160,9 +191,49 @@ async def main():
     elif ui_inputs.weights.total_weight != 1.0:
         st.error("Por favor, ajuste los pesos para que sumen exactamente 1.0 antes de continuar.")
 
+def comparative_analysis(app: HRAnalysisApp):
+    """Pantalla de análisis comparativo"""
+    st.markdown('<h1 class="title">Análisis Comparativo</h1>', unsafe_allow_html=True)
+    
+    if 'styled_df' not in st.session_state:
+        st.error("No se encontraron datos de ranking. Por favor, regrese a la pantalla principal y realice el análisis de candidatos.")
+        return
+    
+    styled_df = st.session_state['styled_df']
+    
+    # Crear informe comparativo para candidatos seleccionados
+    selected_candidate_names = st.multiselect(
+        "Seleccione los nombres de los candidatos para el informe comparativo",
+        options=styled_df['Nombre Candidato'].tolist()
+    )
+    
+    if selected_candidate_names:
+        asyncio.run(app.analyze_text_comparatively(styled_df, selected_candidate_names))
+        comparative_df = st.session_state.get('comparative_df', styled_df[styled_df['Nombre Candidato'].isin(selected_candidate_names)])
+        UIComponents.display_comparative_report(comparative_df)
+    else:
+        st.warning("Por favor, seleccione al menos un candidato para el informe comparativo.")
+
+    # Botón para regresar a la pantalla principal
+    if st.button("Regresar a la pantalla principal"):
+        st.session_state['page'] = 'main'
+        st.experimental_set_query_params(page='main')
+
+def run_app():
+    """Función principal que maneja la navegación entre pantallas"""
+    if 'page' not in st.session_state:
+        st.session_state['page'] = 'main'
+    
+    app = HRAnalysisApp(st.secrets["openai"]["api_key"])
+    
+    if st.session_state['page'] == 'main':
+        asyncio.run(main())
+    elif st.session_state['page'] == 'comparative_analysis':
+        comparative_analysis(app)
+
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        run_app()
     except Exception as e:
         logging.critical(f"Error crítico en main: {str(e)}")
         st.error("Se produjo un error crítico en la aplicación.")
