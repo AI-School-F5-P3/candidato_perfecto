@@ -32,6 +32,7 @@ class JobProfile:
     habilidades: List[str]
     experiencia: List[str]
     formacion: List[str]
+    habilidades_preferidas: Optional[List[str]] = None
 
 @dataclass
 class CandidateProfile:
@@ -157,7 +158,7 @@ class SemanticAnalyzer(TextAnalyzer):
         self.client = AsyncOpenAI(api_key=embedding_provider.client.api_key)
         self.model = "gpt-3.5-turbo"
 
-    async def standardize_job_description(self, description: str) -> JobProfile:
+    async def standardize_job_description(self, description: str, hiring_preferences: dict) -> JobProfile:
         """Standardize job description into a JSON with these keys: nombre_vacante, habilidades, experiencia, formacion."""
         processed_text = self.preprocess_text(description)
         prompt = f"""
@@ -171,6 +172,7 @@ class SemanticAnalyzer(TextAnalyzer):
         For skills and education:
         - Use standard terms (e.g., 'masters_degree', 'bachelors_degree')
         - List only essential requirements
+        - Include these preferred skills: {', '.join(hiring_preferences.get('habilidades_preferidas', []))}
         
         Output a focused JSON with exactly these keys:
         {{

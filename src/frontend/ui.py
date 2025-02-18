@@ -21,6 +21,7 @@ class UIInputs:
     resume_files: List[object]
     killer_criteria: Dict[str, List[str]]
     weights: WeightSettings
+    important_skills: str
 
 class UIComponents:
     """Maneja todos los componentes de la interfaz de usuario"""
@@ -44,8 +45,7 @@ class UIComponents:
         """Crea y gestiona los deslizadores de peso en la barra lateral"""
         with st.sidebar:
             # Aplicar estilo compacto a la barra lateral
-            st.markdown(
-                """
+            st.markdown("""
                 <style>
                 [data-testid="stSidebar"] {
                     min-width: 180px !important;
@@ -79,6 +79,7 @@ class UIComponents:
             )
             
             st.markdown('<div class="section-header">Pesos por sección</div>', unsafe_allow_html=True)
+            
             with st.container():
                 st.markdown('<div class="weights-container">', unsafe_allow_html=True)
                 habilidades = st.slider(
@@ -116,7 +117,6 @@ class UIComponents:
                 
                 total_weight = round(habilidades + experiencia + formacion + preferencias, 2)
                 
-                # Mostrar el peso total
                 st.markdown(
                     f"""
                     <div style='
@@ -229,7 +229,8 @@ class UIComponents:
             recruiter_skills=recruiter_skills,
             resume_files=resume_files,
             killer_criteria=killer_criteria,
-            weights=weights
+            weights=weights,
+            important_skills=recruiter_skills  # Asegurarse de incluir este campo
         )
 
     @staticmethod
@@ -247,6 +248,7 @@ class UIComponents:
             st.markdown('<div class="section-header">Ranking de Candidatos</div>', unsafe_allow_html=True)
             display_df = df.copy()
             raw_data = display_df.pop('raw_data')
+
             def style_row(row):
                 styles = []
                 is_disqualified = row['Estado'] == 'Descalificado'
@@ -264,6 +266,7 @@ class UIComponents:
                     else:
                         styles.append('')
                 return styles
+
             styled_df = display_df.style.apply(style_row, axis=1)
             st.dataframe(styled_df, use_container_width=True)
             
@@ -322,5 +325,5 @@ class UIComponents:
                 })
             
         except Exception as e:
-            logging.error(f"Error in display_ranking: {str(e)}")
             st.error("Error al mostrar los resultados. Verifique los datos y vuelva a intentar.")
+            logging.error(f"Error in display_ranking: {str(e)}")
