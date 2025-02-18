@@ -5,6 +5,7 @@ import asyncio
 import pandas as pd
 from typing import List
 import os
+from datetime import datetime
 from src.hr_analysis_system import (
     SemanticAnalyzer, 
     MatchingEngine,
@@ -12,7 +13,8 @@ from src.hr_analysis_system import (
     JobProfile,
     CandidateProfile,
     OpenAIEmbeddingProvider,
-    MatchScore
+    MatchScore,
+    PreferenciaReclutadorProfile  # Added this import
 )
 from src.frontend.ui import UIComponents
 from src.utils.utilities import setup_logging, create_score_row, sort_ranking_dataframe
@@ -29,19 +31,23 @@ class HRAnalysisApp:
         self.file_handler = FileHandler()
         logging.info("Componentes de análisis inicializados.")
 
-    async def process_job_description(
-        self, 
-        job_file, 
-        hiring_preferences: dict
-    ) -> JobProfile:
-        """Procesa la descripción del puesto y las preferencias del reclutador"""
+    async def process_job_description(self, job_file) -> JobProfile:
+        """Procesa la descripción del puesto"""
         try:
-            # Extrae el texto del archivo y lo convierte a formato estructurado
             job_content = await self.file_handler.read_file_content(job_file)
             logging.info("Procesando descripción del trabajo.")
-            return await self.analyzer.standardize_job_description(job_content, hiring_preferences)
+            return await self.analyzer.standardize_job_description(job_content)
         except Exception as e:
             logging.error(f"Error procesando descripción del trabajo: {str(e)}")
+            raise
+
+    async def process_preferences(self, preferences_text: str) -> PreferenciaReclutadorProfile:
+        """Procesa las preferencias del reclutador"""
+        try:
+            logging.info("Procesando preferencias del reclutador.")
+            return await self.analyzer.standardize_preferences(preferences_text)
+        except Exception as e:
+            logging.error(f"Error procesando preferencias: {str(e)}")
             raise
 
     async def process_resumes(
@@ -85,6 +91,38 @@ class HRAnalysisApp:
             logging.error(f"Error creando DataFrame de ranking: {str(e)}")
             raise
 
+    def create_debug_dataframe(self, job: JobProfile, rankings: List[tuple[CandidateProfile, MatchScore]]) -> pd.DataFrame:
+        """Genera un DataFrame debug utilizando debug_info almacenado en MatchScore sin llamadas adicionales."""
+        rows = []
+        for candidate, score in rankings:
+            base = {
+                "Candidate": candidate.nombre_candidato,
+                "Job Name": job.nombre_vacante
+            }
+            # Para cada componente en debug_info, crear una fila
+            for comp, data in score.debug_info.items():
+                if isinstance(data, str):  # Handle string data (like killer criteria messages)
+                    row = base.copy()
+                    row["Comparison Type"] = comp
+                    row["Debug Info"] = data
+                    rows.append(row)
+                    continue
+
+                row = base.copy()
+                row["Comparison Type"] = comp
+                # Safely get values with defaults
+                row["Candidate Text"] = str(data.get("candidate", ""))
+                if comp == "preferencias_reclutador":
+                    row["Job/Preference Text"] = str(data.get("preferences", ""))
+                else:
+                    row["Job/Preference Text"] = str(data.get("job", ""))
+                row["Cosine Similarity"] = data.get("cosine_similarity", 0.0)
+                row["Weight"] = data.get("weight", 0.0)
+                row["Weighted Score"] = data.get("weighted_score", 0.0)
+                rows.append(row)
+                
+        return pd.DataFrame(rows)
+
 async def main():
     """Punto de entrada principal que maneja el flujo de la aplicación"""
     setup_logging()
@@ -120,37 +158,56 @@ async def main():
             with st.spinner("Analizando candidatos..."):
                 logging.info("Análisis de candidatos iniciado.")
                 
-                # Prepara las preferencias y pesos para el análisis
-                hiring_preferences = {
-                    "habilidades_preferidas": [
-                        skill.strip() 
-                        for skill in (ui_inputs.important_skills or "").split('\n') 
-                        if skill.strip()
-                    ],
-                    "weights": {
-                        "habilidades": ui_inputs.weights.habilidades,
-                        "experiencia": ui_inputs.weights.experiencia,
-                        "formacion": ui_inputs.weights.formacion,
-                        "preferencias_reclutador": ui_inputs.weights.preferencias_reclutador
-                    }
+                weights = {
+                    "habilidades": ui_inputs.weights.habilidades,
+                    "experiencia": ui_inputs.weights.experiencia,
+                    "formacion": ui_inputs.weights.formacion,
+                    "preferencias_reclutador": ui_inputs.weights.preferencias_reclutador
                 }
                 
-                # Procesa la descripción del trabajo y los CVs
-                job_profile = await app.process_job_description(ui_inputs.job_file, hiring_preferences)
+                # Procesa la descripción del trabajo, preferencias y CVs
+                job_profile = await app.process_job_description(ui_inputs.job_file)
+                recruiter_preferences = await app.process_preferences(ui_inputs.recruiter_skills)
+                standardized_killer_criteria = await app.analyzer.standardize_killer_criteria(ui_inputs.killer_criteria)
                 candidate_profiles = await app.process_resumes(ui_inputs.resume_files)
                 
                 if candidate_profiles:
                     # Realiza el ranking de candidatos
                     rankings = await app.ranking_system.rank_candidates(
-                        job_profile, 
+                        job_profile,
+                        recruiter_preferences, 
                         candidate_profiles,
-                        ui_inputs.killer_criteria if any(ui_inputs.killer_criteria.values()) else None,
-                        hiring_preferences["weights"]
+                        standardized_killer_criteria if any(standardized_killer_criteria.values()) else None,
+                        weights
                     )
                     
                     logging.info("Ranking de candidatos completado.")
                     styled_df = app.create_ranking_dataframe(rankings)
-                    UIComponents.display_ranking(styled_df, job_profile)
+                    
+                    # Create and save the debug dataframe
+                    debug_df = app.create_debug_dataframe(job_profile, rankings)
+                    debug_dir = os.path.join(os.path.dirname(__file__), "docs", "debug")
+                    os.makedirs(debug_dir, exist_ok=True)
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    debug_filename = os.path.join(debug_dir, f"debug_{timestamp}.csv")
+                    debug_df.to_csv(debug_filename, index=False)
+                    logging.info(f"Debug CSV guardado en {debug_filename}")
+                    
+                    # Store results in session state (without debug_df)
+                    st.session_state['analysis_results'] = {
+                        'df': styled_df,
+                        'job_profile': job_profile,
+                        'recruiter_preferences': recruiter_preferences,
+                        'killer_criteria': standardized_killer_criteria,
+                        'debug_csv': debug_filename
+                    }
+                    
+                    UIComponents.display_ranking(
+                        df=styled_df,
+                        job_profile=job_profile,
+                        recruiter_preferences=recruiter_preferences,
+                        killer_criteria=standardized_killer_criteria
+                    )
                 else:
                     st.warning("No se pudieron procesar los CVs. Por favor, verifique los archivos.")
                 

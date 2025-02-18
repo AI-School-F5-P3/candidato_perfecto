@@ -15,6 +15,12 @@ class MatchingConfig:
     # Umbral de similitud mínima para criterios eliminatorios (70%)
     killer_criteria_threshold: float = 0.7
     
+    # Umbral mínimo de similitud para considerar una coincidencia válida
+    min_similarity_threshold: float = 0.3
+    
+    # Umbral para activar mecanismo de fallback
+    fallback_threshold: float = 0.2
+
     # Distribución por defecto de pesos para cada componente
     default_weights: Dict[str, float] = None
 

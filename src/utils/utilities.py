@@ -2,6 +2,7 @@
 import logging
 from typing import List, Dict, Any
 import pandas as pd
+import json
 
 def setup_logging(log_file: str = "app.log") -> None:
     """Configura el sistema de registro para la aplicación"""
@@ -23,6 +24,14 @@ def format_list_preview(items: List[str], max_items: int = 5) -> str:
 
 def create_score_row(candidate_data: Dict[str, Any], score_data: Dict[str, Any]) -> Dict[str, Any]:
     """Crea una fila de datos para el DataFrame de resultados"""
+    import json
+    # Convert nested dicts to strings for safe DataFrame creation.
+    if "raw_data" in candidate_data and isinstance(candidate_data["raw_data"], dict):
+        candidate_data["raw_data"] = json.dumps(candidate_data["raw_data"])
+    # Ensure candidate list fields contain only strings.
+    for key in ['habilidades', 'experiencia', 'formacion']:
+        if key in candidate_data and isinstance(candidate_data[key], list):
+            candidate_data[key] = [json.dumps(item) if isinstance(item, dict) else str(item) for item in candidate_data[key]]
     # Construye un diccionario con los datos formateados para visualización
     return {
         'Nombre Candidato': candidate_data['nombre_candidato'],

@@ -1,6 +1,9 @@
 """Módulo de operaciones de manejo de archivos"""
 import logging
 import io
+import os
+import pandas as pd
+from pathlib import Path
 import PyPDF2
 from typing import Union, BinaryIO
 
@@ -70,3 +73,16 @@ class FileHandler:
         except Exception as e:
             logging.error(f"Error al leer archivo {uploaded_file.name}: {str(e)}")
             raise
+
+    @staticmethod
+    def save_dataframe(df: pd.DataFrame, filepath: str, create_dirs: bool = True) -> None:
+        """Save a pandas DataFrame to CSV, optionally creating the directory structure.
+        
+        Args:
+            df: DataFrame to save
+            filepath: Path to save the CSV file
+            create_dirs: If True, create directory structure if it doesn't exist
+        """
+        if create_dirs:
+            os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        df.to_csv(filepath, index=False)
