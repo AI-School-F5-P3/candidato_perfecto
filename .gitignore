@@ -1,7 +1,37 @@
+# Primero, incluir el directorio .streamlit base
+!.streamlit/
+
+# Ignorar todo dentro de .streamlit por defecto
+.streamlit/*
+
+# Permitir subdirectorios específicos y sus contenidos
+!.streamlit/*/
+!.streamlit/**/*.py
+!.streamlit/**/*.yaml
+!.streamlit/google_credentials/
+
+# Permitir archivos específicos de control
+!.streamlit/.gitkeep
+!.streamlit/google_credentials/.gitkeep
+!.streamlit/secrets_sample.toml
+
+# Ignorar explícitamente archivos sensibles
+.streamlit/secrets.toml
+.streamlit/google_credentials/service-account-key.json
 src/.streamlit/secrets.toml
+
+# Resto de archivos a ignorar
 src/__pycache__/
 src/app.log
 old/
 models/
 docs/diagrams
 app.log
+cand/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
