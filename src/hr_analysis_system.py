@@ -1,6 +1,6 @@
 """Lógica principal del sistema de análisis de candidatos usando NLP y embeddings"""
 from openai import AsyncOpenAI
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, Any  # Add Any for debug_info
 import numpy as np
 from dataclasses import dataclass
 import json
@@ -11,6 +11,7 @@ from langdetect import detect
 import re
 import logging  # Added this import
 from src.config import Config  # Add this import
+import pandas as pd  # << Added for debugging CSV creation
 
 @dataclass
 class PreferenciaReclutadorProfile:
@@ -48,10 +49,13 @@ class MatchScore:
     component_scores: Dict[str, float]
     disqualified: bool = False
     disqualification_reasons: List[str] = None
+    debug_info: Optional[Dict[str, Any]] = None  # New field for debug details
 
     def __post_init__(self):
         if self.disqualification_reasons is None:
             self.disqualification_reasons = []
+        if self.debug_info is None:
+            self.debug_info = {}
 
 class IEmbeddingProvider(ABC):
     """Interfaz abstracta para proveedores de embeddings"""
@@ -160,7 +164,7 @@ class SemanticAnalyzer(TextAnalyzer):
         Extract and summarize key information from this job description.
         For experience requirements:
         - Condense long descriptions into concise points
-        - Extract years of experience explicitly
+        - Extract years of experience explicitly (e.g., specify at least X_years_experience)
         - Focus on key responsibilities and achievements
         - Standardize all durations as 'X_years_experience'
         
@@ -254,7 +258,10 @@ class SemanticAnalyzer(TextAnalyzer):
         return CandidateProfile(**profile_data)
 
     async def standardize_killer_criteria(self, criteria: Dict[str, List[str]]) -> Dict[str, List[str]]:
-        """Standardize killer criteria into a JSON with keys: killer_habilidades and killer_experiencia."""
+        """Standardize killer criteria into a JSON with keys: killer_habilidades and killer_experiencia.
+        IMPORTANT: If killer skills is empty then there are no killer skills required and the candidate must not be flagged as disqualified.
+        Similarly, if killer experience is empty then there is no experience required and the candidate must not be flagged as disqualified.
+        """
         if not any(criteria.values()):
             return {"killer_habilidades": [], "killer_experiencia": []}
         skills_text = "\n".join(criteria.get("killer_habilidades", []))
@@ -263,6 +270,8 @@ class SemanticAnalyzer(TextAnalyzer):
         prompt = f"""
         Normalize the following mandatory requirements.
         Convert durations to 'X_years_experience' and standardize technical terms.
+        IMPORTANT: If killer skills is empty then no killer skills are required and no disqualification should occur.
+        If killer experience is empty then no killer experience is required and no disqualification should occur.
         Output JSON as:
         {{
           "killer_habilidades": [...],
@@ -277,7 +286,7 @@ class SemanticAnalyzer(TextAnalyzer):
         )
         return json.loads(response.choices[0].message.content)
 
-class MatchingEngine(TextAnalyzer):  # Fixed the syntax error here - added closing parenthesis
+class MatchingEngine(TextAnalyzer):
     """Maneja la lógica de coincidencia entre requisitos del trabajo y perfiles de candidatos"""
     def __init__(self, embedding_provider: IEmbeddingProvider):
         super().__init__(embedding_provider)
@@ -307,10 +316,13 @@ class MatchingEngine(TextAnalyzer):  # Fixed the syntax error here - added closi
                 getattr(candidate, candidate_field)
             )
             
-            # Si no alcanza el umbral mínimo, se considera que no cumple el criterio
+            # Allow a small tolerance margin of 0.05 before flagging disqualification
             if score < self.threshold:
-                reason = "No cumple con las habilidades obligatorias" if 'habilidades' in criteria_type else "No cumple con la experiencia obligatoria"
-                disqualification_reasons.append(reason)
+                if score < self.threshold - 0.05:
+                    reason = "No cumple con las habilidades obligatorias" if 'habilidades' in criteria_type else "No cumple con la experiencia obligatoria"
+                    disqualification_reasons.append(reason)
+                else:
+                    logging.info("Borderline {0} match (score: {1}), not disqualifying".format(candidate_field, score))
         
         return len(disqualification_reasons) == 0, disqualification_reasons
 
@@ -323,21 +335,10 @@ class MatchingEngine(TextAnalyzer):  # Fixed the syntax error here - added closi
         weights: Optional[Dict[str, float]] = None
     ) -> MatchScore:
         """Calcula la puntuación de coincidencia entre un trabajo y un candidato"""
-        # Primero verifica los criterios eliminatorios si existen
+        killer_met = True
+        killer_reasons = []
         if killer_criteria:
-            meets_criteria, reasons = await self.check_killer_criteria(candidate, killer_criteria)
-            if not meets_criteria:
-                return MatchScore(
-                    final_score=0.0,
-                    component_scores={
-                        "habilidades": 0.0,
-                        "experiencia": 0.0,
-                        "formacion": 0.0,
-                        "preferencias_reclutador": 0.0
-                    },
-                    disqualified=True,
-                    disqualification_reasons=reasons
-                )
+            killer_met, killer_reasons = await self.check_killer_criteria(candidate, killer_criteria)
 
         # Pesos por defecto si no se especifican
         weights = weights or {
@@ -347,26 +348,45 @@ class MatchingEngine(TextAnalyzer):  # Fixed the syntax error here - added closi
             "preferencias_reclutador": 0.1
         }
         
-        # Calcula puntuaciones individuales para cada componente
-        component_scores = {
-            "habilidades": await self.calculate_semantic_similarity(job.habilidades, candidate.habilidades),
-            "experiencia": await self.calculate_semantic_similarity(job.experiencia, candidate.experiencia),
-            "formacion": await self.calculate_semantic_similarity(job.formacion, candidate.formacion),
-            "preferencias_reclutador": await self.calculate_semantic_similarity(
-                preferences.habilidades_preferidas,
-                candidate.habilidades
-            ) if preferences.habilidades_preferidas else 0.0
+        # Compute component scores and capture debug info
+        debug_data = {}
+        comp_scores = {}
+        for comp in ["habilidades", "experiencia", "formacion"]:
+            sim = await self.calculate_semantic_similarity(getattr(job, comp), getattr(candidate, comp))
+            comp_scores[comp] = sim
+            debug_data[comp] = {
+                "candidate": getattr(candidate, comp),
+                "job": getattr(job, comp),
+                "cosine_similarity": sim,
+                "weight": weights.get(comp, 0),
+                "weighted_score": sim * weights.get(comp, 0)
+            }
+        # For recruiter preferences (compare preferences.habilidades_preferidas with candidate.habilidades)
+        if preferences.habilidades_preferidas:
+            pref_sim = await self.calculate_semantic_similarity(preferences.habilidades_preferidas, candidate.habilidades)
+        else:
+            pref_sim = 0.0
+        comp_scores["preferencias_reclutador"] = pref_sim
+        debug_data["preferencias_reclutador"] = {
+            "candidate": candidate.habilidades,
+            "preferences": preferences.habilidades_preferidas,
+            "cosine_similarity": pref_sim,
+            "weight": weights.get("preferencias_reclutador", 0),
+            "weighted_score": pref_sim * weights.get("preferencias_reclutador", 0)
         }
         
-        # Calcula puntuación final ponderada
-        final_score = sum(
-            score * weights[component]
-            for component, score in component_scores.items()
-        )
-        
+        final = sum(score * weights[comp] for comp, score in comp_scores.items())
+        # Include killer criteria details in debug info and disqualify if necessary
+        debug_data["killer"] = {
+            "qualified": killer_met,
+            "reasons": killer_reasons
+        }
         return MatchScore(
-            final_score=final_score,
-            component_scores=component_scores
+            final_score=final,
+            component_scores=comp_scores,
+            disqualified=not killer_met,
+            disqualification_reasons=killer_reasons,
+            debug_info=debug_data
         )
 
 class RankingSystem:
@@ -400,4 +420,19 @@ class RankingSystem:
             key=lambda x: (not x[1].disqualified, x[1].final_score),
             reverse=True
         )
+        
+        # Compile debug info and save CSV using FileHandler to relative folder (project root/docs/debug/)
+        debug_rows = []
+        for candidate, score in rankings:
+            debug_rows.append({
+                "nombre_candidato": candidate.nombre_candidato,
+                "final_score": score.final_score,
+                "disqualified": score.disqualified,
+                "debug_info": json.dumps(score.debug_info)
+            })
+        import pandas as pd
+        debug_df = pd.DataFrame(debug_rows)
+        debug_path = "../docs/debug/debug.csv"  # Relative path from src folder
+        FileHandler.save_dataframe(debug_df, debug_path)  # Using the new method
+        
         return rankings

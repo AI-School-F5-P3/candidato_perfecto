@@ -5,6 +5,7 @@ import asyncio
 import pandas as pd
 from typing import List
 import os
+from datetime import datetime
 from src.hr_analysis_system import (
     SemanticAnalyzer, 
     MatchingEngine,
@@ -90,6 +91,38 @@ class HRAnalysisApp:
             logging.error(f"Error creando DataFrame de ranking: {str(e)}")
             raise
 
+    def create_debug_dataframe(self, job: JobProfile, rankings: List[tuple[CandidateProfile, MatchScore]]) -> pd.DataFrame:
+        """Genera un DataFrame debug utilizando debug_info almacenado en MatchScore sin llamadas adicionales."""
+        rows = []
+        for candidate, score in rankings:
+            base = {
+                "Candidate": candidate.nombre_candidato,
+                "Job Name": job.nombre_vacante
+            }
+            # Para cada componente en debug_info, crear una fila
+            for comp, data in score.debug_info.items():
+                if isinstance(data, str):  # Handle string data (like killer criteria messages)
+                    row = base.copy()
+                    row["Comparison Type"] = comp
+                    row["Debug Info"] = data
+                    rows.append(row)
+                    continue
+
+                row = base.copy()
+                row["Comparison Type"] = comp
+                # Safely get values with defaults
+                row["Candidate Text"] = str(data.get("candidate", ""))
+                if comp == "preferencias_reclutador":
+                    row["Job/Preference Text"] = str(data.get("preferences", ""))
+                else:
+                    row["Job/Preference Text"] = str(data.get("job", ""))
+                row["Cosine Similarity"] = data.get("cosine_similarity", 0.0)
+                row["Weight"] = data.get("weight", 0.0)
+                row["Weighted Score"] = data.get("weighted_score", 0.0)
+                rows.append(row)
+                
+        return pd.DataFrame(rows)
+
 async def main():
     """Punto de entrada principal que maneja el flujo de la aplicación"""
     setup_logging()
@@ -151,12 +184,22 @@ async def main():
                     logging.info("Ranking de candidatos completado.")
                     styled_df = app.create_ranking_dataframe(rankings)
                     
+                    # Create and save the debug dataframe
+                    debug_df = app.create_debug_dataframe(job_profile, rankings)
+                    debug_dir = os.path.join(os.path.dirname(__file__), "docs", "debug")
+                    os.makedirs(debug_dir, exist_ok=True)
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    debug_filename = os.path.join(debug_dir, f"debug_{timestamp}.csv")
+                    debug_df.to_csv(debug_filename, index=False)
+                    logging.info(f"Debug CSV guardado en {debug_filename}")
+                    
                     # Store results in session state (without debug_df)
                     st.session_state['analysis_results'] = {
                         'df': styled_df,
                         'job_profile': job_profile,
                         'recruiter_preferences': recruiter_preferences,
-                        'killer_criteria': standardized_killer_criteria
+                        'killer_criteria': standardized_killer_criteria,
+                        'debug_csv': debug_filename
                     }
                     
                     UIComponents.display_ranking(
