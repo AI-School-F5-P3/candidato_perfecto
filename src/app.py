@@ -1,5 +1,6 @@
 """Módulo principal que coordina todos los componentes del sistema"""
 import logging
+from openai import AsyncOpenAI
 import streamlit as st
 import asyncio
 import pandas as pd
@@ -14,11 +15,20 @@ from src.hr_analysis_system import (
     JobProfile,
     CandidateProfile,
     OpenAIEmbeddingProvider,
-    MatchScore
+    MatchScore,
 )
 from src.frontend.ui import UIComponents
 from src.utils.utilities import setup_logging, create_score_row, sort_ranking_dataframe
 from src.utils.file_handler import FileHandler
+
+class OpenAITextGenerationProvider:
+    """Proveedor de generación de texto usando GPT-3.5 Turbo"""
+
+    def __init__(self, api_key: str):
+        """Inicializa el proveedor de generación de texto"""
+        self.client = AsyncOpenAI(api_key=api_key)
+        self.model = "gpt-3.5-turbo"
+        
 
 class HRAnalysisApp:
     """Clase principal que orquesta el flujo completo del análisis"""
@@ -87,27 +97,36 @@ class HRAnalysisApp:
             logging.error(f"Error creando DataFrame de ranking: {str(e)}")
             raise
 
-    async def analyze_text_comparatively(self, df: pd.DataFrame, candidate_names: List[str]) -> None:
-        """Realiza un análisis de texto comparativo utilizando LLM y genera gráficos"""
-        try:
-            comparative_df = df[df['Nombre Candidato'].isin(candidate_names)].copy()
+async def analyze_text_comparatively(self, df: pd.DataFrame, candidate_names: List[str]) -> None:
+    """Realiza un análisis de texto comparativo utilizando LLM y genera gráficos"""
+    try:
+        comparative_df = df[df['Nombre Candidato'].isin(candidate_names)].copy()
+        
+        # Realiza el análisis de texto comparativo utilizando LLM
+        analysis_results = []
+        for idx, row in comparative_df.iterrows():
+            candidate_text = f"Experiencia: {row['Experiencia']}, Habilidades: {row['Habilidades']}, Formación: {row['Formación']}"
             
-            # Realiza el análisis de texto comparativo utilizando LLM
-            analysis_results = []
-            for idx, row in comparative_df.iterrows():
-                candidate_text = f"Experiencia: {row['Experiencia']}, Habilidades: {row['Habilidades']}, Formación: {row['Formación']}"
-                analysis_result = await self.embedding_provider.get_embedding(candidate_text)  # Cambia a get_embedding
-                analysis_results.append(analysis_result)
+            prompt = f"Genera un análisis comparativo con texto en español sobre el siguiente perfil de candidato:\n{candidate_text}\n\nAnálisis:"
+        
+            try:
+                response = await self.openaitextgenerationprovider.chat.completions.create(
+                    model="gp-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": prompt}],
+                    response_format={"type": "json_object"}
+                )    
+                
+                anaysis_result = response['choices'][0]['message']['content'].strip()
+                analysis_results.append(anaysis_result)
             
-            comparative_df.loc[:, 'analysis_result'] = analysis_results
-            
-            # Guardar el DataFrame actualizado en el estado de la sesión
-            st.session_state['comparative_df'] = comparative_df
-            
-            logging.info("Análisis comparativo completado exitosamente.")
-        except Exception as e:
-            logging.error(f"Error en el análisis comparativo: {str(e)}")
-            st.error(f"Error en el análisis comparativo: {str(e)}")
+            except Exception as e:
+                print(f"Error al obtener el análisis del candidato {row['Nombre Candidato']}: {str(e)}")
+        return
+    except Exception as e:
+        logging.error(f"Error en el análisis comparativo: {str(e)}")
+        st.error(f"Error en el análisis comparativo: {str(e)}")
+        
 
 async def main():
     """Punto de entrada principal que maneja el flujo de la aplicación"""
