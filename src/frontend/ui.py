@@ -1,8 +1,13 @@
 import streamlit as st
 from pathlib import Path
+from src.hr_analysis_system import JobProfile
 import logging
 from typing import Dict, List, Tuple
 from dataclasses import dataclass
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from src.frontend import comparative_analysis  # added import for comparative_analysis
 
 @dataclass
 class WeightSettings:
@@ -28,17 +33,29 @@ class UIComponents:
     @staticmethod
     def load_custom_css() -> None:
         """Carga estilos CSS personalizados"""
-        try:
-            css_path = Path(__file__).parent / 'style.css'
-            with open(css_path) as f:
-                st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-        except Exception as e:
-            logging.warning(f"Could not load custom CSS: {str(e)}")
+        st.markdown(
+            """
+            <style>
+            .title {
+                font-size: 2rem;
+                font-weight: bold;
+                margin-bottom: 1rem;
+            }
+            .section-header {
+                font-size: 1.5rem;
+                font-weight: bold;
+                margin-top: 2rem;
+                margin-bottom: 1rem;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
 
     @staticmethod
     def setup_page_config() -> None:
-        """Configura las opciones generales de la página"""
-        st.set_page_config(layout="wide", page_title="Sistema de Análisis de CVs")
+        """Configura la página de Streamlit"""
+        st.set_page_config(page_title="El candidato perfecto", layout="wide")
 
     @staticmethod
     def create_weight_sliders() -> WeightSettings:

@@ -58,18 +58,21 @@ class MatchScore:
         if self.debug_info is None:
             self.debug_info = {}
 
+  # Usamos el modelo GPT-3.5 Turbo
+
 class IEmbeddingProvider(ABC):
     """Interfaz abstracta para proveedores de embeddings"""
     @abstractmethod
     async def get_embedding(self, text: str) -> List[float]:
         """Obtiene el vector de embedding para el texto"""
         pass
-
+    
 class OpenAIEmbeddingProvider(IEmbeddingProvider):
     """Implementación OpenAI del proveedor de embeddings"""
     def __init__(self, api_key: str):
         self.client = AsyncOpenAI(api_key=api_key)
         self.model = "text-embedding-3-small"
+
 
     async def get_embedding(self, text: str) -> List[float]:
         response = await self.client.embeddings.create(
