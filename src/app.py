@@ -7,6 +7,9 @@ from typing import List
 import os
 from datetime import datetime
 import sys
+import matplotlib.pyplot as plt
+from src.frontend.state import session_state
+import openai
 
 # Añade la ruta del proyecto al PYTHONPATH
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -153,6 +156,68 @@ class HRAnalysisApp:
                 
         return pd.DataFrame(rows)
 
+    async def generate_comparative_analysis(self, selected_cvs, job_profile):
+        """Generates a comparative analysis report using OpenAI GPT-3.5-turbo."""
+        try:
+            cvs_data = [await self.analyzer.standardize_resume(cv) for cv in selected_cvs]
+            prompt = self.create_comparison_prompt(cvs_data, job_profile)
+            response = openai.Completion.create(
+                engine="gpt-3.5-turbo",
+                prompt=prompt,
+                max_tokens=1500
+            )
+            report = response.choices[0].text
+            visualizations = self.create_visualizations(cvs_data)
+            return report, visualizations
+        except Exception as e:
+            logging.error(f"Error generating comparative analysis: {str(e)}")
+            raise
+        
+    def create_comparison_prompt(self, cvs_data, job_profile):
+        """Creates a detailed prompt for OpenAI GPT-3.5-turbo."""
+        prompt = f'''
+        Analyze these {len(cvs_data)} candidates for the following job position.
+        Provide a detailed comparison report including:
+
+        1. Individual Analysis for each candidate:
+        - Key strengths aligned with the position
+        - Potential gaps or areas for development
+        - Experience relevance analysis
+        - Skills match percentage explanation
+
+        2. Comparative Analysis:
+        - Relative strengths between candidates
+        - Unique value propositions
+        - Overall fit ranking explanation
+
+        3. Final Recommendations:
+        - Best fit justification
+        - Development areas for each candidate
+        - Hiring recommendations
+
+        Use this data in your analysis:
+        Job Description: {job_profile}
+        Selected Candidates: {cvs_data}
+        '''
+        return prompt
+    
+    def create_visualizations(self, cvs_data):
+        """Creates visualizations for the comparative analysis."""
+        visualizations = []
+        # Radar chart for skills comparison
+        skills = list(set(skill for cv in cvs_data for skill in cv['habilidades']))
+        skill_values = [[cv['habilidades'].count(skill) for skill in skills] for cv in cvs_data]
+        fig, ax = plt.subplots()
+        ax.plot(skills, skill_values)
+        visualizations.append(fig)
+        # Bar chart for experience comparison
+        experience = list(set(exp for cv in cvs_data for exp in cv['experiencia']))
+        exp_values = [[cv['experiencia'].count(exp) for exp in experience] for cv in cvs_data]
+        fig, ax = plt.subplots()
+        ax.bar(experience, exp_values)
+        visualizations.append(fig)
+        return visualizations   
+
 # Inicialización de la aplicación y configuración de la UI
 setup_logging()
 UIComponents.setup_page_config()
@@ -244,6 +309,9 @@ async def analyze_candidates(ui_inputs, app):
             candidate_profiles = await app.process_resumes(ui_inputs.resume_files)
         
         if candidate_profiles:
+            # Store candidate profiles in session state
+            st.session_state['candidate_profiles'] = candidate_profiles
+
             # Realiza el ranking
             rankings = await app.ranking_system.rank_candidates(
                 job_profile,
@@ -280,6 +348,11 @@ async def analyze_candidates(ui_inputs, app):
                 recruiter_preferences=recruiter_preferences,
                 killer_criteria=standardized_killer_criteria
             )
+            # Añadir botón para generar informe avanzado
+            if st.button("Generar Informe Avanzado", key="advanced_report_button"):
+                st.session_state.selected_cvs = candidate_profiles
+                st.session_state.page = 'advanced_report'
+                st.experimental_rerun()
         else:
             st.warning("No se pudieron procesar los CVs. Por favor, verifique los archivos.")
                 
@@ -287,9 +360,72 @@ async def analyze_candidates(ui_inputs, app):
         logging.error(f"Error durante el análisis: {str(e)}")
         st.error(f"Error durante el análisis: {str(e)}")
 
-if st.button("Analizar Candidatos", key="analyze_button"):
-    asyncio.run(analyze_candidates(ui_inputs, app))
+# Configuración inicial del estado de la aplicación
+def initialize_session_state():
+    if 'page' not in st.session_state:
+        st.session_state.page = 'ranking'
+    if 'selected_cvs' not in st.session_state:
+        st.session_state.selected_cvs = None
+    if 'job_profile' not in st.session_state:
+        st.session_state.job_profile = None
+
+# Ejecutar una función asíncrona dentro de Streamlit
+def run_async(func, *args):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    result = loop.run_until_complete(func(*args))
+    loop.close()
+    return result
+
+# Función principal de la aplicación
+def main():
+    initialize_session_state()  # Inicializar session_state si no existe
+
+    if st.session_state.page == 'ranking':
+        st.title("Ranking de Candidatos")
+        
+        # Mostrar advertencia si aún no hay candidatos procesados
+        if not st.session_state.selected_cvs:
+            st.warning("Aún no se han procesado los candidatos.")
+
+        # Botón para analizar candidatos
+        if st.button("Analizar Candidatos", key="analyze_button"):
+            run_async(analyze_candidates, ui_inputs, app)  # Ejecuta el análisis de candidatos
+            
+            # Verificar si los candidatos fueron procesados correctamente
+            if st.session_state.selected_cvs:
+                st.session_state.page = 'advanced_report'
+                st.experimental_rerun()
+            else:
+                st.warning("No se encontraron candidatos para el informe avanzado.")
+
+    elif st.session_state.page == 'advanced_report':
+        st.title("Informe Avanzado de Candidatos")
+
+        # Verificar si hay candidatos seleccionados antes de mostrar la página
+        if st.session_state.selected_cvs:
+            UIComponents.create_advanced_report_page(st.session_state.selected_cvs)
+        else:
+            st.warning("No hay candidatos disponibles para el informe avanzado.")
+            st.button("Volver al Ranking", on_click=lambda: setattr(st.session_state, 'page', 'ranking'))
+
+    elif st.session_state.page == 'report_results':
+        st.title("Resultados del Informe Comparativo")
+
+        # Generar el análisis comparativo de los CVs con el perfil de la vacante
+        if st.session_state.selected_cvs:
+            report, visualizations = asyncio.run(app.generate_comparative_analysis(
+                st.session_state.selected_cvs, 
+                st.session_state.job_profile
+            ))
+            UIComponents.create_report_results_page(report, visualizations)
+        else:
+            st.warning("No hay candidatos seleccionados para generar el informe.")
+
+        # Botón para volver al ranking
+        if st.button("Volver al Ranking"):
+            st.session_state.page = 'ranking'
+            st.experimental_rerun()
 
 if __name__ == "__main__":
-    # Este archivo está diseñado para ejecutarse con Streamlit
-    pass  # No ejecutamos nada aquí porque Streamlit maneja la ejecución automáticamente
+    main()

@@ -3,7 +3,7 @@ from pathlib import Path
 import logging
 from typing import Dict, List, Tuple
 from dataclasses import dataclass
-
+from src.frontend.state import session_state
 @dataclass
 class WeightSettings:
     """Configuración de pesos para diferentes componentes de puntuación"""
@@ -327,3 +327,31 @@ class UIComponents:
         except Exception as e:
             st.error("Error al mostrar los resultados. Verifique los datos y vuelva a intentar.")
             logging.error(f"Error in display_ranking: {str(e)}")
+          
+    @staticmethod        
+    def create_advanced_report_button():
+        if st.button("Advanced Report"):
+            st.session_state.page = "advanced_report"
+            st.experimental_rerun()  # Forzar la recarga de la UI
+
+    @staticmethod
+    def create_advanced_report_page(candidates):
+        st.title("Advanced Candidate Report")
+        selected_cvs = st.multiselect("Select CVs for Comparison", candidates)
+
+        if st.button("Generate Report"):
+            st.session_state.selected_cvs = selected_cvs
+            st.session_state.page = "report_results"
+            st.experimental_rerun()  # Forzar la recarga
+
+    @staticmethod
+    def create_report_results_page(report, visualizations):
+        st.title("Comparison Report")
+        st.write(report)
+
+        for viz in visualizations:
+            st.pyplot(viz)
+
+        if st.button("Back to Ranking"):
+            st.session_state.page = "ranking"
+            st.experimental_rerun()  # Asegurar que vuelva a la página de ranking
