@@ -3,6 +3,7 @@ from pathlib import Path
 import logging
 from typing import Dict, List, Tuple
 from dataclasses import dataclass
+from hr_analysis_system import generar_informe_comparativo, CandidateProfile
 
 @dataclass
 class WeightSettings:
@@ -293,16 +294,32 @@ class UIComponents:
             </div>
             """, unsafe_allow_html=True)
             
-            # Always show candidate details
+            selected_candidates = []  # Lista para almacenar los candidatos seleccionados
+
             for idx, row in df.iterrows():
                 expander_title = f"Ver datos del candidato: {row['Nombre Candidato']}"
                 if row['Estado'] == 'Descalificado':
                     expander_title += " (Descalificado)"
                 
                 with st.expander(expander_title):
+                    # Mostrar el estado de descalificación si corresponde
                     if row['Estado'] == 'Descalificado':
                         st.error(f"Razones de descalificación: {row['Razones Descalificación']}")
+                    
+                    # Mostrar los datos crudos del candidato
                     st.json(row['raw_data'])
+                    
+                    # Añadir checkbox para seleccionar el candidato
+                    if row['Estado'] != 'Descalificado':  # Solo permitir seleccionar candidatos no descalificados
+                        if st.checkbox(f"Seleccionar para informe comparativo: {row['Nombre Candidato']}", key=f"select_{idx}"):
+                            # Añadir el candidato seleccionado a la lista
+                            selected_candidates.append(
+                                CandidateProfile(
+                                    nombre_candidato=row['Nombre Candidato'],
+                                    habilidades=row['Habilidades'],
+                                    experiencia=row['Experiencia']
+                                )
+                            )
 
             # Show requirement details in expandable sections
             with st.expander("Ver Requisitos del Puesto"):
@@ -323,6 +340,20 @@ class UIComponents:
                     "habilidades_obligatorias": killer_criteria.get("killer_habilidades", []),
                     "experiencia_obligatoria": killer_criteria.get("killer_experiencia", [])
                 })
+                
+            # Aquí es donde agregamos el botón para generar el informe comparativo
+            st.markdown('<div class="section-header">Generar Informe Comparativo</div>', unsafe_allow_html=True)
+            
+            # Botón para generar el informe comparativo
+            if st.button('Generar Informe Comparativo'):
+                if selected_candidates:
+                    # Llamar a la función de generación de informe con los candidatos seleccionados
+                    informe = generar_informe_comparativo(selected_candidates, job_profile)
+
+                    # Mostrar el informe generado
+                    st.text_area("Informe Comparativo Generado", value=informe, height=400)
+                else:
+                    st.warning("Por favor, seleccione al menos un candidato para generar el informe.")
             
         except Exception as e:
             st.error("Error al mostrar los resultados. Verifique los datos y vuelva a intentar.")

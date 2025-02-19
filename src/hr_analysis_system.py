@@ -440,3 +440,38 @@ class RankingSystem:
         FileHandler.save_dataframe(debug_df, debug_path)  # Using the new method
         
         return rankings
+    
+async def generar_informe_comparativo(cvs_seleccionados: List[CandidateProfile], vacante: JobProfile) -> str:
+    """Genera un informe comparando los CVs seleccionados con la vacante utilizando GPT-3.5 Turbo"""
+    try:
+        # Preparamos el mensaje de comparación para GPT-3.5 Turbo
+        texto_comparativo = "Compara los siguientes CVs con la vacante descrita a continuación. Resalta las ventajas y carencias de cada candidato."
+        
+        # Descripción de la vacante
+        descripcion_vacante = f"Vacante: {vacante.titulo} \nRequisitos: {vacante.requisitos} \nDescripción del trabajo: {vacante.descripcion}"
+
+        # Información de los candidatos seleccionados
+        candidatos_info = ""
+        for candidato in cvs_seleccionados:
+            candidatos_info += f"Nombre: {candidato.nombre_candidato}\nHabilidades: {candidato.habilidades}\nExperiencia: {candidato.experiencia}\n\n"
+        
+        # Creación del prompt para GPT-3.5
+        prompt = f"{texto_comparativo}\n\n{descripcion_vacante}\n\n{candidatos_info}\nGenera un informe comparativo donde se resalten las ventajas y carencias de cada candidato en relación con la vacante. Organiza la información por candidato."
+
+        # Llamada a GPT-3.5 Turbo para generar el informe
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Eres un asistente experto en análisis de CVs y vacantes."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=1500,
+            temperature=0.7
+        )
+
+        # Extraemos el informe generado
+        informe_generado = response['choices'][0]['message']['content']
+        return informe_generado
+    except Exception as e:
+        logging.error(f"Error generando informe comparativo: {str(e)}")
+        return "Hubo un error al generar el informe. Inténtalo nuevamente."
