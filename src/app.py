@@ -226,40 +226,6 @@ async def main():
     elif ui_inputs.weights.total_weight != 1.0:
         st.error("Por favor, ajuste los pesos para que sumen exactamente 1.0 antes de continuar.")
 
-def comparative_analysis(app: HRAnalysisApp):
-    """Pantalla de análisis comparativo"""
-    st.markdown('<h1 class="title">Análisis Comparativo</h1>', unsafe_allow_html=True)
-    
-    if 'styled_df' not in st.session_state:
-        st.error("No se encontraron datos de ranking. Por favor, regrese a la pantalla principal y realice el análisis de candidatos.")
-        return
-    
-    styled_df = st.session_state['styled_df']
-    
-    selected_candidate_names = st.multiselect(
-        "Seleccione los nombres de los candidatos para el informe comparativo",
-        options=styled_df['Nombre Candidato'].tolist()
-    )
-    
-    if selected_candidate_names:
-        with st.spinner("Generando análisis comparativo..."):
-            analysis_results = asyncio.run(app.analyze_text_comparatively(styled_df, selected_candidate_names))
-            
-            if analysis_results:
-                st.subheader("Análisis Individual de Candidatos")
-                for result in analysis_results:
-                    with st.expander(f"Análisis de {result['nombre']}"):
-                        st.write(result['analisis'])
-            
-            comparative_df = styled_df[styled_df['Nombre Candidato'].isin(selected_candidate_names)]
-            UIComponents.display_comparative_report(comparative_df)
-    else:
-        st.warning("Por favor, seleccione al menos un candidato para el informe comparativo.")
-
-    if st.button("Regresar a la pantalla principal"):
-        st.session_state['page'] = 'main'
-        st.experimental_set_query_params(page='main')
-
 def run_app():
     """Función principal que maneja la navegación entre pantallas"""
     if 'page' not in st.session_state:
@@ -270,7 +236,8 @@ def run_app():
     if st.session_state['page'] == 'main':
         asyncio.run(main())
     elif st.session_state['page'] == 'comparative_analysis':
-        comparative_analysis(app)
+        from src.frontend import comparative_analysis
+        comparative_analysis.comparative_analysis_view(app)
 
 if __name__ == "__main__":
     try:
