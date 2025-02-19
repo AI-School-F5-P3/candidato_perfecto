@@ -14,22 +14,20 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from hr_analysis_system import (
     SemanticAnalyzer,
-import matplotlib.pyplot as plt
-import seaborn as sns
-from src.hr_analysis_system import (
-    SemanticAnalyzer, 
     MatchingEngine,
     RankingSystem,
     JobProfile,
     CandidateProfile,
     OpenAIEmbeddingProvider,
     MatchScore,
-    PreferenciaReclutadorProfile  # Added this import
+    PreferenciaReclutadorProfile  # Se añadió esta importación
 )
-from src.frontend.ui import UIComponents
-from src.utils.utilities import setup_logging, create_score_row, sort_ranking_dataframe
-from src.utils.file_handler import FileHandler
-from src.utils.google_drive import GoogleDriveIntegration
+import matplotlib.pyplot as plt
+import seaborn as sns
+from frontend.ui import UIComponents
+from utils.utilities import setup_logging, create_score_row, sort_ranking_dataframe
+from utils.file_handler import FileHandler
+from utils.google_drive import GoogleDriveIntegration
 
 class OpenAITextGenerationProvider:
     """Proveedor de generación de texto usando GPT-3.5 Turbo"""
@@ -152,17 +150,36 @@ class HRAnalysisApp:
                     row["Debug Info"] = data
                     rows.append(row)
                     continue
-    async def analyze_text_comparatively(self, df: pd.DataFrame, candidate_names: List[str]) -> List[str]:
+                    
+    import streamlit as st
+import pandas as pd
+import logging
+import asyncio
+from typing import List
+
+class ComparativeAnalysis:
+    def __init__(self, text_generation_provider):
+        self.text_generation_provider = text_generation_provider
+
+    async def analyze_text_comparatively(self, df: pd.DataFrame, candidate_names: List[str]) -> List[dict]:
         """Realiza un análisis de texto comparativo utilizando LLM y genera gráficos"""
         try:
             comparative_df = df[df['Nombre Candidato'].isin(candidate_names)].copy()
             analysis_results = []
-            
-            for idx, row in comparative_df.iterrows():
-                candidate_text = f"Nombre: {row['Nombre Candidato']}\nExperiencia: {row['Experiencia']}\nHabilidades: {row['Habilidades']}\nFormación: {row['Formación']}"
-                
-                prompt = f"Analiza el siguiente perfil de candidato y genera un resumen conciso de sus fortalezas y áreas de mejora en español:\n{candidate_text}"
-                
+
+            for _, row in comparative_df.iterrows():
+                candidate_text = (
+                    f"Nombre: {row['Nombre Candidato']}\n"
+                    f"Experiencia: {row.get('Experiencia', 'No disponible')}\n"
+                    f"Habilidades: {row.get('Habilidades', 'No disponible')}\n"
+                    f"Formación: {row.get('Formación', 'No disponible')}"
+                )
+
+                prompt = (
+                    "Analiza el siguiente perfil de candidato y genera un resumen conciso de sus fortalezas y áreas de mejora en español:\n"
+                    f"{candidate_text}"
+                )
+
                 try:
                     response = await self.text_generation_provider.client.chat.completions.create(
                         model=self.text_generation_provider.model,
@@ -214,20 +231,17 @@ async def main():
     """)
     logging.info("Aplicación iniciada.")
 
-                row = base.copy()
-                row["Comparison Type"] = comp
-                # Safely get values with defaults
-                row["Candidate Text"] = str(data.get("candidate", ""))
-                if comp == "preferencias_reclutador":
-                    row["Job/Preference Text"] = str(data.get("preferences", ""))
-                else:
-                    row["Job/Preference Text"] = str(data.get("job", ""))
-                row["Cosine Similarity"] = data.get("cosine_similarity", 0.0)
-                row["Weight"] = data.get("weight", 0.0)
-                row["Weighted Score"] = data.get("weighted_score", 0.0)
-                rows.append(row)
-                
-        return pd.DataFrame(rows)
+    # Suponiendo que 'base' y 'data' son previamente definidos, y 'comp' es la comparación que se está haciendo
+    rows = []  # Inicializa la lista de filas vacía
+    for comp, data in score.debug_info.items():
+        if isinstance(data, str):  # Maneja datos de tipo string (como mensajes de criterios de eliminación)
+            row = base.copy()
+            row["Tipo de Comparación"] = comp
+            row["Información de Depuración"] = data
+            rows.append(row)
+            continue
+
+
 
 # Inicialización de la aplicación y configuración de la UI
 setup_logging()
@@ -376,7 +390,7 @@ def run_app():
     if st.session_state['page'] == 'main':
         asyncio.run(main())
     elif st.session_state['page'] == 'comparative_analysis':
-        from src.frontend import comparative_analysis
+        from frontend import comparative_analysis
         comparative_analysis.comparative_analysis_view(app)
 
 if __name__ == "__main__":

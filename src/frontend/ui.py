@@ -1,13 +1,13 @@
 import streamlit as st
 from pathlib import Path
-from src.hr_analysis_system import JobProfile
+from hr_analysis_system import JobProfile
 import logging
 from typing import Dict, List, Tuple
 from dataclasses import dataclass
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from src.frontend import comparative_analysis  # added import for comparative_analysis
+from frontend import comparative_analysis  # added import for comparative_analysis
 
 @dataclass
 class WeightSettings:
@@ -340,6 +340,11 @@ class UIComponents:
                     "habilidades_obligatorias": killer_criteria.get("killer_habilidades", []),
                     "experiencia_obligatoria": killer_criteria.get("killer_experiencia", [])
                 })
+            
+            # Botón para ir al análisis comparativo
+            if st.button("Ir al análisis comparativo"):
+                st.session_state['page'] = 'comparative_analysis'
+                st.experimental_set_query_params(page='comparative_analysis')
             
         except Exception as e:
             st.error("Error al mostrar los resultados. Verifique los datos y vuelva a intentar.")
