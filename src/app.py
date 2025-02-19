@@ -1,5 +1,6 @@
 """Módulo principal que coordina todos los componentes del sistema"""
 import logging
+from openai import AsyncOpenAI
 import streamlit as st
 import asyncio
 import pandas as pd
@@ -13,6 +14,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from hr_analysis_system import (
     SemanticAnalyzer,
+import matplotlib.pyplot as plt
+import seaborn as sns
+from src.hr_analysis_system import (
+    SemanticAnalyzer, 
     MatchingEngine,
     RankingSystem,
     JobProfile,
@@ -25,6 +30,15 @@ from src.frontend.ui import UIComponents
 from src.utils.utilities import setup_logging, create_score_row, sort_ranking_dataframe
 from src.utils.file_handler import FileHandler
 from src.utils.google_drive import GoogleDriveIntegration
+
+class OpenAITextGenerationProvider:
+    """Proveedor de generación de texto usando GPT-3.5 Turbo"""
+
+    def __init__(self, api_key: str):
+        """Inicializa el proveedor de generación de texto"""
+        self.client = AsyncOpenAI(api_key=api_key)
+        self.model = "gpt-3.5-turbo"
+        
 
 class HRAnalysisApp:
     """Clase principal que orquesta el flujo completo del análisis"""
@@ -45,6 +59,7 @@ class HRAnalysisApp:
             "service-account-key.json"
         )
         self.gdrive_folder_id = "1HiJatHPiHgtjMcQI34Amwjwlr5VQ535s"
+        self.text_generation_provider = OpenAITextGenerationProvider(api_key)
         logging.info("Componentes de análisis inicializados.")
 
     async def process_drive_cvs(self) -> List[CandidateProfile]:
@@ -137,6 +152,67 @@ class HRAnalysisApp:
                     row["Debug Info"] = data
                     rows.append(row)
                     continue
+    async def analyze_text_comparatively(self, df: pd.DataFrame, candidate_names: List[str]) -> List[str]:
+        """Realiza un análisis de texto comparativo utilizando LLM y genera gráficos"""
+        try:
+            comparative_df = df[df['Nombre Candidato'].isin(candidate_names)].copy()
+            analysis_results = []
+            
+            for idx, row in comparative_df.iterrows():
+                candidate_text = f"Nombre: {row['Nombre Candidato']}\nExperiencia: {row['Experiencia']}\nHabilidades: {row['Habilidades']}\nFormación: {row['Formación']}"
+                
+                prompt = f"Analiza el siguiente perfil de candidato y genera un resumen conciso de sus fortalezas y áreas de mejora en español:\n{candidate_text}"
+                
+                try:
+                    response = await self.text_generation_provider.client.chat.completions.create(
+                        model=self.text_generation_provider.model,
+                        messages=[
+                            {"role": "system", "content": "Eres un experto en recursos humanos que analiza perfiles profesionales."},
+                            {"role": "user", "content": prompt}
+                        ],
+                        max_tokens=500,
+                        temperature=0.7
+                    )    
+                    
+                    if response and response.choices:
+                        analysis = response.choices[0].message.content.strip()
+                        analysis_results.append({
+                            'nombre': row['Nombre Candidato'],
+                            'analisis': analysis
+                        })
+                    else:
+                        raise ValueError("No se recibió respuesta del modelo")
+                
+                except Exception as e:
+                    logging.error(f"Error al analizar el candidato {row['Nombre Candidato']}: {str(e)}")
+                    analysis_results.append({
+                        'nombre': row['Nombre Candidato'],
+                        'analisis': f"Error al analizar el perfil: {str(e)}"
+                    })
+            
+            st.session_state['analysis_results'] = analysis_results
+            return analysis_results
+            
+        except Exception as e:
+            logging.error(f"Error en el análisis comparativo: {str(e)}")
+            st.error("Error al mostrar el informe comparativo. Verifique los datos y vuelva a intentar.")
+            return []
+
+async def main():
+    """Punto de entrada principal que maneja el flujo de la aplicación"""
+    setup_logging()
+    UIComponents.setup_page_config()
+    UIComponents.load_custom_css()
+    
+    st.markdown('<h1 class="title">El candidato perfecto</h1>', unsafe_allow_html=True)
+    st.write("""
+    El sistema recopila información de una vacante junto con las preferencias del equipo reclutador 
+    y las características obligatorias a cumplir por los candidatos. Con esta información, se analizan 
+    los curriculum vitae de los candidatos y se obtiene un ranking de idoneidad basado en habilidades, 
+    experiencia y formación. También se identifican los candidatos que no cumplen con los requisitos 
+    obligatorios. Los pesos de ponderación pueden ser ajustados si así se requiere.
+    """)
+    logging.info("Aplicación iniciada.")
 
                 row = base.copy()
                 row["Comparison Type"] = comp
@@ -289,7 +365,71 @@ async def analyze_candidates(ui_inputs, app):
 
 if st.button("Analizar Candidatos", key="analyze_button"):
     asyncio.run(analyze_candidates(ui_inputs, app))
+                # Prepara las preferencias y pesos para el análisis
+                hiring_preferences = {
+                    "habilidades_preferidas": [
+                        skill.strip() 
+                        for skill in (ui_inputs.important_skills or "").split('\n') 
+                        if skill.strip()
+                    ],
+                    "weights": {
+                        "habilidades": ui_inputs.weights.habilidades,
+                        "experiencia": ui_inputs.weights.experiencia,
+                        "formacion": ui_inputs.weights.formacion,
+                        "preferencias_reclutador": ui_inputs.weights.preferencias_reclutador
+                    }
+                }
+                
+                # Procesa la descripción del trabajo y los CVs
+                job_profile = await app.process_job_description(ui_inputs.job_file, hiring_preferences)
+                candidate_profiles = await app.process_resumes(ui_inputs.resume_files)
+                
+                if candidate_profiles:
+                    # Realiza el ranking de candidatos
+                    rankings = await app.ranking_system.rank_candidates(
+                        job_profile, 
+                        candidate_profiles,
+                        ui_inputs.killer_criteria if any(ui_inputs.killer_criteria.values()) else None,
+                        hiring_preferences["weights"]
+                    )
+                    
+                    logging.info("Ranking de candidatos completado.")
+                    styled_df = app.create_ranking_dataframe(rankings)
+                    UIComponents.display_ranking(styled_df, job_profile)
+                    
+                    # Guardar el DataFrame en el estado de la sesión
+                    st.session_state['styled_df'] = styled_df
+
+                    # Navegar a la pantalla de análisis comparativo
+                    st.session_state['page'] = 'comparative_analysis'
+                    st.experimental_set_query_params(page='comparative_analysis')
+                else:
+                    st.warning("No se pudieron procesar los CVs. Por favor, verifique los archivos.")
+                
+        except Exception as e:
+            logging.error(f"Error durante el análisis de candidatos: {str(e)}")
+            st.error(f"Ocurrió un error durante el análisis: {str(e)}")
+    elif ui_inputs.weights.total_weight != 1.0:
+        st.error("Por favor, ajuste los pesos para que sumen exactamente 1.0 antes de continuar.")
+
+def run_app():
+    """Función principal que maneja la navegación entre pantallas"""
+    if 'page' not in st.session_state:
+        st.session_state['page'] = 'main'
+    
+    app = HRAnalysisApp(st.secrets["openai"]["api_key"])
+    
+    if st.session_state['page'] == 'main':
+        asyncio.run(main())
+    elif st.session_state['page'] == 'comparative_analysis':
+        from src.frontend import comparative_analysis
+        comparative_analysis.comparative_analysis_view(app)
 
 if __name__ == "__main__":
     # Este archivo está diseñado para ejecutarse con Streamlit
     pass  # No ejecutamos nada aquí porque Streamlit maneja la ejecución automáticamente
+    try:
+        run_app()
+    except Exception as e:
+        logging.critical(f"Error crítico en main: {str(e)}")
+        st.error("Se produjo un error crítico en la aplicación.")
