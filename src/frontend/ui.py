@@ -269,7 +269,7 @@ class UIComponents:
             st.dataframe(df, use_container_width=True)
             
             # Generar gráficos comparativos
-            fig, ax = plt.subplots(figsize=(10, 6))
+            fig, ax = plt.subplots(figsize=(5, 2))
             sns.barplot(x='Nombre Candidato', y='Score Final', data=df, ax=ax)  # Cambia a 'Nombre Candidato'
             ax.set_title('Comparación de Scores entre Candidatos')
             ax.set_xlabel('Nombre del Candidato')
