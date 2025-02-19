@@ -1,9 +1,8 @@
-"""Módulo principal que coordina todos los componentes del sistema"""
 import logging
 import streamlit as st
 import asyncio
 import pandas as pd
-from typing import List
+from typing import List, Dict
 import os
 from datetime import datetime
 import sys
@@ -21,7 +20,7 @@ from hr_analysis_system import (
     MatchScore,
     PreferenciaReclutadorProfile  # Added this import
 )
-from src.frontend.ui import UIComponents
+from src.frontend.ui import UIComponents, VacancySection # Importar VacancySection
 from src.utils.utilities import setup_logging, create_score_row, sort_ranking_dataframe
 from src.utils.file_handler import FileHandler
 from src.utils.google_drive import GoogleDriveIntegration
@@ -53,14 +52,14 @@ class HRAnalysisApp:
         cv_texts = await drive_client.process_drive_cvs()
         return await self.process_resumes(cv_texts)
 
-    async def process_job_description(self, job_file, hiring_preferences: dict) -> JobProfile:
+    async def process_job_description(self, job_file, hiring_preferences: dict, job_id: str) -> JobProfile:
         """Procesa la descripción del puesto y las preferencias del reclutador"""
         try:
             job_content = await self.file_handler.read_file_content(job_file)
-            logging.info("Procesando descripción del trabajo.")
+            logging.info(f"Procesando descripción del trabajo para la vacante {job_id}.")
             return await self.analyzer.standardize_job_description(job_content, hiring_preferences)
         except Exception as e:
-            logging.error(f"Error procesando descripción del trabajo: {str(e)}")
+            logging.error(f"Error procesando descripción del trabajo para la vacante {job_id}: {str(e)}")
             raise
 
     async def process_preferences(self, preferences_text: str) -> PreferenciaReclutadorProfile:
@@ -203,9 +202,12 @@ if st.button("🔄 Cargar CVs desde Google Drive", key="drive_button"):
         asyncio.run(load_drive_cvs(app))
 
 # --- Procesamiento Unificado ---
+VacancySection.create_vacancy_section()  # Llamar a create_vacancy_section para inic
 async def analyze_candidates(ui_inputs, app):
-    if not ui_inputs.job_file:
-        st.warning("⚠️ Por favor, suba un archivo de descripción del puesto")
+    # Verificar que al menos haya una vacante con descripción
+    valid_vacancies = [v for v in st.session_state.vacancies if v.get('job_file')]
+    if not valid_vacancies:
+        st.warning("⚠️ Por favor, suba al menos un archivo de descripción de puesto")
         return
         
     if not ('drive_cvs' in st.session_state or ui_inputs.resume_files):
@@ -216,76 +218,78 @@ async def analyze_candidates(ui_inputs, app):
         st.error("Por favor, ajuste los pesos para que sumen exactamente 1.0")
         return
     
-    # Prepara las preferencias y pesos
-    hiring_preferences = {
-        "habilidades_preferidas": [
-            skill.strip() 
-            for skill in (ui_inputs.recruiter_skills or "").split('\n')  # Cambiar important_skills por recruiter_skills
-            if skill.strip()
-        ],
-        "weights": {
-            "habilidades": ui_inputs.weights.habilidades,
-            "experiencia": ui_inputs.weights.experiencia,
-            "formacion": ui_inputs.weights.formacion,
-            "preferencias_reclutador": ui_inputs.weights.preferencias_reclutador
-        }
-    }
-    
-    try:
-        # Procesa la descripción del trabajo y preferencias
-        job_profile = await app.process_job_description(ui_inputs.job_file, hiring_preferences)
-        recruiter_preferences = await app.process_preferences(ui_inputs.recruiter_skills)
-        standardized_killer_criteria = await app.analyzer.standardize_killer_criteria(ui_inputs.killer_criteria)
+    # Procesar CVs una sola vez
+    if 'drive_cvs' in st.session_state:
+        candidate_profiles = await app.process_resumes(st.session_state.drive_cvs)
+    else:
+        candidate_profiles = await app.process_resumes(ui_inputs.resume_files)
         
-        # Procesa los CVs según la fuente
-        if 'drive_cvs' in st.session_state:
-            candidate_profiles = await app.process_resumes(st.session_state.drive_cvs)
-        else:
-            candidate_profiles = await app.process_resumes(ui_inputs.resume_files)
+    if not candidate_profiles:
+        st.warning("No se pudieron procesar los CVs. Por favor, verifique los archivos.")
+        return
         
-        if candidate_profiles:
-            # Realiza el ranking
-            rankings = await app.ranking_system.rank_candidates(
-                job_profile,
-                recruiter_preferences,
-                candidate_profiles,
-                standardized_killer_criteria if any(standardized_killer_criteria.values()) else None,
-                hiring_preferences["weights"]
-            )
-            
-            logging.info("Ranking de candidatos completado.")
-            styled_df = app.create_ranking_dataframe(rankings)
-            
-            # Create and save debug information
-            debug_df = app.create_debug_dataframe(job_profile, rankings)
-            debug_dir = os.path.join(os.path.dirname(__file__), "docs", "debug")
-            os.makedirs(debug_dir, exist_ok=True)
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            debug_filename = os.path.join(debug_dir, f"debug_{timestamp}.csv")
-            debug_df.to_csv(debug_filename, index=False)
-            logging.info(f"Debug CSV guardado en {debug_filename}")
-            
-            # Store results in session state
-            st.session_state['analysis_results'] = {
-                'df': styled_df,
-                'job_profile': job_profile,
-                'recruiter_preferences': recruiter_preferences,
-                'killer_criteria': standardized_killer_criteria,
-                'debug_csv': debug_filename
-            }
-            
-            UIComponents.display_ranking(
-                df=styled_df,
-                job_profile=job_profile,
-                recruiter_preferences=recruiter_preferences,
-                killer_criteria=standardized_killer_criteria
-            )
-        else:
-            st.warning("No se pudieron procesar los CVs. Por favor, verifique los archivos.")
+    # Analizar cada vacante
+    for vacancy in valid_vacancies:
+        with st.expander(f"Resultados para Vacante {vacancy['id'] + 1}", expanded=True):
+            try:
+                # Preparar preferencias y pesos para esta vacante
+                hiring_preferences = {
+                    "habilidades_preferidas": [
+                        skill.strip() 
+                        for skill in (vacancy['recruiter_skills'] or "").split('\n')
+                        if skill.strip()
+                    ],
+                    "weights": {
+                        "habilidades": ui_inputs.weights.habilidades,
+                        "experiencia": ui_inputs.weights.experiencia,
+                        "formacion": ui_inputs.weights.formacion,
+                        "preferencias_reclutador": ui_inputs.weights.preferencias_reclutador
+                    }
+                }
                 
-    except Exception as e:
-        logging.error(f"Error durante el análisis: {str(e)}")
-        st.error(f"Error durante el análisis: {str(e)}")
+                killer_criteria = {
+                    "killer_habilidades": [
+                        skill.strip() 
+                        for skill in (vacancy['killer_habilidades'] or "").split('\n')
+                        if skill.strip()
+                    ],
+                    "killer_experiencia": [
+                        exp.strip() 
+                        for exp in (vacancy['killer_experiencia'] or "").split('\n')
+                        if exp.strip()
+                    ]
+                }
+                
+                # Procesar la descripción y preferencias de esta vacante
+                job_profile = await app.process_job_description(
+                    vacancy['job_file'], 
+                    hiring_preferences,
+                    str(vacancy['id'])
+                )
+                recruiter_preferences = await app.process_preferences(vacancy['recruiter_skills'])
+                standardized_killer_criteria = await app.analyzer.standardize_killer_criteria(killer_criteria)
+                
+                # Realizar el ranking para esta vacante
+                rankings = await app.ranking_system.rank_candidates(
+                    job_profile,
+                    recruiter_preferences,
+                    candidate_profiles,
+                    standardized_killer_criteria if any(standardized_killer_criteria.values()) else None,
+                    hiring_preferences["weights"]
+                )
+                
+                # Mostrar resultados para esta vacante
+                styled_df = app.create_ranking_dataframe(rankings)
+                UIComponents.display_ranking(
+                    df=styled_df,
+                    job_profile=job_profile,
+                    recruiter_preferences=recruiter_preferences,
+                    killer_criteria=standardized_killer_criteria
+                )
+                
+            except Exception as e:
+                st.error(f"Error procesando la vacante {vacancy['id'] + 1}: {str(e)}")
+                logging.error(f"Error procesando vacante {vacancy['id']}: {str(e)}")
 
 if st.button("Analizar Candidatos", key="analyze_button"):
     asyncio.run(analyze_candidates(ui_inputs, app))

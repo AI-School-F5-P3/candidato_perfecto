@@ -327,3 +327,63 @@ class UIComponents:
         except Exception as e:
             st.error("Error al mostrar los resultados. Verifique los datos y vuelva a intentar.")
             logging.error(f"Error in display_ranking: {str(e)}")
+
+# Añadir nueva clase para manejar múltiples vacantes
+class VacancySection:
+    """Maneja la interfaz para múltiples descripciones de puestos"""
+    @staticmethod
+    def create_vacancy_section():
+        """Maneja la interfaz para múltiples descripciones de puestos"""
+        st.markdown('<div class="section-header">Descripciones de Puestos</div>', unsafe_allow_html=True)
+        
+        # Inicializar el estado de las vacantes si no existe
+        if 'vacancies' not in st.session_state:
+            st.session_state.vacancies = [{'id': 0}]
+            
+        # Crear contenedor para todas las vacantes
+        for i, vacancy in enumerate(st.session_state.vacancies):
+            with st.expander(f"Vacante {i + 1}", expanded=True):
+                vacancy['job_file'] = st.file_uploader(
+                    "Suba la descripción del puesto (TXT o PDF)",
+                    type=['txt', 'pdf'],
+                    key=f"job_upload_{i}"
+                )
+                
+                vacancy['recruiter_skills'] = st.text_area(
+                    "Preferencias del reclutador (una por línea)",
+                    height=120,
+                    key=f"skills_input_{i}",
+                    help="Campo opcional. Puede dejarlo vacío si no hay preferencias específicas."
+                )
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    vacancy['killer_habilidades'] = st.text_area(
+                        "Habilidades obligatorias (una por línea)",
+                        height=120,
+                        key=f"killer_skills_input_{i}",
+                        help="Campo opcional."
+                    )
+                with col2:
+                    vacancy['killer_experiencia'] = st.text_area(
+                        "Experiencia obligatoria (una por línea)",
+                        height=120,
+                        key=f"killer_exp_input_{i}",
+                        help="Campo opcional."
+                    )
+        
+        # Botón para añadir nueva vacante
+        col1, col2 = st.columns([1, 4])
+        with col1:
+            if st.button("Añadir Vacante", key="add_vacancy"):
+                st.session_state.vacancies.append({
+                    'id': len(st.session_state.vacancies)
+                })
+                st.rerun()  # Usar st.rerun() en lugar de st.experimental_rerun()
+                
+        # Botón para eliminar última vacante (opcional)
+        with col2:
+            if len(st.session_state.vacancies) > 1:  # Solo mostrar si hay más de una vacante
+                if st.button("Eliminar última vacante", key="remove_vacancy"):
+                    st.session_state.vacancies.pop()
+                    st.rerun()
