@@ -39,6 +39,7 @@ class HRAnalysisApp:
         self.matching_engine = MatchingEngine(self.embedding_provider)
         self.ranking_system = RankingSystem(self.matching_engine)
         self.file_handler = FileHandler()
+        self.text_generation_provider = OpenAITextGenerationProvider(api_key)
         logging.info("Componentes de análisis inicializados.")
 
     async def process_job_description(
@@ -97,36 +98,51 @@ class HRAnalysisApp:
             logging.error(f"Error creando DataFrame de ranking: {str(e)}")
             raise
 
-async def analyze_text_comparatively(self, df: pd.DataFrame, candidate_names: List[str]) -> None:
-    """Realiza un análisis de texto comparativo utilizando LLM y genera gráficos"""
-    try:
-        comparative_df = df[df['Nombre Candidato'].isin(candidate_names)].copy()
-        
-        # Realiza el análisis de texto comparativo utilizando LLM
-        analysis_results = []
-        for idx, row in comparative_df.iterrows():
-            candidate_text = f"Experiencia: {row['Experiencia']}, Habilidades: {row['Habilidades']}, Formación: {row['Formación']}"
+    async def analyze_text_comparatively(self, df: pd.DataFrame, candidate_names: List[str]) -> List[str]:
+        """Realiza un análisis de texto comparativo utilizando LLM y genera gráficos"""
+        try:
+            comparative_df = df[df['Nombre Candidato'].isin(candidate_names)].copy()
+            analysis_results = []
             
-            prompt = f"Genera un análisis comparativo con texto en español sobre el siguiente perfil de candidato:\n{candidate_text}\n\nAnálisis:"
-        
-            try:
-                response = await self.openaitextgenerationprovider.chat.completions.create(
-                    model="gp-3.5-turbo",
-                    messages=[
-                        {"role": "system", "content": prompt}],
-                    response_format={"type": "json_object"}
-                )    
+            for idx, row in comparative_df.iterrows():
+                candidate_text = f"Nombre: {row['Nombre Candidato']}\nExperiencia: {row['Experiencia']}\nHabilidades: {row['Habilidades']}\nFormación: {row['Formación']}"
                 
-                anaysis_result = response['choices'][0]['message']['content'].strip()
-                analysis_results.append(anaysis_result)
+                prompt = f"Analiza el siguiente perfil de candidato y genera un resumen conciso de sus fortalezas y áreas de mejora en español:\n{candidate_text}"
+                
+                try:
+                    response = await self.text_generation_provider.client.chat.completions.create(
+                        model=self.text_generation_provider.model,
+                        messages=[
+                            {"role": "system", "content": "Eres un experto en recursos humanos que analiza perfiles profesionales."},
+                            {"role": "user", "content": prompt}
+                        ],
+                        max_tokens=500,
+                        temperature=0.7
+                    )    
+                    
+                    if response and response.choices:
+                        analysis = response.choices[0].message.content.strip()
+                        analysis_results.append({
+                            'nombre': row['Nombre Candidato'],
+                            'analisis': analysis
+                        })
+                    else:
+                        raise ValueError("No se recibió respuesta del modelo")
+                
+                except Exception as e:
+                    logging.error(f"Error al analizar el candidato {row['Nombre Candidato']}: {str(e)}")
+                    analysis_results.append({
+                        'nombre': row['Nombre Candidato'],
+                        'analisis': f"Error al analizar el perfil: {str(e)}"
+                    })
             
-            except Exception as e:
-                print(f"Error al obtener el análisis del candidato {row['Nombre Candidato']}: {str(e)}")
-        return
-    except Exception as e:
-        logging.error(f"Error en el análisis comparativo: {str(e)}")
-        st.error(f"Error en el análisis comparativo: {str(e)}")
-        
+            st.session_state['analysis_results'] = analysis_results
+            return analysis_results
+            
+        except Exception as e:
+            logging.error(f"Error en el análisis comparativo: {str(e)}")
+            st.error("Error al mostrar el informe comparativo. Verifique los datos y vuelva a intentar.")
+            return []
 
 async def main():
     """Punto de entrada principal que maneja el flujo de la aplicación"""
@@ -220,20 +236,26 @@ def comparative_analysis(app: HRAnalysisApp):
     
     styled_df = st.session_state['styled_df']
     
-    # Crear informe comparativo para candidatos seleccionados
     selected_candidate_names = st.multiselect(
         "Seleccione los nombres de los candidatos para el informe comparativo",
         options=styled_df['Nombre Candidato'].tolist()
     )
     
     if selected_candidate_names:
-        asyncio.run(app.analyze_text_comparatively(styled_df, selected_candidate_names))
-        comparative_df = st.session_state.get('comparative_df', styled_df[styled_df['Nombre Candidato'].isin(selected_candidate_names)])
-        UIComponents.display_comparative_report(comparative_df)
+        with st.spinner("Generando análisis comparativo..."):
+            analysis_results = asyncio.run(app.analyze_text_comparatively(styled_df, selected_candidate_names))
+            
+            if analysis_results:
+                st.subheader("Análisis Individual de Candidatos")
+                for result in analysis_results:
+                    with st.expander(f"Análisis de {result['nombre']}"):
+                        st.write(result['analisis'])
+            
+            comparative_df = styled_df[styled_df['Nombre Candidato'].isin(selected_candidate_names)]
+            UIComponents.display_comparative_report(comparative_df)
     else:
         st.warning("Por favor, seleccione al menos un candidato para el informe comparativo.")
 
-    # Botón para regresar a la pantalla principal
     if st.button("Regresar a la pantalla principal"):
         st.session_state['page'] = 'main'
         st.experimental_set_query_params(page='main')

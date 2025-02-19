@@ -265,21 +265,31 @@ class UIComponents:
         try:
             st.markdown('<div class="section-header">Informe Comparativo de Candidatos</div>', unsafe_allow_html=True)
             
+            # Verificar que el DataFrame no esté vacío
+            if df.empty:
+                st.warning("No hay datos para mostrar en el informe comparativo.")
+                return
+            
             # Mostrar el DataFrame comparativo
             st.dataframe(df, use_container_width=True)
             
-            # Generar gráficos comparativos
-            fig, ax = plt.subplots(figsize=(5, 2))
-            sns.barplot(x='Nombre Candidato', y='Score Final', data=df, ax=ax)  # Cambia a 'Nombre Candidato'
-            ax.set_title('Comparación de Scores entre Candidatos')
-            ax.set_xlabel('Nombre del Candidato')
-            ax.set_ylabel('Score')
-            st.pyplot(fig)
+            # Generar gráficos comparativos solo si existen las columnas necesarias
+            if 'Nombre Candidato' in df.columns and 'Score Final' in df.columns:
+                fig, ax = plt.subplots(figsize=(5, 2))
+                sns.barplot(x='Nombre Candidato', y='Score Final', data=df, ax=ax)
+                ax.set_title('Comparación de Scores entre Candidatos')
+                ax.set_xlabel('Nombre del Candidato')
+                ax.set_ylabel('Score')
+                plt.xticks(rotation=45)
+                st.pyplot(fig)
             
-            # Mostrar el texto generado por el LLM
-            for idx, row in df.iterrows():
-                st.markdown(f"### Análisis para {row['Nombre Candidato']}")
-                st.write(row['analysis_result'])
+            # Mostrar análisis individual solo si existe la columna analysis_result
+            if 'analysis_result' in df.columns:
+                for idx, row in df.iterrows():
+                    st.markdown(f"### Análisis para {row['Nombre Candidato']}")
+                    st.write(row['analysis_result'])
+            else:
+                st.info("No hay análisis detallado disponible para los candidatos.")
             
         except Exception as e:
             logging.error(f"Error in display_comparative_report: {str(e)}")
