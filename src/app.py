@@ -1,21 +1,19 @@
 """Módulo principal que coordina todos los componentes del sistema"""
 import logging
-from openai import AsyncOpenAI
-import streamlit as st
+import sys
+import os
 import asyncio
 import pandas as pd
-from typing import List
-import os
-from datetime import datetime
-import sys
-
-# Añade la ruta del proyecto al PYTHONPATH
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from hr_analysis_system import (
-    SemanticAnalyzer,
 import matplotlib.pyplot as plt
 import seaborn as sns
+from datetime import datetime
+from typing import List
+from openai import AsyncOpenAI
+import streamlit as st
+
+# Asegurar que el sistema encuentra los módulos correctamente
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from src.hr_analysis_system import (
     SemanticAnalyzer, 
     MatchingEngine,
@@ -23,13 +21,13 @@ from src.hr_analysis_system import (
     JobProfile,
     CandidateProfile,
     OpenAIEmbeddingProvider,
-    MatchScore,
-    PreferenciaReclutadorProfile  # Added this import
+    PreferenciaReclutadorProfile
 )
 from src.frontend.ui import UIComponents
 from src.utils.utilities import setup_logging, create_score_row, sort_ranking_dataframe
 from src.utils.file_handler import FileHandler
 from src.utils.google_drive import GoogleDriveIntegration
+
 
 class OpenAITextGenerationProvider:
     """Proveedor de generación de texto usando GPT-3.5 Turbo"""
@@ -38,10 +36,23 @@ class OpenAITextGenerationProvider:
         """Inicializa el proveedor de generación de texto"""
         self.client = AsyncOpenAI(api_key=api_key)
         self.model = "gpt-3.5-turbo"
-        
+
+    async def generate_text(self, prompt: str) -> str:
+        """Genera texto basado en un prompt"""
+        try:
+            response = await self.client.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}]
+            )
+            return response.choices[0].message["content"]
+        except Exception as e:
+            logging.error(f"Error en generación de texto: {e}")
+            return ""
+
 
 class HRAnalysisApp:
     """Clase principal que orquesta el flujo completo del análisis"""
+    
     def __init__(self, api_key: str):
         # Inicializa los componentes principales del sistema
         self.embedding_provider = OpenAIEmbeddingProvider(api_key)
@@ -59,14 +70,22 @@ class HRAnalysisApp:
             "service-account-key.json"
         )
         self.gdrive_folder_id = "1HiJatHPiHgtjMcQI34Amwjwlr5VQ535s"
+
+        if not os.path.exists(self.gdrive_credentials):
+            logging.warning("Las credenciales de Google Drive no fueron encontradas.")
+
         self.text_generation_provider = OpenAITextGenerationProvider(api_key)
         logging.info("Componentes de análisis inicializados.")
 
     async def process_drive_cvs(self) -> List[CandidateProfile]:
         """Procesa CVs desde Google Drive"""
-        drive_client = GoogleDriveIntegration(self.gdrive_credentials, self.gdrive_folder_id)
-        cv_texts = await drive_client.process_drive_cvs()
-        return await self.process_resumes(cv_texts)
+        try:
+            drive_client = GoogleDriveIntegration(self.gdrive_credentials, self.gdrive_folder_id)
+            cv_texts = await drive_client.process_drive_cvs()
+            return await self.process_resumes(cv_texts)
+        except Exception as e:
+            logging.error(f"Error al procesar CVs desde Google Drive: {e}")
+            return []
 
     async def process_job_description(self, job_file, hiring_preferences: dict) -> JobProfile:
         """Procesa la descripción del puesto y las preferencias del reclutador"""
@@ -75,7 +94,7 @@ class HRAnalysisApp:
             logging.info("Procesando descripción del trabajo.")
             return await self.analyzer.standardize_job_description(job_content, hiring_preferences)
         except Exception as e:
-            logging.error(f"Error procesando descripción del trabajo: {str(e)}")
+            logging.error(f"Error procesando descripción del trabajo: {e}")
             raise
 
     async def process_preferences(self, preferences_text: str) -> PreferenciaReclutadorProfile:
@@ -405,11 +424,10 @@ if st.button("Analizar Candidatos", key="analyze_button"):
                     st.experimental_set_query_params(page='comparative_analysis')
                 else:
                     st.warning("No se pudieron procesar los CVs. Por favor, verifique los archivos.")
-                
-        except Exception as e:
-            logging.error(f"Error durante el análisis de candidatos: {str(e)}")
+                    except Exception as e:
+                    logging.error(f"Error durante el análisis de candidatos: {str(e)}")
             st.error(f"Ocurrió un error durante el análisis: {str(e)}")
-    elif ui_inputs.weights.total_weight != 1.0:
+elif ui_inputs.weights.total_weight != 1.0:
         st.error("Por favor, ajuste los pesos para que sumen exactamente 1.0 antes de continuar.")
 
 def run_app():
