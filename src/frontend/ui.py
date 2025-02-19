@@ -245,6 +245,7 @@ class UIComponents:
                     'killer_criteria': killer_criteria
                 }
 
+            # Sección principal de ranking
             st.markdown('<div class="section-header">Ranking de Candidatos</div>', unsafe_allow_html=True)
             display_df = df.copy()
             raw_data = display_df.pop('raw_data')
@@ -270,6 +271,7 @@ class UIComponents:
             styled_df = display_df.style.apply(style_row, axis=1)
             st.dataframe(styled_df, use_container_width=True)
             
+            # Leyenda del ranking
             st.markdown("""
             <div style="margin: 10px 0; font-size: 0.8em;">
                 <div style="display: flex; gap: 20px; margin-bottom: 10px;">
@@ -292,20 +294,26 @@ class UIComponents:
                 </div>
             </div>
             """, unsafe_allow_html=True)
-            
-            # Always show candidate details
-            for idx, row in df.iterrows():
-                expander_title = f"Ver datos del candidato: {row['Nombre Candidato']}"
-                if row['Estado'] == 'Descalificado':
-                    expander_title += " (Descalificado)"
-                
-                with st.expander(expander_title):
+
+            # Tabs para mostrar detalles
+            tab1, tab2, tab3, tab4 = st.tabs([
+                "Detalles de Candidatos", 
+                "Requisitos del Puesto", 
+                "Preferencias del Reclutador",
+                "Criterios Eliminatorios"
+            ])
+
+            # Tab 1: Detalles de Candidatos
+            with tab1:
+                for idx, row in df.iterrows():
+                    st.markdown(f"### {row['Nombre Candidato']}")
                     if row['Estado'] == 'Descalificado':
                         st.error(f"Razones de descalificación: {row['Razones Descalificación']}")
                     st.json(row['raw_data'])
+                    st.markdown("---")
 
-            # Show requirement details in expandable sections
-            with st.expander("Ver Requisitos del Puesto"):
+            # Tab 2: Requisitos del Puesto
+            with tab2:
                 st.json({
                     "nombre_vacante": job_profile.nombre_vacante,
                     "habilidades": job_profile.habilidades,
@@ -313,17 +321,19 @@ class UIComponents:
                     "formacion": job_profile.formacion
                 })
 
-            with st.expander("Ver Preferencias del Reclutador"):
+            # Tab 3: Preferencias del Reclutador
+            with tab3:
                 st.json({
                     "habilidades_preferidas": recruiter_preferences.habilidades_preferidas
                 })
 
-            with st.expander("Ver Criterios Eliminatorios"):
+            # Tab 4: Criterios Eliminatorios
+            with tab4:
                 st.json({
                     "habilidades_obligatorias": killer_criteria.get("killer_habilidades", []),
                     "experiencia_obligatoria": killer_criteria.get("killer_experiencia", [])
                 })
-            
+                
         except Exception as e:
             st.error("Error al mostrar los resultados. Verifique los datos y vuelva a intentar.")
             logging.error(f"Error in display_ranking: {str(e)}")
