@@ -3,7 +3,8 @@ from pathlib import Path
 import logging
 from typing import Dict, List, Tuple
 from dataclasses import dataclass
-from src.frontend.state import session_state
+import asyncio
+
 @dataclass
 class WeightSettings:
     """Configuración de pesos para diferentes componentes de puntuación"""
@@ -237,13 +238,11 @@ class UIComponents:
     def display_ranking(df, job_profile, recruiter_preferences, killer_criteria) -> None:
         """Muestra el ranking de candidatos y detalles de la búsqueda"""
         try:
-            if 'current_data' not in st.session_state:
-                st.session_state.current_data = {
-                    'df': df,
-                    'job_profile': job_profile,
-                    'recruiter_preferences': recruiter_preferences,
-                    'killer_criteria': killer_criteria
-                }
+            # Guardar datos en session_state
+            st.session_state.current_df = df
+            st.session_state.current_job_profile = job_profile
+            st.session_state.current_recruiter_preferences = recruiter_preferences
+            st.session_state.current_killer_criteria = killer_criteria
 
             st.markdown('<div class="section-header">Ranking de Candidatos</div>', unsafe_allow_html=True)
             display_df = df.copy()
@@ -270,6 +269,13 @@ class UIComponents:
             styled_df = display_df.style.apply(style_row, axis=1)
             st.dataframe(styled_df, use_container_width=True)
             
+            # Añadir el botón de Informe Avanzado aquí, después de mostrar el DataFrame
+            col2 = st.columns([3, 1])
+            with col2:
+                if st.button("Generar Informe Avanzado", key="advanced_report_btn"):
+                    st.session_state.page = "advanced_report"
+                    st.experimental_rerun()
+            
             st.markdown("""
             <div style="margin: 10px 0; font-size: 0.8em;">
                 <div style="display: flex; gap: 20px; margin-bottom: 10px;">
@@ -293,7 +299,7 @@ class UIComponents:
             </div>
             """, unsafe_allow_html=True)
             
-            # Always show candidate details
+            # Details sections
             for idx, row in df.iterrows():
                 expander_title = f"Ver datos del candidato: {row['Nombre Candidato']}"
                 if row['Estado'] == 'Descalificado':
@@ -304,7 +310,6 @@ class UIComponents:
                         st.error(f"Razones de descalificación: {row['Razones Descalificación']}")
                     st.json(row['raw_data'])
 
-            # Show requirement details in expandable sections
             with st.expander("Ver Requisitos del Puesto"):
                 st.json({
                     "nombre_vacante": job_profile.nombre_vacante,
@@ -327,31 +332,66 @@ class UIComponents:
         except Exception as e:
             st.error("Error al mostrar los resultados. Verifique los datos y vuelva a intentar.")
             logging.error(f"Error in display_ranking: {str(e)}")
-          
-    @staticmethod        
-    def create_advanced_report_button():
-        if st.button("Advanced Report"):
-            st.session_state.page = "advanced_report"
-            st.experimental_rerun()  # Forzar la recarga de la UI
 
     @staticmethod
-    def create_advanced_report_page(candidates):
-        st.title("Advanced Candidate Report")
-        selected_cvs = st.multiselect("Select CVs for Comparison", candidates)
+    def create_advanced_report_page():
+        st.title("Informe Avanzado de Candidatos")
+        
+        # Verificar que tengamos los datos necesarios en session_state
+        if not all(key in st.session_state for key in ['current_df', 'current_job_profile']):
+            st.error("No se encontraron los datos necesarios para generar el informe.")
+            if st.button("Volver al Ranking"):
+                st.session_state.page = "ranking"
+                st.experimental_rerun()
+            return
+        
+        # Hacer una copia del DataFrame para evitar modificaciones inesperadas
+        df_copy = st.session_state.current_df.copy()
+        
+        # Mostrar el DataFrame actual para referencia
+        st.subheader("Ranking Actual")
+        st.dataframe(df_copy)
+        
+        # Obtener nombres de candidatos del DataFrame
+        candidate_names = df_copy['Nombre Candidato'].tolist()
+        
+        # Selector de candidatos para el informe
+        selected_names = st.multiselect(
+            "Seleccionar candidatos para comparación detallada",
+            options=candidate_names,
+            help="Seleccione dos o más candidatos para generar un informe comparativo detallado"
+        )
+        
+        # Variable en session_state para almacenar el informe
+        if "comparative_report" not in st.session_state:
+            st.session_state.comparative_report = None
+        
+        # Botón para generar el informe
+        if selected_names:
+            if st.button("Generar Informe Comparativo"):
+                with st.spinner("Generando informe..."):
+                    try:
+                        report, visualizations = asyncio.run(app.generate_comparative_analysis(
+                            selected_names, 
+                            st.session_state.job_profile
+                        ))
+                        st.session_state.comparative_report = {
+                            "report": report,
+                            "visualizations": visualizations
+                        }
+                    except Exception as e:
+                        st.error(f"Error al generar el informe: {e}")
+        
+        # Si ya se generó un informe, mostrarlo
+        if st.session_state.comparative_report:
+            st.subheader("Resultados del Informe Comparativo")
+            st.write(st.session_state.comparative_report["report"])
+            
+            # Mostrar visualizaciones
+            for fig in st.session_state.comparative_report["visualizations"]:
+                st.pyplot(fig)
 
-        if st.button("Generate Report"):
-            st.session_state.selected_cvs = selected_cvs
-            st.session_state.page = "report_results"
-            st.experimental_rerun()  # Forzar la recarga
-
-    @staticmethod
-    def create_report_results_page(report, visualizations):
-        st.title("Comparison Report")
-        st.write(report)
-
-        for viz in visualizations:
-            st.pyplot(viz)
-
-        if st.button("Back to Ranking"):
+        # Botón para volver al ranking
+        if st.button("Volver al Ranking"):
             st.session_state.page = "ranking"
-            st.experimental_rerun()  # Asegurar que vuelva a la página de ranking
+            st.experimental_rerun()

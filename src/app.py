@@ -1,4 +1,3 @@
-"""Módulo principal que coordina todos los componentes del sistema"""
 import logging
 import streamlit as st
 import asyncio
@@ -267,7 +266,28 @@ if st.button("🔄 Cargar CVs desde Google Drive", key="drive_button"):
     with st.spinner("Descargando CVs desde Google Drive..."):
         asyncio.run(load_drive_cvs(app))
 
-# --- Procesamiento Unificado ---
+def initialize_session_state():
+    """Inicializa todas las variables de estado necesarias"""
+    if 'page' not in st.session_state:
+        st.session_state.page = 'ranking'
+    if 'candidate_profiles' not in st.session_state:
+        st.session_state.candidate_profiles = None
+    if 'job_profile' not in st.session_state:
+        st.session_state.job_profile = None
+    if 'rankings_df' not in st.session_state:
+        st.session_state.rankings_df = None
+    if 'rankings' not in st.session_state:
+        st.session_state.rankings = None
+    if 'recruiter_preferences' not in st.session_state:
+        st.session_state.recruiter_preferences = None
+    if 'killer_criteria' not in st.session_state:
+        st.session_state.killer_criteria = None
+    if 'debug_filename' not in st.session_state:
+        st.session_state.debug_filename = None
+    if 'selected_cvs' not in st.session_state:  # Nueva línea para inicializar 'selected_cvs'
+        st.session_state.selected_cvs = []
+
+# La función analyze_candidates modificada
 async def analyze_candidates(ui_inputs, app):
     if not ui_inputs.job_file:
         st.warning("⚠️ Por favor, suba un archivo de descripción del puesto")
@@ -348,26 +368,13 @@ async def analyze_candidates(ui_inputs, app):
                 recruiter_preferences=recruiter_preferences,
                 killer_criteria=standardized_killer_criteria
             )
-            # Añadir botón para generar informe avanzado
-            if st.button("Generar Informe Avanzado", key="advanced_report_button"):
-                st.session_state.selected_cvs = candidate_profiles
-                st.session_state.page = 'advanced_report'
-                st.experimental_rerun()
+
         else:
             st.warning("No se pudieron procesar los CVs. Por favor, verifique los archivos.")
                 
     except Exception as e:
         logging.error(f"Error durante el análisis: {str(e)}")
         st.error(f"Error durante el análisis: {str(e)}")
-
-# Configuración inicial del estado de la aplicación
-def initialize_session_state():
-    if 'page' not in st.session_state:
-        st.session_state.page = 'ranking'
-    if 'selected_cvs' not in st.session_state:
-        st.session_state.selected_cvs = None
-    if 'job_profile' not in st.session_state:
-        st.session_state.job_profile = None
 
 # Ejecutar una función asíncrona dentro de Streamlit
 def run_async(func, *args):
@@ -379,53 +386,55 @@ def run_async(func, *args):
 
 # Función principal de la aplicación
 def main():
-    initialize_session_state()  # Inicializar session_state si no existe
-
+    # Inicializar las variables de estado
+    initialize_session_state()
+    
+    # 2️⃣ Página de Ranking
     if st.session_state.page == 'ranking':
         st.title("Ranking de Candidatos")
-        
+
         # Mostrar advertencia si aún no hay candidatos procesados
         if not st.session_state.selected_cvs:
             st.warning("Aún no se han procesado los candidatos.")
 
-        # Botón para analizar candidatos
+        # 3️⃣ Botón para analizar candidatos (siempre visible)
         if st.button("Analizar Candidatos", key="analyze_button"):
-            run_async(analyze_candidates, ui_inputs, app)  # Ejecuta el análisis de candidatos
+            logging.info("Botón 'Analizar Candidatos' presionado.")
+            st.write("Ejecutando análisis de candidatos...")
             
-            # Verificar si los candidatos fueron procesados correctamente
+            # Llamar a la función de análisis (asegurar que `ui_inputs` y `app` existen)
+            run_async(analyze_candidates, ui_inputs, app)
+            
+            # Cambiar de página solo si se encontraron candidatos
             if st.session_state.selected_cvs:
+                
                 st.session_state.page = 'advanced_report'
                 st.experimental_rerun()
             else:
                 st.warning("No se encontraron candidatos para el informe avanzado.")
 
+    # 4️⃣ Página de Informe Avanzado
     elif st.session_state.page == 'advanced_report':
         st.title("Informe Avanzado de Candidatos")
 
-        # Verificar si hay candidatos seleccionados antes de mostrar la página
+        # Verificar si hay candidatos seleccionados
         if st.session_state.selected_cvs:
+            # Mostrar los componentes de la página de informe avanzado
             UIComponents.create_advanced_report_page(st.session_state.selected_cvs)
+
+            # Si ya se generó el informe comparativo, mostrarlo
+            if 'comparative_report' in st.session_state:
+                st.subheader("Resultados del Informe Comparativo")
+                st.write(st.session_state.comparative_report["report"])
+                for fig in st.session_state.comparative_report["visualizations"]:
+                    st.pyplot(fig)
         else:
             st.warning("No hay candidatos disponibles para el informe avanzado.")
-            st.button("Volver al Ranking", on_click=lambda: setattr(st.session_state, 'page', 'ranking'))
+            if st.button("Volver al Ranking"):
+                st.session_state.page = 'ranking'
+                st.experimental_rerun()
 
-    elif st.session_state.page == 'report_results':
-        st.title("Resultados del Informe Comparativo")
-
-        # Generar el análisis comparativo de los CVs con el perfil de la vacante
-        if st.session_state.selected_cvs:
-            report, visualizations = asyncio.run(app.generate_comparative_analysis(
-                st.session_state.selected_cvs, 
-                st.session_state.job_profile
-            ))
-            UIComponents.create_report_results_page(report, visualizations)
-        else:
-            st.warning("No hay candidatos seleccionados para generar el informe.")
-
-        # Botón para volver al ranking
-        if st.button("Volver al Ranking"):
-            st.session_state.page = 'ranking'
-            st.experimental_rerun()
-
-if __name__ == "__main__":
-    main()
+    # 6️⃣ Botón para volver al ranking (siempre presente)
+    if st.button("Volver al Ranking", key="back_to_ranking"):
+        st.session_state.page = 'ranking'
+        st.experimental_rerun()
