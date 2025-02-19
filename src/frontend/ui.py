@@ -301,6 +301,7 @@ class UIComponents:
                 if row['Estado'] == 'Descalificado':
                     expander_title += " (Descalificado)"
                 
+                # Mostrar datos del candidato
                 with st.expander(expander_title):
                     # Mostrar el estado de descalificación si corresponde
                     if row['Estado'] == 'Descalificado':
@@ -308,10 +309,15 @@ class UIComponents:
                     
                     # Mostrar los datos crudos del candidato
                     st.json(row['raw_data'])
-                    
+                
+                # Añadir checkbox junto al nombre del candidato en el ranking
+                col1, col2 = st.columns([5, 1])  # Usamos 2 columnas para separar la checkbox del nombre
+                with col1:
+                    st.write(row['Nombre Candidato'])  # Mostrar nombre del candidato
+                with col2:
                     # Añadir checkbox para seleccionar el candidato
                     if row['Estado'] != 'Descalificado':  # Solo permitir seleccionar candidatos no descalificados
-                        if st.checkbox(f"Seleccionar para informe comparativo: {row['Nombre Candidato']}", key=f"select_{idx}"):
+                        if st.checkbox(f"Seleccionar", key=f"select_{idx}"):
                             # Añadir el candidato seleccionado a la lista
                             selected_candidates.append(
                                 CandidateProfile(
