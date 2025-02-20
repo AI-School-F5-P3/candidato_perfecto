@@ -1,8 +1,10 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pandas as pd
 import logging
 import asyncio
+from typing import List, Dict
 
 def render_comparative_analysis(df):
     """Render comparative analysis report for candidates"""
@@ -34,35 +36,73 @@ def render_comparative_analysis(df):
         logging.error(f"Error in render_comparative_analysis: {str(e)}")
         st.error("Error al mostrar el informe comparativo. Verifique los datos y vuelva a intentar.")
 
+def render_comparative_charts(comparative_df: pd.DataFrame) -> None:
+    """Renderiza gráficos comparativos de los candidatos"""
+    try:
+        # Preparar datos para visualización
+        score_cols = ['Score Habilidades', 'Score Experiencia', 'Score Formación']
+        plot_data = comparative_df[['Nombre Candidato'] + score_cols].copy()
+        
+        for col in score_cols:
+            plot_data[col] = plot_data[col].str.rstrip('%').astype(float) / 100
+
+        # Crear gráfico de barras comparativo
+        fig, ax = plt.subplots(figsize=(10, 6))
+        x = range(len(plot_data['Nombre Candidato']))
+        width = 0.25
+
+        for i, col in enumerate(score_cols):
+            ax.bar([xi + i*width for xi in x], plot_data[col], width, 
+                  label=col.replace('Score ', ''))
+
+        ax.set_ylabel('Puntuación')
+        ax.set_title('Comparación de Scores por Categoría')
+        ax.set_xticks([xi + width for xi in x])
+        ax.set_xticklabels(plot_data['Nombre Candidato'], rotation=45)
+        ax.legend()
+        plt.tight_layout()
+        st.pyplot(fig)
+
+    except Exception as e:
+        logging.error(f"Error en render_comparative_charts: {str(e)}")
+        st.error("Error al generar los gráficos comparativos.")
+
 def comparative_analysis_view(app):
-    """Pantalla de análisis comparativo, integra selección de candidatos, análisis y reporte gráfico"""
-    st.markdown('<h1 class="title">Análisis Comparativo</h1>', unsafe_allow_html=True)
+    """Vista de análisis comparativo"""
+    st.markdown('<h1 class="title">Análisis Comparativo de Candidatos</h1>', 
+               unsafe_allow_html=True)
     
     if 'current_data' not in st.session_state:
-        st.error("No se encontraron datos de ranking. Por favor, regrese a la pantalla principal y realice el análisis de candidatos.")
+        st.error("No hay datos disponibles. Por favor, realice primero el análisis de candidatos.")
         return
-    
+
     df = st.session_state['current_data']['df']
     
-    selected_candidate_names = st.multiselect(
-        "Seleccione los nombres de los candidatos para el informe comparativo",
-        options=df['Nombre Candidato'].tolist()
+    selected_candidates = st.multiselect(
+        "Seleccione candidatos para comparar",
+        options=df['Nombre Candidato'].tolist(),
+        max_selections=5
     )
-    
-    if selected_candidate_names:
+
+    if selected_candidates:
         with st.spinner("Generando análisis comparativo..."):
-            analysis_results = asyncio.run(app.analyze_text_comparatively(df, selected_candidate_names))
-            if analysis_results:
-                st.subheader("Análisis Individual de Candidatos")
-                for result in analysis_results:
-                    with st.expander(f"Análisis de {result['nombre']}"):
-                        st.write(result['analisis'])
-        
-        comparative_df = df[df['Nombre Candidato'].isin(selected_candidate_names)]
-        render_comparative_analysis(comparative_df)
-    else:
-        st.warning("Por favor, seleccione al menos un candidato para el informe comparativo.")
-    
-    if st.button("Regresar a la pantalla principal"):
+            # Obtener análisis detallado
+            analysis_results = asyncio.run(
+                app.analyze_text_comparatively(df, selected_candidates)
+            )
+            
+            # Mostrar gráficos comparativos
+            comparative_df = df[df['Nombre Candidato'].isin(selected_candidates)]
+            render_comparative_charts(comparative_df)
+            
+            # Mostrar análisis detallado
+            st.subheader("Análisis Detallado")
+            for result in analysis_results:
+                with st.expander(f"📋 Análisis de {result['nombre']}"):
+                    st.write(result['analisis'])
+                    st.markdown("**Puntuaciones:**")
+                    st.json(result['scores'])
+
+    if st.button("← Volver al Ranking Principal"):
         st.session_state['page'] = 'main'
-        st.experimental_set_query_params(page='main')
+        st.experimental_rerun()

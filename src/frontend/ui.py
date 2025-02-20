@@ -53,11 +53,6 @@ class UIComponents:
         )
 
     @staticmethod
-    def setup_page_config() -> None:
-        """Configura la página de Streamlit"""
-        st.set_page_config(page_title="El candidato perfecto", layout="wide")
-
-    @staticmethod
     def create_weight_sliders() -> WeightSettings:
         """Crea y gestiona los deslizadores de peso en la barra lateral"""
         with st.sidebar:

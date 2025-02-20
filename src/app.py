@@ -29,6 +29,20 @@ from utils.utilities import setup_logging, create_score_row, sort_ranking_datafr
 from utils.file_handler import FileHandler
 from utils.google_drive import GoogleDriveIntegration
 
+# Move these to the top, before any other Streamlit commands
+st.set_page_config(page_title="El candidato perfecto", layout="wide")
+st.markdown('<h1 class="title">El candidato perfecto</h1>', unsafe_allow_html=True)
+st.write("""
+El sistema recopila información de una vacante junto con las preferencias del equipo reclutador 
+y las características obligatorias a cumplir por los candidatos. Con esta información, se analizan 
+los curriculum vitae de los candidatos y se obtiene un ranking de idoneidad basado en habilidades, 
+experiencia y formación. También se identifican los candidatos que no cumplen con los requisitos 
+obligatorios. Los pesos de ponderación pueden ser ajustados si así se requiere.
+""")
+
+setup_logging()
+UIComponents.load_custom_css()
+
 class OpenAITextGenerationProvider:
     """Proveedor de generación de texto usando GPT-3.5 Turbo"""
 
@@ -58,6 +72,7 @@ class HRAnalysisApp:
         )
         self.gdrive_folder_id = "1HiJatHPiHgtjMcQI34Amwjwlr5VQ535s"
         self.text_generation_provider = OpenAITextGenerationProvider(api_key)
+        self.comparative_analysis = ComparativeAnalysis(self.text_generation_provider)
         logging.info("Componentes de análisis inicializados.")
 
     async def process_drive_cvs(self) -> List[CandidateProfile]:
@@ -144,18 +159,19 @@ class HRAnalysisApp:
             }
             # Para cada componente en debug_info, crear una fila
             for comp, data in score.debug_info.items():
-                if isinstance(data, str):  # Handle string data (like killer criteria messages)
-                    row = base.copy()
-                    row["Comparison Type"] = comp
+                row = base.copy()
+                row["Comparison Type"] = comp
+                if isinstance(data, str):
                     row["Debug Info"] = data
-                    rows.append(row)
-                    continue
-                    
-    import streamlit as st
-import pandas as pd
-import logging
-import asyncio
-from typing import List
+                else:
+                    row["Debug Info"] = str(data)  # Convert non-string data to string
+                rows.append(row)
+        
+        return pd.DataFrame(rows)
+
+    async def analyze_text_comparatively(self, df: pd.DataFrame, candidate_names: List[str]) -> List[dict]:
+        """Wrapper para el análisis comparativo de candidatos"""
+        return await self.comparative_analysis.analyze_text_comparatively(df, candidate_names)
 
 class ComparativeAnalysis:
     def __init__(self, text_generation_provider):
@@ -217,47 +233,8 @@ class ComparativeAnalysis:
 
 async def main():
     """Punto de entrada principal que maneja el flujo de la aplicación"""
-    setup_logging()
-    UIComponents.setup_page_config()
-    UIComponents.load_custom_css()
-    
-    st.markdown('<h1 class="title">El candidato perfecto</h1>', unsafe_allow_html=True)
-    st.write("""
-    El sistema recopila información de una vacante junto con las preferencias del equipo reclutador 
-    y las características obligatorias a cumplir por los candidatos. Con esta información, se analizan 
-    los curriculum vitae de los candidatos y se obtiene un ranking de idoneidad basado en habilidades, 
-    experiencia y formación. También se identifican los candidatos que no cumplen con los requisitos 
-    obligatorios. Los pesos de ponderación pueden ser ajustados si así se requiere.
-    """)
     logging.info("Aplicación iniciada.")
-
-    # Suponiendo que 'base' y 'data' son previamente definidos, y 'comp' es la comparación que se está haciendo
-    rows = []  # Inicializa la lista de filas vacía
-    for comp, data in score.debug_info.items():
-        if isinstance(data, str):  # Maneja datos de tipo string (como mensajes de criterios de eliminación)
-            row = base.copy()
-            row["Tipo de Comparación"] = comp
-            row["Información de Depuración"] = data
-            rows.append(row)
-            continue
-
-
-
-# Inicialización de la aplicación y configuración de la UI
-setup_logging()
-UIComponents.setup_page_config()
-UIComponents.load_custom_css()
-
-st.markdown('<h1 class="title">El candidato perfecto</h1>', unsafe_allow_html=True)
-st.write("""
-El sistema recopila información de una vacante junto con las preferencias del equipo reclutador
-y las características obligatorias a cumplir por los candidatos. Con esta información, se analizan
-los curriculum vitae de los candidatos y se obtiene un ranking de idoneidad basado en habilidades,
-experiencia y formación. También se identifican los candidatos que no cumplen con los requisitos
-obligatorios. Los pesos de ponderación pueden ser ajustados si así se requiere.
-""")
-logging.info("Aplicación iniciada.")
-
+    
 try:
     os.environ['STREAMLIT_SECRETS_PATH'] = os.path.join(os.path.dirname(__file__), '.streamlit', 'secrets.toml')
     api_key = st.secrets["openai"]["api_key"]
