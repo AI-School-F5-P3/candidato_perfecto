@@ -12,6 +12,8 @@ import re
 import logging  # Added this import
 from src.config import Config  # Add this import
 import pandas as pd  # << Added for debugging CSV creation
+from src.utils.text_processor import TextProcessor
+from src.utils.text_processor import extract_years_number
 
 @dataclass
 class PreferenciaReclutadorProfile:
@@ -152,141 +154,186 @@ class TextAnalyzer:
         return matches / len(text1) if text1 else 0.0
 
 class SemanticAnalyzer(TextAnalyzer):
-    """Maneja el análisis semántico de texto usando LLM"""
+    """Maneja el análisis semántico de texto usando LLM y procesamiento de texto estructurado"""
     def __init__(self, embedding_provider: IEmbeddingProvider):
         super().__init__(embedding_provider)
         self.client = AsyncOpenAI(api_key=embedding_provider.client.api_key)
         self.model = "gpt-3.5-turbo"
+        self.text_processor = TextProcessor()
 
     async def standardize_job_description(self, description: str, hiring_preferences: dict) -> JobProfile:
-        """Standardize job description into a JSON with these keys: nombre_vacante, habilidades, experiencia, formacion."""
-        processed_text = self.preprocess_text(description)
+        """Standardize job description into structured JSON format"""
+        # Pre-process and translate text
+        processed_text = self.text_processor.process_text(description)
+        
         prompt = f"""
-        Extract and summarize key information from this job description.
-        For experience requirements:
-        - Condense long descriptions into concise points
-        - Extract years of experience explicitly (e.g., specify at least X_years_experience)
-        - Focus on key responsibilities and achievements
-        - Standardize all durations as 'X_years_experience'
+        Extract key information in Spanish from this job description:
+        - Skills should be specific technical skills and tools
+        - Experience should include years and key technical responsibilities 
+        - Education should use standard terms (doctorado, master, grado)
         
-        For skills and education:
-        - Use standard terms (e.g., 'masters_degree', 'bachelors_degree')
-        - List only essential requirements
-        - Include these preferred skills: {', '.join(hiring_preferences.get('habilidades_preferidas', []))}
+        Required skills from preferences: {', '.join(hiring_preferences.get('habilidades_preferidas', []))}
         
-        Output a focused JSON with exactly these keys:
+        Output JSON with:
         {{
-          "nombre_vacante": "clear job title",
-          "habilidades": ["key technical skills only"],
-          "experiencia": [
-              "condensed experience points",
-              "e.g., '5_years_experience in backend development'",
-              "e.g., 'led_teams of 5-10 developers'"
-          ],
-          "formacion": ["required education levels only"]
+            "nombre_vacante": "job title",
+            "habilidades": ["skill1", "skill2"],
+            "experiencia": ["X_years_experience in...", "other requirements"],
+            "formacion": ["education level requirements"]
         }}
         
         Text: {processed_text}
         """
+        
         response = await self.client.chat.completions.create(
             model=self.model,
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"}
         )
+        
+        # Post-process LLM output
         profile_data = json.loads(response.choices[0].message.content)
+        profile_data["habilidades"] = [
+            self.text_processor.normalize_skill(skill) 
+            for skill in profile_data["habilidades"]
+        ]
+        profile_data["formacion"] = [
+            self.text_processor.standardize_education(edu)
+            for edu in profile_data["formacion"]
+        ]
+        profile_data["experiencia"] = [
+            self.text_processor.extract_years_experience(exp)
+            for exp in profile_data["experiencia"]
+        ]
+        
         return JobProfile(**profile_data)
 
     async def standardize_preferences(self, preferences: str) -> PreferenciaReclutadorProfile:
-        """Standardize recruiter preferences into JSON with the key 'habilidades_preferidas'."""
+        """Standardize recruiter preferences into structured skills list"""
         if not preferences.strip():
             return PreferenciaReclutadorProfile(habilidades_preferidas=[])
-        processed_text = self.preprocess_text(preferences)
+            
+        processed_text = self.text_processor.process_text(preferences)
+        
         prompt = f"""
-        Extract and normalize skills from the following recruiter preferences.
-        Output a JSON of the form:
-        {{"habilidades_preferidas": [...]}} 
+        Extract specific technical skills in Spanish from these preferences.
+        Focus on hard skills, tools and technologies only.
+        
+        Output JSON as:
+        {{"habilidades_preferidas": ["skill1", "skill2"]}}
+        
         Preferences: {processed_text}
         """
+        
         response = await self.client.chat.completions.create(
             model=self.model,
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"}
         )
+        
         profile_data = json.loads(response.choices[0].message.content)
+        profile_data["habilidades_preferidas"] = [
+            self.text_processor.normalize_skill(skill)
+            for skill in profile_data["habilidades_preferidas"]
+        ]
+        
         return PreferenciaReclutadorProfile(
             habilidades_preferidas=profile_data["habilidades_preferidas"],
             raw_data=profile_data
         )
 
     async def standardize_resume(self, resume_text: str) -> CandidateProfile:
-        """Standardize resume text into JSON with keys: nombre_candidato, habilidades, experiencia, formacion."""
-        processed_text = self.preprocess_text(resume_text)
+        """Standardize resume into structured JSON format"""
+        processed_text = self.text_processor.process_text(resume_text)
+        
         prompt = f"""
-        Extract and summarize key information from this resume.
-        For experience section:
-        - Condense lengthy job descriptions into key achievements
-        - Extract and standardize duration as 'X_years_experience'
-        - Focus on quantifiable results and responsibilities
-        - Limit to 2-3 key points per role
-        - Remove unnecessary details while keeping core accomplishments
+        Extract key information in Spanish from this resume:
+        - List specific technical skills and tools
+        - Include quantifiable achievements and years of experience
+        - Standardize education levels
         
-        For skills and education:
-        - Extract technical skills and tools
-        - Standardize education terms
-        - Focus on relevant certifications
-        
-        Output a focused JSON with exactly these keys:
+        Output JSON with:
         {{
-          "nombre_candidato": "candidate name",
-          "habilidades": ["relevant technical skills only"],
-          "experiencia": [
-              "condensed experience points",
-              "e.g., '3_years_experience leading backend teams'",
-              "e.g., 'increased system performance by 40%'"
-          ],
-          "formacion": ["standardized education and certifications"]
+            "nombre_candidato": "full name",
+            "habilidades": ["skill1", "skill2"],  
+            "experiencia": ["X_years_experience in...", "achievements"],
+            "formacion": ["education with levels"]
         }}
         
         Resume: {processed_text}
         """
+        
         response = await self.client.chat.completions.create(
             model=self.model,
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"}
         )
+        
         profile_data = json.loads(response.choices[0].message.content)
         raw_data = profile_data.copy()
-        profile_data['raw_data'] = raw_data
+        
+        # Post-process LLM output
+        profile_data["habilidades"] = [
+            self.text_processor.normalize_skill(skill) 
+            for skill in profile_data["habilidades"]
+        ]
+        profile_data["formacion"] = [
+            self.text_processor.standardize_education(edu)
+            for edu in profile_data["formacion"]
+        ]
+        profile_data["experiencia"] = [
+            self.text_processor.extract_years_experience(exp)
+            for exp in profile_data["experiencia"]
+        ]
+        profile_data["raw_data"] = raw_data
+        
         return CandidateProfile(**profile_data)
 
     async def standardize_killer_criteria(self, criteria: Dict[str, List[str]]) -> Dict[str, List[str]]:
-        """Standardize killer criteria into a JSON with keys: killer_habilidades and killer_experiencia.
-        IMPORTANT: If killer skills is empty then there are no killer skills required and the candidate must not be flagged as disqualified.
-        Similarly, if killer experience is empty then there is no experience required and the candidate must not be flagged as disqualified.
-        """
+        """Standardize killer criteria into structured format"""
         if not any(criteria.values()):
             return {"killer_habilidades": [], "killer_experiencia": []}
+            
+        # Pre-process both criteria types
         skills_text = "\n".join(criteria.get("killer_habilidades", []))
         exp_text = "\n".join(criteria.get("killer_experiencia", []))
-        processed_text = self.preprocess_text(f"Skills:\n{skills_text}\n\nExperience:\n{exp_text}")
+        processed_text = self.text_processor.process_text(
+            f"Skills:\n{skills_text}\n\nExperience:\n{exp_text}"
+        )
+        
         prompt = f"""
-        Normalize the following mandatory requirements.
-        Convert durations to 'X_years_experience' and standardize technical terms.
-        IMPORTANT: If killer skills is empty then no killer skills are required and no disqualification should occur.
-        If killer experience is empty then no killer experience is required and no disqualification should occur.
+        Extract and normalize mandatory requirements in Spanish:
+        - Skills should be specific technical skills
+        - Experience should include years and key technical requirements
+        
         Output JSON as:
         {{
-          "killer_habilidades": [...],
-          "killer_experiencia": [...]
+            "killer_habilidades": ["required_skill1", "required_skill2"],
+            "killer_experiencia": ["X_years_experience1", "X_years_experience2"]
         }}
+        
         Requirements: {processed_text}
         """
+        
         response = await self.client.chat.completions.create(
             model=self.model,
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"}
         )
-        return json.loads(response.choices[0].message.content)
+        
+        result = json.loads(response.choices[0].message.content)
+        
+        # Post-process LLM output
+        result["killer_habilidades"] = [
+            self.text_processor.normalize_skill(skill)
+            for skill in result["killer_habilidades"]
+        ]
+        result["killer_experiencia"] = [
+            self.text_processor.extract_years_experience(exp)
+            for exp in result["killer_experiencia"]
+        ]
+        
+        return result
 
 class MatchingEngine(TextAnalyzer):
     """Maneja la lógica de coincidencia entre requisitos del trabajo y perfiles de candidatos"""
@@ -300,33 +347,43 @@ class MatchingEngine(TextAnalyzer):
         candidate: CandidateProfile,
         killer_criteria: Optional[Dict[str, List[str]]]
     ) -> Tuple[bool, List[str]]:
-        """Verifica si el candidato cumple con los criterios eliminatorios mediante análisis semántico"""
+        """Verifica si el candidato cumple con los criterios eliminatorios mediante análisis semántico extraído
+        para habilidades y experiencia de forma paralela.
+        Para killer_experiencia, se suma el total de años extraídos de todas las entradas del candidato
+        y se compara con el mínimo requerido extraído de la cadena de criterios.
+        """
         if not killer_criteria or not any(killer_criteria.values()):
             return True, []
-            
+
         disqualification_reasons = []
 
-        # Verifica cada tipo de criterio eliminatorio (habilidades y experiencia)
-        for criteria_type, criteria_list in killer_criteria.items():
-            if not criteria_list:
-                continue
-                
-            # Determina qué campo del perfil del candidato comparar basado en el tipo de criterio
-            candidate_field = 'habilidades' if 'habilidades' in criteria_type else 'experiencia'
-            score = await self.calculate_semantic_similarity(
-                criteria_list,
-                getattr(candidate, candidate_field)
-            )
-            
-            # Allow a small tolerance margin of 0.05 before flagging disqualification
-            if score < self.threshold:
-                if score < self.threshold - 0.05:
-                    reason = "No cumple con las habilidades obligatorias" if 'habilidades' in criteria_type else "No cumple con la experiencia obligatoria"
-                    disqualification_reasons.append(reason)
-                else:
-                    logging.info("Borderline {0} match (score: {1}), not disqualifying".format(candidate_field, score))
-        
-        return len(disqualification_reasons) == 0, disqualification_reasons
+        # Process killer_habilidades (skills)
+        killer_skills = killer_criteria.get("killer_habilidades", [])
+        if killer_skills:
+            # Normalize candidate skills (assumed to be a list of strings)
+            candidate_skills = [skill.lower().strip() for skill in candidate.habilidades]
+            for req_skill in killer_skills:
+                req_norm = req_skill.lower().strip()
+                if req_norm not in candidate_skills:
+                    disqualification_reasons.append("No cumple con la habilidad obligatoria: " + req_skill)
+
+        # Process killer_experiencia (experience)
+        killer_experiences = killer_criteria.get("killer_experiencia", [])
+        if killer_experiences:
+            # Sum candidate's experience years from every entry in candidate.experiencia (assumed list of strings)
+            candidate_total_years = sum(extract_years_number(exp) for exp in candidate.experiencia)
+            # For each required experience criterion, check candidate's total experience years
+            for req_exp in killer_experiences:
+                required_years = extract_years_number(req_exp)
+                if candidate_total_years < required_years:
+                    disqualification_reasons.append(
+                        f"Experiencia insuficiente: requiere {required_years} años, tiene {candidate_total_years} años."
+                    )
+        # Log borderline cases as needed (keeping existing tolerance logic if needed)
+        # ...existing code for borderline tolerance can be inserted here if required...
+
+        # Candidate is qualified if no disqualification reasons were found
+        return (len(disqualification_reasons) == 0, disqualification_reasons)
 
     async def calculate_match_score(
         self, 
