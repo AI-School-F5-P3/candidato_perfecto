@@ -6,32 +6,66 @@ import logging
 import asyncio
 from typing import List, Dict
 
-def render_comparative_analysis(df):
+async def render_comparative_analysis(df: pd.DataFrame) -> None:
     """Render comparative analysis report for candidates"""
     try:
-        st.markdown('<div class="section-header">Informe Comparativo de Candidatos</div>', unsafe_allow_html=True)
-        
-        if df.empty:
-            st.warning("No hay datos para mostrar en el informe comparativo.")
+        if df is None:
+            st.error("No hay datos disponibles para el análisis comparativo")
             return
+            
+        if 'Estado' not in df.columns:
+            st.error("Los datos no contienen la columna 'Estado' requerida")
+            return
+            
+        st.markdown("## 📊 Análisis Comparativo de Candidatos")
         
-        st.dataframe(df, use_container_width=True)
+        # Filtrar solo candidatos calificados
+        qualified_df = df[df['Estado'] == 'Calificado']
         
-        if 'Nombre Candidato' in df.columns and 'Score Final' in df.columns:
-            fig, ax = plt.subplots(figsize=(5, 2))
-            sns.barplot(x='Nombre Candidato', y='Score Final', data=df, ax=ax)
-            ax.set_title('Comparación de Scores entre Candidatos')
-            ax.set_xlabel('Nombre del Candidato')
-            ax.set_ylabel('Score')
-            plt.xticks(rotation=45)
-            st.pyplot(fig)
+        if qualified_df.empty:
+            st.warning("No hay candidatos calificados para comparar.")
+            return
+            
+        # Selector múltiple de candidatos
+        selected_candidates = st.multiselect(
+            "🔍 Seleccione los candidatos a comparar:",
+            options=qualified_df['Nombre Candidato'].unique()
+        )
         
-        if 'analysis_result' in df.columns:
-            for idx, row in df.iterrows():
-                st.markdown(f"### Análisis para {row['Nombre Candidato']}")
-                st.write(row['analysis_result'])
-        else:
-            st.info("No hay análisis detallado disponible para los candidatos.")
+        if selected_candidates:
+            # Filtrar DataFrame para los candidatos seleccionados
+            selected_df = qualified_df[qualified_df['Nombre Candidato'].isin(selected_candidates)]
+            
+            # 1. Mostrar tabla comparativa
+            st.subheader("📋 Tabla Comparativa")
+            st.dataframe(selected_df, use_container_width=True)
+            
+            # 2. Mostrar gráficos comparativos
+            st.subheader("📈 Gráficos Comparativos")
+            render_comparative_charts(selected_df)
+            
+            # 3. Generar y mostrar análisis GPT para cada candidato
+            st.subheader("🤖 Análisis Detallado por GPT")
+            
+            for _, row in selected_df.iterrows():
+                with st.expander(f"📝 Análisis de {row['Nombre Candidato']}"):
+                    candidate_text = (
+                        f"Experiencia: {row.get('Experiencia', 'No disponible')}\n"
+                        f"Habilidades: {row.get('Habilidades', 'No disponible')}\n"
+                        f"Formación: {row.get('Formación', 'No disponible')}\n"
+                        f"Score Final: {row.get('Score Final', 'No disponible')}"
+                    )
+                    
+                    prompt = (
+                        "Como experto en recursos humanos, analiza el siguiente perfil "
+                        "de candidato y genera un resumen conciso destacando fortalezas, "
+                        f"áreas de mejora y fit con el puesto:\n\n{candidate_text}"
+                    )
+                    
+                    with st.spinner(f"Analizando perfil de {row['Nombre Candidato']}..."):
+                        analysis = await st.session_state.app.text_generation_provider.generate_text(prompt)
+                        st.write(analysis)
+                        
     except Exception as e:
         logging.error(f"Error in render_comparative_analysis: {str(e)}")
         st.error("Error al mostrar el informe comparativo. Verifique los datos y vuelva a intentar.")
@@ -39,6 +73,15 @@ def render_comparative_analysis(df):
 def render_comparative_charts(comparative_df: pd.DataFrame) -> None:
     """Renderiza gráficos comparativos de los candidatos"""
     try:
+        if comparative_df is None or comparative_df.empty:
+            st.error("No hay datos disponibles para generar los gráficos")
+            return
+            
+        required_cols = ['Nombre Candidato', 'Score Habilidades', 'Score Experiencia', 'Score Formación']
+        if not all(col in comparative_df.columns for col in required_cols):
+            st.error("Faltan columnas requeridas en los datos")
+            return
+            
         # Preparar datos para visualización
         score_cols = ['Score Habilidades', 'Score Experiencia', 'Score Formación']
         plot_data = comparative_df[['Nombre Candidato'] + score_cols].copy()
@@ -66,21 +109,3 @@ def render_comparative_charts(comparative_df: pd.DataFrame) -> None:
     except Exception as e:
         logging.error(f"Error en render_comparative_charts: {str(e)}")
         st.error("Error al generar los gráficos comparativos.")
-
-def comparative_analysis_view(app, analysis_results):
-    """Vista de análisis comparativo"""
-    try:
-        st.title("Análisis Comparativo de Candidatos")
-        
-        # Usar directamente analysis_results
-        df = analysis_results['df']
-        
-        # Mostrar la tabla comparativa
-        st.dataframe(df, use_container_width=True)
-        
-        # Crear visualizaciones
-        render_comparative_charts(df)
-        
-    except Exception as e:
-        st.error(f"Error en el análisis comparativo: {str(e)}")
-        logging.error(f"Error en comparative_analysis_view: {str(e)}")

@@ -223,7 +223,8 @@ class ComparativeAnalysis:
                         'analisis': f"Error al analizar el perfil: {str(e)}"
                     })
             
-            st.session_state['analysis_results'] = analysis_results
+            # Guardar en una clave diferente
+            st.session_state['comparative_analysis_results'] = analysis_results
             return analysis_results
             
         except Exception as e:
@@ -275,12 +276,9 @@ def main():
         render_main_page()
         
     with tab2:
-        if st.session_state.analysis_results is not None:
+        if 'analysis_results' in st.session_state:
             from frontend import comparative_analysis
-            comparative_analysis.comparative_analysis_view(
-                st.session_state.app,
-                st.session_state.analysis_results
-            )
+            asyncio.run(comparative_analysis.render_comparative_analysis(st.session_state.analysis_results['df']))
         else:
             st.warning("Primero debe realizar un análisis de candidatos para ver la comparación")
 
