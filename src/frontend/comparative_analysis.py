@@ -9,14 +9,10 @@ from typing import List, Dict
 async def render_comparative_analysis(df: pd.DataFrame) -> None:
     """Render comparative analysis report for candidates"""
     try:
-        if df is None:
+        if df is None or 'Estado' not in df.columns:
             st.error("No hay datos disponibles para el análisis comparativo")
             return
-            
-        if 'Estado' not in df.columns:
-            st.error("Los datos no contienen la columna 'Estado' requerida")
-            return
-            
+
         st.markdown("## 📊 Análisis Comparativo de Candidatos")
         
         # Filtrar solo candidatos calificados
@@ -63,8 +59,18 @@ async def render_comparative_analysis(df: pd.DataFrame) -> None:
                     )
                     
                     with st.spinner(f"Analizando perfil de {row['Nombre Candidato']}..."):
-                        analysis = await st.session_state.app.text_generation_provider.generate_text(prompt)
-                        st.write(analysis)
+                        try:
+                            provider = st.session_state.app.text_generation_provider
+                            if provider and hasattr(provider, 'generate_text'):
+                                analysis = await provider.generate_text(prompt)
+                                if analysis:
+                                    st.write(analysis)
+                                else:
+                                    st.warning("No se pudo generar el análisis.")
+                            else:
+                                st.warning("El servicio de análisis de texto no está disponible.")
+                        except Exception as e:
+                            st.error(f"Error al generar el análisis: {str(e)}")
                         
     except Exception as e:
         logging.error(f"Error in render_comparative_analysis: {str(e)}")

@@ -4,7 +4,7 @@ from openai import AsyncOpenAI
 import streamlit as st
 import asyncio
 import pandas as pd
-from typing import List
+from typing import List, Optional
 import os
 from datetime import datetime
 import sys
@@ -44,12 +44,36 @@ def initialize_session_state():
         st.session_state.current_tab = "Ranking Principal"
 
 class OpenAITextGenerationProvider:
-    """Proveedor de generación de texto usando GPT-3.5 Turbo"""
+    """Proveedor de generación de texto usando OpenAI API"""
 
     def __init__(self, api_key: str):
         """Inicializa el proveedor de generación de texto"""
         self.client = AsyncOpenAI(api_key=api_key)
-        self.model = "gpt-3.5-turbo"
+
+    async def generate_text(self, prompt: str) -> str:
+        """
+        Genera texto usando OpenAI API
+        
+        Args:
+            prompt (str): El prompt para generar el texto
+            
+        Returns:
+            str: El texto generado
+        """
+        try:
+            response = await self.client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "Eres un experto en recursos humanos."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=500,
+                temperature=0.7
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            logging.error(f"Error en generate_text: {str(e)}")
+            return f"Error al generar análisis: {str(e)}"
         
 
 class HRAnalysisApp:
@@ -197,18 +221,10 @@ class ComparativeAnalysis:
                 )
 
                 try:
-                    response = await self.text_generation_provider.client.chat.completions.create(
-                        model=self.text_generation_provider.model,
-                        messages=[
-                            {"role": "system", "content": "Eres un experto en recursos humanos que analiza perfiles profesionales."},
-                            {"role": "user", "content": prompt}
-                        ],
-                        max_tokens=500,
-                        temperature=0.7
-                    )    
+                    response = await self.text_generation_provider.generate_text(prompt)    
                     
-                    if response and response.choices:
-                        analysis = response.choices[0].message.content.strip()
+                    if response:
+                        analysis = response.strip()
                         analysis_results.append({
                             'nombre': row['Nombre Candidato'],
                             'analisis': analysis
