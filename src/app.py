@@ -29,19 +29,19 @@ from utils.utilities import setup_logging, create_score_row, sort_ranking_datafr
 from utils.file_handler import FileHandler
 from utils.google_drive import GoogleDriveIntegration
 
-# Move these to the top, before any other Streamlit commands
+# Configuración inicial de Streamlit y logging
 st.set_page_config(page_title="El candidato perfecto", layout="wide")
-st.markdown('<h1 class="title">El candidato perfecto</h1>', unsafe_allow_html=True)
-st.write("""
-El sistema recopila información de una vacante junto con las preferencias del equipo reclutador 
-y las características obligatorias a cumplir por los candidatos. Con esta información, se analizan 
-los curriculum vitae de los candidatos y se obtiene un ranking de idoneidad basado en habilidades, 
-experiencia y formación. También se identifican los candidatos que no cumplen con los requisitos 
-obligatorios. Los pesos de ponderación pueden ser ajustados si así se requiere.
-""")
-
 setup_logging()
 UIComponents.load_custom_css()
+
+def initialize_session_state():
+    """Inicializa el estado de la sesión si no existe"""
+    if 'app' not in st.session_state:
+        st.session_state.app = None
+    if 'analysis_results' not in st.session_state:
+        st.session_state.analysis_results = None
+    if 'current_tab' not in st.session_state:
+        st.session_state.current_tab = "Ranking Principal"
 
 class OpenAITextGenerationProvider:
     """Proveedor de generación de texto usando GPT-3.5 Turbo"""
@@ -231,25 +231,58 @@ class ComparativeAnalysis:
             st.error("Error al mostrar el informe comparativo. Verifique los datos y vuelva a intentar.")
             return []
 
-async def main():
-    """Punto de entrada principal que maneja el flujo de la aplicación"""
-    logging.info("Aplicación iniciada.")
+def render_main_page():
+    """Renderiza la página principal de la aplicación"""
+    st.markdown('<h1 class="title">El candidato perfecto</h1>', unsafe_allow_html=True)
+    st.write("""
+    El sistema recopila información de una vacante junto con las preferencias del equipo reclutador 
+    y las características obligatorias a cumplir por los candidatos. Con esta información, se analizan 
+    los curriculum vitae de los candidatos y se obtiene un ranking de idoneidad basado en habilidades, 
+    experiencia y formación. También se identifican los candidatos que no cumplen con los requisitos 
+    obligatorios. Los pesos de ponderación pueden ser ajustados si así se requiere.
+    """)
     
-try:
-    os.environ['STREAMLIT_SECRETS_PATH'] = os.path.join(os.path.dirname(__file__), '.streamlit', 'secrets.toml')
-    api_key = st.secrets["openai"]["api_key"]
-    app = HRAnalysisApp(api_key)
-except Exception as e:
-    logging.error(f"Error inicializando la aplicación: {str(e)}")
-    st.error("Error inicializando la aplicación. Por favor revise su configuración.")
-    app = None
+    ui_inputs = UIComponents.create_main_sections()
+    
+    # Sección de Google Drive
+    st.markdown("---")
+    st.subheader("Cargar CVs desde Google Drive")
+    
+    if st.button("🔄 Cargar CVs desde Google Drive", key="drive_button"):
+        with st.spinner("Descargando CVs desde Google Drive..."):
+            asyncio.run(load_drive_cvs(st.session_state.app))
+            
+    if st.button("Analizar Candidatos", key="analyze_button"):
+        asyncio.run(analyze_candidates(ui_inputs, st.session_state.app))
 
-# --- Opción 1: Carga manual de CVs
-ui_inputs = UIComponents.create_main_sections()
+def main():
+    """Función principal que maneja el flujo de la aplicación"""
+    initialize_session_state()
+    
+    if not st.session_state.app:
+        try:
+            api_key = st.secrets["openai"]["api_key"]
+            st.session_state.app = HRAnalysisApp(api_key)
+        except Exception as e:
+            logging.error(f"Error inicializando la aplicación: {str(e)}")
+            st.error("Error inicializando la aplicación. Por favor revise su configuración.")
+            return
 
-# --- Opción 2: Carga desde Google Drive ---
-st.markdown("---")
-st.subheader("Cargar CVs desde Google Drive")
+    # Crear pestañas
+    tab1, tab2 = st.tabs(["Ranking Principal", "Análisis Comparativo"])
+    
+    with tab1:
+        render_main_page()
+        
+    with tab2:
+        if st.session_state.analysis_results is not None:
+            from frontend import comparative_analysis
+            comparative_analysis.comparative_analysis_view(
+                st.session_state.app,
+                st.session_state.analysis_results
+            )
+        else:
+            st.warning("Primero debe realizar un análisis de candidatos para ver la comparación")
 
 async def load_drive_cvs(app):
     """Función asíncrona para cargar CVs desde Google Drive"""
@@ -265,11 +298,6 @@ async def load_drive_cvs(app):
         st.error(f"❌ Error al cargar desde Google Drive: {str(e)}")
         logging.error(f"Google Drive Error: {str(e)}")
 
-if st.button("🔄 Cargar CVs desde Google Drive", key="drive_button"):
-    with st.spinner("Descargando CVs desde Google Drive..."):
-        asyncio.run(load_drive_cvs(app))
-
-# --- Procesamiento Unificado ---
 async def analyze_candidates(ui_inputs, app):
     if not ui_inputs.job_file:
         st.warning("⚠️ Por favor, suba un archivo de descripción del puesto")
@@ -354,25 +382,9 @@ async def analyze_candidates(ui_inputs, app):
         logging.error(f"Error durante el análisis: {str(e)}")
         st.error(f"Error durante el análisis: {str(e)}")
 
-if st.button("Analizar Candidatos", key="analyze_button"):
-    asyncio.run(analyze_candidates(ui_inputs, app))
-
-def run_app():
-    """Función principal que maneja la navegación entre pantallas"""
-    if 'page' not in st.session_state:
-        st.session_state['page'] = 'main'
-    
-    app = HRAnalysisApp(st.secrets["openai"]["api_key"])
-    
-    if st.session_state['page'] == 'main':
-        asyncio.run(main())
-    elif st.session_state['page'] == 'comparative_analysis':
-        from frontend import comparative_analysis
-        comparative_analysis.comparative_analysis_view(app)
-
 if __name__ == "__main__":
     try:
-        run_app()
+        main()
     except Exception as e:
         logging.critical(f"Error crítico en main: {str(e)}")
         st.error("Se produjo un error crítico en la aplicación.")

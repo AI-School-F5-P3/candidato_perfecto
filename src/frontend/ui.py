@@ -336,11 +336,15 @@ class UIComponents:
                     "experiencia_obligatoria": killer_criteria.get("killer_experiencia", [])
                 })
             
-            # Botón para ir al análisis comparativo
-            if st.button("Ir al análisis comparativo"):
-                st.session_state['page'] = 'comparative_analysis'
-                st.experimental_set_query_params(page='comparative_analysis')
+            # Reemplazar el botón existente con:
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                navigation_button()
             
         except Exception as e:
             st.error("Error al mostrar los resultados. Verifique los datos y vuelva a intentar.")
             logging.error(f"Error in display_ranking: {str(e)}")
+
+def navigation_button():
+    if st.button("Realizar análisis comparativo", use_container_width=True):
+        st.session_state.show_comparative = True

@@ -67,42 +67,20 @@ def render_comparative_charts(comparative_df: pd.DataFrame) -> None:
         logging.error(f"Error en render_comparative_charts: {str(e)}")
         st.error("Error al generar los gráficos comparativos.")
 
-def comparative_analysis_view(app):
+def comparative_analysis_view(app, analysis_results):
     """Vista de análisis comparativo"""
-    st.markdown('<h1 class="title">Análisis Comparativo de Candidatos</h1>', 
-               unsafe_allow_html=True)
-    
-    if 'current_data' not in st.session_state:
-        st.error("No hay datos disponibles. Por favor, realice primero el análisis de candidatos.")
-        return
-
-    df = st.session_state['current_data']['df']
-    
-    selected_candidates = st.multiselect(
-        "Seleccione candidatos para comparar",
-        options=df['Nombre Candidato'].tolist(),
-        max_selections=5
-    )
-
-    if selected_candidates:
-        with st.spinner("Generando análisis comparativo..."):
-            # Obtener análisis detallado
-            analysis_results = asyncio.run(
-                app.analyze_text_comparatively(df, selected_candidates)
-            )
-            
-            # Mostrar gráficos comparativos
-            comparative_df = df[df['Nombre Candidato'].isin(selected_candidates)]
-            render_comparative_charts(comparative_df)
-            
-            # Mostrar análisis detallado
-            st.subheader("Análisis Detallado")
-            for result in analysis_results:
-                with st.expander(f"📋 Análisis de {result['nombre']}"):
-                    st.write(result['analisis'])
-                    st.markdown("**Puntuaciones:**")
-                    st.json(result['scores'])
-
-    if st.button("← Volver al Ranking Principal"):
-        st.session_state['page'] = 'main'
-        st.experimental_rerun()
+    try:
+        st.title("Análisis Comparativo de Candidatos")
+        
+        # Usar directamente analysis_results
+        df = analysis_results['df']
+        
+        # Mostrar la tabla comparativa
+        st.dataframe(df, use_container_width=True)
+        
+        # Crear visualizaciones
+        render_comparative_charts(df)
+        
+    except Exception as e:
+        st.error(f"Error en el análisis comparativo: {str(e)}")
+        logging.error(f"Error en comparative_analysis_view: {str(e)}")
