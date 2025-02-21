@@ -43,110 +43,7 @@ class UIComponents:
     @staticmethod
     def create_weight_sliders() -> WeightSettings:
         """Crea y gestiona los deslizadores de peso en la barra lateral"""
-        with st.sidebar:
-            # Aplicar estilo compacto a la barra lateral
-            st.markdown("""
-                <style>
-                [data-testid="stSidebar"] {
-                    min-width: 180px !important;
-                    max-width: 250px !important;
-                }
-                div[data-testid="stVerticalBlock"] > div {
-                    padding: 0 !important;
-                    margin: 0 !important;
-                }
-                .stSlider [data-baseweb="slider"] {
-                    margin: 0 !important;
-                    padding: 0.25rem 0 !important;
-                }
-                label[data-testid="stWidgetLabel"] {
-                    font-size: 0.8em !important;
-                    margin: 0 !important;
-                    padding: 0 !important;
-                }
-                [data-testid="stText"] {
-                    font-size: 0.8em !important;
-                    margin: 0 !important;
-                    padding: 0 !important;
-                }
-                .section-header {
-                    margin: 0 0 0.25rem 0 !important;
-                    padding: 0 0 0.25rem 0 !important;
-                }
-                </style>
-                """, 
-                unsafe_allow_html=True
-            )
-            
-            st.markdown('<div class="section-header">Pesos por sección</div>', unsafe_allow_html=True)
-            
-            with st.container():
-                st.markdown('<div class="weights-container">', unsafe_allow_html=True)
-                habilidades = st.slider(
-                    "Habilidades",
-                    min_value=0.0,
-                    max_value=1.0,
-                    value=0.3,
-                    step=0.05,
-                    key="habilidades_slider"
-                )
-                experiencia = st.slider(
-                    "Experiencia",
-                    min_value=0.0,
-                    max_value=1.0,
-                    value=0.3,
-                    step=0.05,
-                    key="exp_slider"
-                )
-                formacion = st.slider(
-                    "Formación",
-                    min_value=0.0,
-                    max_value=1.0,
-                    value=0.2,
-                    step=0.05,
-                    key="formacion_slider"
-                )
-                preferencias = st.slider(
-                    "Preferencias del Reclutador",
-                    min_value=0.0,
-                    max_value=1.0,
-                    value=0.2,
-                    step=0.05,
-                    key="preferencias_slider"
-                )
-                
-                total_weight = round(habilidades + experiencia + formacion + preferencias, 2)
-                
-                st.markdown(
-                    f"""
-                    <div style='
-                        background-color: #f0f2f6;
-                        padding: 0.25rem;
-                        border-radius: 4px;
-                        margin: 0.25rem 0;
-                        font-size: 0.8em;
-                        text-align: center;
-                        line-height: 1.2;
-                    '>
-                        Suma: <b>{total_weight}</b>
-                        <div style='font-size: 0.75em; color: #666;'>
-                            (debe ser 1.0)
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-                
-                if total_weight != 1.0:
-                    st.error("⚠️", icon="⚠️")
-
-                return WeightSettings(
-                    habilidades=habilidades,
-                    experiencia=experiencia,
-                    formacion=formacion,
-                    preferencias_reclutador=preferencias,
-                    total_weight=total_weight
-                )
+        
 
     @staticmethod
     def create_main_sections() -> UIInputs:
@@ -346,54 +243,123 @@ class VacancySection:
         """Maneja la interfaz para múltiples descripciones de puestos"""
         st.markdown('<div class="section-header">Descripciones de Puestos</div>', unsafe_allow_html=True)
         
+        
         # Inicializar el estado de las vacantes si no existe
         if 'vacancies' not in st.session_state:
-            st.session_state.vacancies = [{'id': 0}]
+            st.session_state.vacancies = [{
+                'id': 0,
+                'weights': {
+                    'habilidades': 0.3,
+                    'experiencia': 0.3,
+                    'formacion': 0.2,
+                    'preferencias_reclutador': 0.2
+                }
+            }]
             
-        # Crear contenedor para todas las vacantes
+        # Contenedor para vacantes
         for i, vacancy in enumerate(st.session_state.vacancies):
-            with st.expander(f"Vacante {i + 1}", expanded=True):
+            with st.expander(f"📋 Vacante {i + 1}", expanded=True):
+                # Sección de archivo
                 vacancy['job_file'] = st.file_uploader(
-                    "Suba la descripción del puesto (TXT o PDF)",
+                    "Descripción del puesto (TXT o PDF)",
                     type=['txt', 'pdf'],
                     key=f"job_upload_{i}"
                 )
                 
+                # Sección de pesos con colores
+                st.markdown("### 🎚️ Pesos de Evaluación")
+                
+                # Columnas para los pesos
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    vacancy['weights']['habilidades'] = st.slider(
+                        "Habilidades 💡",
+                        0.0, 1.0, 
+                        vacancy['weights'].get('habilidades', 0.3),
+                        0.05,
+                        key=f"w_hab_{i}"
+                    )
+                    
+                    vacancy['weights']['formacion'] = st.slider(
+                        "Formación 📚",
+                        0.0, 1.0, 
+                        vacancy['weights'].get('formacion', 0.2),
+                        0.05,
+                        key=f"w_form_{i}"
+                    )
+                
+                with col2:
+                    vacancy['weights']['experiencia'] = st.slider(
+                        "Experiencia 💼",
+                        0.0, 1.0, 
+                        vacancy['weights'].get('experiencia', 0.3),
+                        0.05,
+                        key=f"w_exp_{i}"
+                    )
+                    
+                    vacancy['weights']['preferencias_reclutador'] = st.slider(
+                        "Preferencias 👥",
+                        0.0, 1.0, 
+                        vacancy['weights'].get('preferencias_reclutador', 0.2),
+                        0.05,
+                        key=f"w_pref_{i}"
+                    )
+                
+                # Cálculo y visualización del total
+                total = sum(vacancy['weights'].values())
+                if total == 1.0:
+                    st.success(f"✅ Total: {total:.2f}")
+                else:
+                    st.error(f"⚠️ Total: {total:.2f} (debe ser 1.0)")
+                
+                # Sección de criterios
+                st.markdown("### 📋 Criterios de Evaluación")
+                
+                # Preferencias del reclutador
                 vacancy['recruiter_skills'] = st.text_area(
-                    "Preferencias del reclutador (una por línea)",
-                    height=120,
-                    key=f"skills_input_{i}",
-                    help="Campo opcional. Puede dejarlo vacío si no hay preferencias específicas."
+                    "Preferencias del reclutador 👥",
+                    value=vacancy.get('recruiter_skills', ''),
+                    height=100,
+                    placeholder="Escribe una preferencia por línea",
+                    key=f"skills_{i}"
                 )
                 
+                # Criterios obligatorios en columnas
                 col1, col2 = st.columns(2)
                 with col1:
                     vacancy['killer_habilidades'] = st.text_area(
-                        "Habilidades obligatorias (una por línea)",
-                        height=120,
-                        key=f"killer_skills_input_{i}",
-                        help="Campo opcional."
+                        "Habilidades obligatorias ⭐",
+                        value=vacancy.get('killer_habilidades', ''),
+                        height=100,
+                        placeholder="Una habilidad por línea",
+                        key=f"killer_skills_{i}"
                     )
+                
                 with col2:
                     vacancy['killer_experiencia'] = st.text_area(
-                        "Experiencia obligatoria (una por línea)",
-                        height=120,
-                        key=f"killer_exp_input_{i}",
-                        help="Campo opcional."
+                        "Experiencia obligatoria ⭐",
+                        value=vacancy.get('killer_experiencia', ''),
+                        height=100,
+                        placeholder="Una experiencia por línea",
+                        key=f"killer_exp_{i}"
                     )
+                
+                # Botón para eliminar vacante
+                if len(st.session_state.vacancies) > 1:
+                    if st.button("🗑️ Eliminar esta vacante", key=f"delete_{i}"):
+                        st.session_state.vacancies.pop(i)
+                        st.rerun()
         
         # Botón para añadir nueva vacante
-        col1, col2 = st.columns([1, 4])
-        with col1:
-            if st.button("Añadir Vacante", key="add_vacancy"):
-                st.session_state.vacancies.append({
-                    'id': len(st.session_state.vacancies)
-                })
-                st.rerun()  # Usar st.rerun() en lugar de st.experimental_rerun()
-                
-        # Botón para eliminar última vacante (opcional)
-        with col2:
-            if len(st.session_state.vacancies) > 1:  # Solo mostrar si hay más de una vacante
-                if st.button("Eliminar última vacante", key="remove_vacancy"):
-                    st.session_state.vacancies.pop()
-                    st.rerun()
+        if st.button("➕ Añadir Nueva Vacante"):
+            st.session_state.vacancies.append({
+                'id': len(st.session_state.vacancies),
+                'weights': {
+                    'habilidades': 0.3,
+                    'experiencia': 0.3,
+                    'formacion': 0.2,
+                    'preferencias_reclutador': 0.2
+                }
+            })
+            st.rerun()

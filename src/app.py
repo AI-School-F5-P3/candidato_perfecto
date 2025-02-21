@@ -214,9 +214,6 @@ async def analyze_candidates(ui_inputs, app):
         st.warning("⚠️ Por favor, cargue CVs desde Google Drive o suba archivos manualmente")
         return
         
-    if ui_inputs.weights.total_weight != 1.0:
-        st.error("Por favor, ajuste los pesos para que sumen exactamente 1.0")
-        return
     
     # Procesar CVs una sola vez
     if 'drive_cvs' in st.session_state:
@@ -232,20 +229,29 @@ async def analyze_candidates(ui_inputs, app):
     for vacancy in valid_vacancies:
         with st.expander(f"Resultados para Vacante {vacancy['id'] + 1}", expanded=True):
             try:
-                # Preparar preferencias y pesos para esta vacante
+                # Usar los pesos específicos de esta vacante
+                weights = vacancy.get('weights', {
+                    'habilidades': 0.3,
+                    'experiencia': 0.3,
+                    'formacion': 0.2,
+                    'preferencias_reclutador': 0.2
+                })
+                
+                # Verificar que los pesos sumen 1.0
+                if abs(sum(weights.values()) - 1.0) > 0.001:
+                    st.error(f"Los pesos para la Vacante {vacancy['id'] + 1} deben sumar 1.0")
+                    continue
+                
+                # Preparar preferencias con los pesos específicos de esta vacante
                 hiring_preferences = {
                     "habilidades_preferidas": [
                         skill.strip() 
                         for skill in (vacancy['recruiter_skills'] or "").split('\n')
                         if skill.strip()
                     ],
-                    "weights": {
-                        "habilidades": ui_inputs.weights.habilidades,
-                        "experiencia": ui_inputs.weights.experiencia,
-                        "formacion": ui_inputs.weights.formacion,
-                        "preferencias_reclutador": ui_inputs.weights.preferencias_reclutador
-                    }
+                    "weights": weights  # Usando los pesos específicos de la vacante
                 }
+                
                 
                 killer_criteria = {
                     "killer_habilidades": [
