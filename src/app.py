@@ -259,7 +259,7 @@ def render_drive_file_grid():
         return
     
     # Calcular número de columnas basado en el ancho de la pantalla
-    num_columns = 3
+    num_columns = 4
     files = list(st.session_state.drive_files.items())
     
     # Crear filas de columnas para el grid
