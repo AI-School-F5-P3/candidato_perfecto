@@ -367,7 +367,7 @@ async def analyze_candidates(ui_inputs, app):
             
             # Create and save debug information
             debug_df = app.create_debug_dataframe(job_profile, rankings)
-            debug_dir = os.path.join(os.path.dirname(__file__), "docs", "debug")
+            debug_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs", "debug")
             os.makedirs(debug_dir, exist_ok=True)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             debug_filename = os.path.join(debug_dir, f"debug_{timestamp}.csv")
