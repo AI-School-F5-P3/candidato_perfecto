@@ -258,6 +258,20 @@ def render_drive_file_grid():
     if not st.session_state.drive_files:
         return
     
+    # Añadir botón "Seleccionar Todos"
+    col1, col2 = st.columns([1, 3])
+    with col1:
+        select_all = st.button("Seleccionar Todos", key="select_all_files")
+        if select_all:
+            st.session_state.selected_files = list(st.session_state.drive_files.keys())
+            st.rerun()
+    with col2:
+        if st.session_state.selected_files:
+            deselect_all = st.button("Deseleccionar Todos", key="deselect_all_files")
+            if deselect_all:
+                st.session_state.selected_files = []
+                st.rerun()
+    
     # Calcular número de columnas basado en el ancho de la pantalla
     num_columns = 4
     files = list(st.session_state.drive_files.items())
