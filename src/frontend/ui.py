@@ -1,13 +1,13 @@
 import streamlit as st
 from pathlib import Path
-from hr_analysis_system import JobProfile
+from src.hr_analysis_system import JobProfile
 import logging
 from typing import Dict, List, Tuple
 from dataclasses import dataclass
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from frontend import comparative_analysis  # added import for comparative_analysis
+from src.frontend import comparative_analysis  # added import for comparative_analysis
 
 @dataclass
 class WeightSettings:
@@ -51,6 +51,11 @@ class UIComponents:
             """,
             unsafe_allow_html=True
         )
+
+    @staticmethod
+    def setup_page_config() -> None:
+        """Configura la página de Streamlit"""
+        st.set_page_config(page_title="El candidato perfecto", layout="wide")
 
     @staticmethod
     def create_weight_sliders() -> WeightSettings:
@@ -336,15 +341,6 @@ class UIComponents:
                     "experiencia_obligatoria": killer_criteria.get("killer_experiencia", [])
                 })
             
-            # Reemplazar el botón existente con:
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col2:
-                navigation_button()
-            
         except Exception as e:
             st.error("Error al mostrar los resultados. Verifique los datos y vuelva a intentar.")
             logging.error(f"Error in display_ranking: {str(e)}")
-
-def navigation_button():
-    if st.button("Realizar análisis comparativo", use_container_width=True):
-        st.session_state.show_comparative = True
