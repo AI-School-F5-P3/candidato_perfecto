@@ -292,11 +292,22 @@ def main():
         render_main_page()
         
     with tab2:
-        if 'analysis_results' in st.session_state:
+        if (
+            'analysis_results' in st.session_state 
+            and st.session_state.analysis_results 
+            and 'df' in st.session_state.analysis_results
+        ):
+            logging.debug(f"analysis_results state: {st.session_state.analysis_results}")
             from frontend import comparative_analysis
-            asyncio.run(comparative_analysis.render_comparative_analysis(st.session_state.analysis_results['df']))
+            try:
+                asyncio.run(comparative_analysis.render_comparative_analysis(
+                    st.session_state.analysis_results['df']
+                ))
+            except Exception as e:
+                logging.error(f"Error en análisis comparativo: {str(e)}")
+                st.error("Error al mostrar el análisis comparativo. Por favor, intente de nuevo.")
         else:
-            st.warning("Primero debe realizar un análisis de candidatos para ver la comparación")
+            st.info("Primero debe realizar un análisis de candidatos para ver la comparación")
 
 async def load_drive_cvs(app):
     """Función asíncrona para cargar CVs desde Google Drive"""
