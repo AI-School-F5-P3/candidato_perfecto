@@ -36,12 +36,17 @@ UIComponents.load_custom_css()
 
 def initialize_session_state():
     """Inicializa el estado de la sesión si no existe"""
-    if 'app' not in st.session_state:
-        st.session_state.app = None
-    if 'analysis_results' not in st.session_state:
-        st.session_state.analysis_results = None
-    if 'current_tab' not in st.session_state:
-        st.session_state.current_tab = "Ranking Principal"
+    for key, default_value in {
+        'app': None,
+        'analysis_results': None,
+        'current_tab': "Ranking Principal",
+        'drive_files': None,
+        'selected_files': [],
+        'drive_cvs': None,
+        'is_processing': False
+    }.items():
+        if key not in st.session_state:
+            st.session_state[key] = default_value
 
 class OpenAITextGenerationProvider:
     """Proveedor de generación de texto usando OpenAI API"""
@@ -265,10 +270,35 @@ def render_main_page():
     st.markdown("---")
     st.subheader("Cargar CVs desde Google Drive")
     
-    if st.button("🔄 Cargar CVs desde Google Drive", key="drive_button"):
-        with st.spinner("Descargando CVs desde Google Drive..."):
+    # Contenedor para la sección de Drive
+    drive_section = st.container()
+    
+    with drive_section:
+        if st.button("🔄 Listar CVs disponibles", key="list_drive_button"):
+            st.session_state.is_processing = True
             asyncio.run(load_drive_cvs(st.session_state.app))
+            st.session_state.is_processing = False
             
+        # Mostrar selector de archivos si hay archivos listados
+        if st.session_state.drive_files:
+            selected = st.multiselect(
+                "Seleccione los CVs a procesar:",
+                options=list(st.session_state.drive_files.keys()),
+                default=st.session_state.selected_files
+            )
+            st.session_state.selected_files = selected
+            
+            if selected and st.button("Procesar CVs seleccionados", key="process_selected"):
+                with st.spinner("Procesando CVs seleccionados..."):
+                    drive_client = GoogleDriveIntegration(
+                        credentials_path=st.session_state.app.gdrive_credentials,
+                        folder_id=st.session_state.app.gdrive_folder_id
+                    )
+                    selected_ids = [st.session_state.drive_files[filename] for filename in selected]
+                    cv_texts = asyncio.run(drive_client.process_selected_cvs(selected_ids))
+                    st.session_state.drive_cvs = cv_texts
+                    st.success(f"✅ {len(cv_texts)} CVs cargados desde Google Drive")
+    
     if st.button("Analizar Candidatos", key="analyze_button"):
         asyncio.run(analyze_candidates(ui_inputs, st.session_state.app))
 
@@ -333,9 +363,17 @@ async def load_drive_cvs(app):
             credentials_path=app.gdrive_credentials,
             folder_id=app.gdrive_folder_id
         )
-        cv_texts = await drive_client.process_drive_cvs()
-        st.session_state.drive_cvs = cv_texts
-        st.success(f"✅ {len(cv_texts)} CVs cargados desde Google Drive")
+        files = await drive_client.list_cv_files()
+        
+        if not files:
+            st.warning("No se encontraron CVs en la carpeta de Google Drive")
+            return
+            
+        st.session_state.drive_files = {
+            f"{file['name']} (Modificado: {file['modifiedTime']})": file['id'] 
+            for file in files
+        }
+        
     except Exception as e:
         st.error(f"❌ Error al cargar desde Google Drive: {str(e)}")
         logging.error(f"Google Drive Error: {str(e)}")
@@ -430,3 +468,4 @@ if __name__ == "__main__":
     except Exception as e:
         logging.critical(f"Error crítico en main: {str(e)}")
         st.error("Se produjo un error crítico en la aplicación.")
+

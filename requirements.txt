@@ -30,3 +30,9 @@ pytest-mock>=3.14.0
 coverage>=7.3.0
 
 openpyxl
+
+# Google API dependencies
+google-api-python-client==2.0.2
+google-auth-httplib2==0.1.0
+google-auth-oauthlib==0.4.6
+oauth2client==3.0.0

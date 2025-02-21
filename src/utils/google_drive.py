@@ -24,7 +24,7 @@ class GoogleDriveIntegration:
         query = f"'{self.folder_id}' in parents and (mimeType='application/pdf' or mimeType='application/vnd.openxmlformats-officedocument.wordprocessingml.document')"
         results = self.service.files().list(
             q=query,
-            fields="files(id, name)"
+            fields="files(id, name, modifiedTime)"  # Añadido modifiedTime para mejor información
         ).execute()
         return results.get('files', [])
 
@@ -53,4 +53,22 @@ class GoogleDriveIntegration:
                 logging.info(f"CV procesado: {file['name']}")
             except Exception as e:
                 logging.error(f"Error procesando {file['name']}: {str(e)}")
+        return cv_contents
+
+    async def process_selected_cvs(self, selected_file_ids: List[str]) -> List[str]:
+        """Procesa solo los CVs seleccionados de Drive"""
+        cv_contents = []
+        for file_id in selected_file_ids:
+            try:
+                content = await self.download_file(file_id)
+                # Obtener el nombre del archivo
+                file_info = self.service.files().get(fileId=file_id, fields="name").execute()
+                # Simula un objeto de archivo para compatibilidad con FileHandler
+                fake_file = io.BytesIO(content)
+                fake_file.name = file_info['name']
+                text = await self.file_handler.read_file_content(fake_file)
+                cv_contents.append(text)
+                logging.info(f"CV procesado: {file_info['name']}")
+            except Exception as e:
+                logging.error(f"Error procesando archivo {file_id}: {str(e)}")
         return cv_contents
