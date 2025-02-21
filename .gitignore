@@ -26,6 +26,7 @@ src/app.log
 old/
 models/
 docs/diagrams
+docs/debug
 app.log
 cand/
 

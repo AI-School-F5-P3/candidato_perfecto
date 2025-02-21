@@ -482,18 +482,4 @@ class RankingSystem:
             reverse=True
         )
         
-        # Compile debug info and save CSV using FileHandler to relative folder (project root/docs/debug/)
-        debug_rows = []
-        for candidate, score in rankings:
-            debug_rows.append({
-                "nombre_candidato": candidate.nombre_candidato,
-                "final_score": score.final_score,
-                "disqualified": score.disqualified,
-                "debug_info": json.dumps(score.debug_info)
-            })
-        import pandas as pd
-        debug_df = pd.DataFrame(debug_rows)
-        debug_path = "../docs/debug/debug.csv"  # Relative path from src folder
-        FileHandler.save_dataframe(debug_df, debug_path)  # Using the new method
-        
         return rankings
