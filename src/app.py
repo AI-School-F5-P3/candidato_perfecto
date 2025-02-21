@@ -253,72 +253,9 @@ class ComparativeAnalysis:
             st.error("Error al mostrar el informe comparativo. Verifique los datos y vuelva a intentar.")
             return []
 
-def render_drive_file_grid():
-    """Renderiza los archivos de Drive en un grid con formato de tarjetas"""
-    if not st.session_state.drive_files:
-        return
-    
-    # Añadir botón "Seleccionar Todos"
-    col1, col2 = st.columns([1, 3])
-    with col1:
-        select_all = st.button("Seleccionar Todos", key="select_all_files")
-        if select_all:
-            st.session_state.selected_files = list(st.session_state.drive_files.keys())
-            st.rerun()
-    with col2:
-        if st.session_state.selected_files:
-            deselect_all = st.button("Deseleccionar Todos", key="deselect_all_files")
-            if deselect_all:
-                st.session_state.selected_files = []
-                st.rerun()
-    
-    # Calcular número de columnas basado en el ancho de la pantalla
-    num_columns = 4
-    files = list(st.session_state.drive_files.items())
-    
-    # Crear filas de columnas para el grid
-    for i in range(0, len(files), num_columns):
-        cols = st.columns(num_columns)
-        for col_idx, col in enumerate(cols):
-            if i + col_idx < len(files):
-                filename, file_id = files[i + col_idx]
-                with col:
-                    # Crear una tarjeta para cada archivo
-                    st.markdown("""
-                    <style>
-                    .file-card {
-                        border: 1px solid #ddd;
-                        border-radius: 5px;
-                        padding: 10px;
-                        margin: 5px;
-                        background-color: white;
-                    }
-                    .file-card:hover {
-                        border-color: #0066cc;
-                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                    }
-                    </style>
-                    """, unsafe_allow_html=True)
-                    
-                    with st.container():
-                        st.markdown(f'<div class="file-card">', unsafe_allow_html=True)
-                        is_selected = st.checkbox(
-                            "Seleccionar",
-                            key=f"check_{file_id}",
-                            value=filename in st.session_state.selected_files
-                        )
-                        st.markdown(f"**{filename.split(' (Modificado')[0]}**")
-                        st.markdown('</div>', unsafe_allow_html=True)
-                        
-                        if is_selected and filename not in st.session_state.selected_files:
-                            st.session_state.selected_files.append(filename)
-                        elif not is_selected and filename in st.session_state.selected_files:
-                            st.session_state.selected_files.remove(filename)
-
 async def load_drive_cvs(app):
     """Función asíncrona para cargar CVs desde Google Drive"""
     try:
-        # Crear un modal para la selección de archivos
         if st.session_state.drive_files is None:
             with st.spinner("Cargando lista de archivos de Drive..."):
                 drive_client = GoogleDriveIntegration(
@@ -333,30 +270,7 @@ async def load_drive_cvs(app):
                     f"{file['name']} (Modificado: {file['modifiedTime']})": file['id'] 
                     for file in files
                 }
-
-        # Mostrar el modal de selección
-        with st.expander("📂 Selección de CVs", expanded=True):
-            st.write("Seleccione los CVs que desea analizar:")
-            render_drive_file_grid()
-            
-            # Mostrar botón de procesamiento solo si hay archivos seleccionados
-            if st.session_state.selected_files:
-                if st.button("Procesar CVs seleccionados", key="process_selected"):
-                    with st.spinner("Procesando CVs seleccionados..."):
-                        drive_client = GoogleDriveIntegration(
-                            credentials_path=app.gdrive_credentials,
-                            folder_id=app.gdrive_folder_id
-                        )
-                        selected_ids = [
-                            st.session_state.drive_files[filename] 
-                            for filename in st.session_state.selected_files
-                        ]
-                        cv_texts = await drive_client.process_selected_cvs(selected_ids)
-                        st.session_state.drive_cvs = cv_texts
-                        st.success(f"✅ {len(cv_texts)} CVs cargados desde Google Drive")
-            else:
-                st.info("Seleccione al menos un CV para procesar")
-            
+                
     except Exception as e:
         st.error(f"❌ Error al cargar desde Google Drive: {str(e)}")
         logging.error(f"Google Drive Error: {str(e)}")
@@ -378,36 +292,30 @@ def render_main_page():
     st.markdown("---")
     st.subheader("Cargar CVs desde Google Drive")
     
-    # Contenedor para la sección de Drive
-    drive_section = st.container()
+    col1, _ = st.columns([1, 3])
+    with col1:
+        if st.button("🔄 Cargar CVs de Drive", key="list_drive_button"):
+            with st.spinner("Cargando archivos de Drive..."):
+                asyncio.run(load_drive_cvs(st.session_state.app))
     
-    with drive_section:
-        col1, col2 = st.columns([1, 3])
-        with col1:
-            if st.button("🔄 Listar CVs disponibles", key="list_drive_button"):
-                with st.spinner("Cargando archivos de Drive..."):
-                    asyncio.run(load_drive_cvs(st.session_state.app))
+    # Usar el selector de Drive de UIComponents
+    if 'drive_files' in st.session_state and st.session_state.drive_files:
+        selected_files = UIComponents.render_drive_section()
         
-        # Mostrar el grid de selección si hay archivos
-        if st.session_state.drive_files:
-            st.markdown("### CVs Disponibles")
-            render_drive_file_grid()
-            
-            # Mostrar botón de procesamiento solo si hay archivos seleccionados
-            if st.session_state.selected_files:
-                if st.button("Procesar CVs seleccionados", key="process_selected"):
-                    with st.spinner("Procesando CVs seleccionados..."):
-                        drive_client = GoogleDriveIntegration(
-                            credentials_path=st.session_state.app.gdrive_credentials,
-                            folder_id=st.session_state.app.gdrive_folder_id
-                        )
-                        selected_ids = [
-                            st.session_state.drive_files[filename] 
-                            for filename in st.session_state.selected_files
-                        ]
-                        cv_texts = asyncio.run(drive_client.process_selected_cvs(selected_ids))
-                        st.session_state.drive_cvs = cv_texts
-                        st.success(f"✅ {len(cv_texts)} CVs cargados desde Google Drive")
+        if selected_files:
+            if st.button("Procesar CVs seleccionados", key="process_selected"):
+                with st.spinner("Procesando CVs seleccionados..."):
+                    drive_client = GoogleDriveIntegration(
+                        credentials_path=st.session_state.app.gdrive_credentials,
+                        folder_id=st.session_state.app.gdrive_folder_id
+                    )
+                    selected_ids = [
+                        st.session_state.drive_files[filename] 
+                        for filename in selected_files
+                    ]
+                    cv_texts = asyncio.run(drive_client.process_selected_cvs(selected_ids))
+                    st.session_state.drive_cvs = cv_texts
+                    st.success(f"✅ {len(cv_texts)} CVs cargados desde Google Drive")
 
     if st.button("Analizar Candidatos", key="analyze_button"):
         asyncio.run(analyze_candidates(ui_inputs, st.session_state.app))
@@ -465,28 +373,6 @@ def main():
                 st.error("Error al generar la exportación Excel. Por favor, intente de nuevo.")
         else:
             st.info("Primero debe realizar un análisis de candidatos para exportar a Excel")
-
-async def load_drive_cvs(app):
-    """Función asíncrona para cargar CVs desde Google Drive"""
-    try:
-        drive_client = GoogleDriveIntegration(
-            credentials_path=app.gdrive_credentials,
-            folder_id=app.gdrive_folder_id
-        )
-        files = await drive_client.list_cv_files()
-        
-        if not files:
-            st.warning("No se encontraron CVs en la carpeta de Google Drive")
-            return
-            
-        st.session_state.drive_files = {
-            f"{file['name']} (Modificado: {file['modifiedTime']})": file['id'] 
-            for file in files
-        }
-        
-    except Exception as e:
-        st.error(f"❌ Error al cargar desde Google Drive: {str(e)}")
-        logging.error(f"Google Drive Error: {str(e)}")
 
 async def analyze_candidates(ui_inputs, app):
     if not ui_inputs.job_file:
