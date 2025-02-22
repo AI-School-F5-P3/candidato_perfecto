@@ -1,13 +1,9 @@
 
-#  IA Recruiter 
+#  CandidatoPerfecto 
 
 <div align="center">
     <img src="logoNFQ.png" alt="Logo de IA Recruiter" />
 </div>
-
-
-## Descripción de la Aplicación
-**IA Recruiter** es una innovadora aplicación basada en Inteligencia Artificial que revoluciona el proceso de selección de talento. Diseñada para ayudar a empresas y reclutadores a encontrar al candidato ideal, la aplicación analiza y clasifica automáticamente un conjunto de perfiles profesionales para determinar cuáles se ajustan mejor a una vacante específica.
 
 ## Índice  
 - [Descripción de la Aplicación](#descripción-de-la-aplicación)  
@@ -15,12 +11,17 @@
 - [Beneficios de la Aplicación](#beneficios-de-la-aplicación)  
 - [Público Objetivo](#público-objetivo)  
 - [Tecnologías y Bibliotecas](#tecnologías-y-bibliotecas)  
-- [Diagrama de Flujo de Google Drive](#diagrama-de-flujo-de-google-drive)  
+- [Documentación](#documentación)  
 - [Conclusión](#conclusión)  
+
+--- 
+
+## Descripción de la Aplicación
+**IA Recruiter** es una innovadora aplicación basada en Inteligencia Artificial que revoluciona el proceso de selección de talento. Diseñada para ayudar a empresas y reclutadores a encontrar al candidato ideal, la aplicación analiza y clasifica automáticamente un conjunto de perfiles profesionales para determinar cuáles se ajustan mejor a una vacante específica.
+
 
 ---
 
-- [Documentación](#Documemtación)  
 
 
 ## 🌟 Funcionalidades Clave
@@ -74,10 +75,17 @@
 - 👩‍💼 Profesionales que buscan optimizar procesos de contratación con IA.
 
 **IA Recruiter** es la solución definitiva para empresas que buscan optimizar su proceso de selección con tecnología avanzada. 🚀
+
 </details>
+
 ---
 
 ## Tecnologías y Bibliotecas
+
+<details>
+  <summary>Ver más</summary>
+  
+--
 Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas tecnologías y bibliotecas que faciliten la implementación de sus funcionalidades clave. A continuación, se presenta una lista de tecnologías y bibliotecas relevantes:
 
 ### 💻 Lenguajes de Programación
@@ -123,15 +131,16 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 
 
 </details>
+
+
 --- 
 
 ### Documentación
 <details>
   <summary>Ver más</summary>
--- 
 
 ## 1. Diagrama de Flujo de Google Drive
-
+Falta
 
 ## 2. Flujo Completo de la Aplicación
 
@@ -262,6 +271,8 @@ async def analyze_candidates(ui_inputs, app):
         killer_criteria=standardized_killer_criteria
     )
 ```
+</details>
+
 
 ### Conclusión
 La combinación de estas tecnologías y bibliotecas permitirá desarrollar una aplicación robusta y eficiente que cumpla con los objetivos de **IA Recruiter**, optimizando el proceso de selección de talento mediante el uso de inteligencia artificial y garantizando un enfoque ético y normativo.
