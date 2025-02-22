@@ -273,7 +273,13 @@ async def analyze_candidates(ui_inputs, app):
 ```
 </details>
 
+---
 
 ### Conclusión
-La combinación de estas tecnologías y bibliotecas permitirá desarrollar una aplicación robusta y eficiente que cumpla con los objetivos de **IA Recruiter**, optimizando el proceso de selección de talento mediante el uso de inteligencia artificial y garantizando un enfoque ético y normativo.
+<details>
+  <summary>Ver más</summary>
+    
+La combinación de estas tecnologías y bibliotecas permitirá desarrollar una aplicación robusta y eficiente que cumpla con los objetivos de **CandidatoPerfecto**, optimizando el proceso de selección de talento mediante el uso de inteligencia artificial y garantizando un enfoque ético y normativo.
+
+</details>
 
