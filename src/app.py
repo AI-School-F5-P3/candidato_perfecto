@@ -331,10 +331,11 @@ async def analyze_candidates(ui_inputs, app):
     if not ('drive_cvs' in st.session_state or ui_inputs.resume_files):
         st.warning("⚠️ Por favor, cargue CVs desde Google Drive o suba archivos manualmente")
         return
-        
-    if ui_inputs.weights.total_weight != 1.0:
-        st.error("Por favor, ajuste los pesos para que sumen exactamente 1.0")
-        return
+
+    # Se elimina la verificación de pesos globales
+    # if ui_inputs.weights.total_weight != 1.0:
+    #     st.error("Por favor, ajuste los pesos para que sumen exactamente 1.0")
+    #     return
     
     # Procesa los CVs (se mantiene igual)
     if 'drive_cvs' in st.session_state:
@@ -350,19 +351,14 @@ async def analyze_candidates(ui_inputs, app):
     for idx, job_section in enumerate(ui_inputs.job_sections):
         st.markdown(f"---\n### Análisis para la Vacante {idx+1}: {job_section.job_file.name}")
         try:
-            # Prepara preferencias propias para la vacante
+            # Prepara preferencias propias para la vacante usando los pesos del job_section
             hiring_preferences = {
                 "habilidades_preferidas": [
                     skill.strip() 
                     for skill in (job_section.recruiter_skills or "").split('\n')
                     if skill.strip()
                 ],
-                "weights": {
-                    "habilidades": ui_inputs.weights.habilidades,
-                    "experiencia": ui_inputs.weights.experiencia,
-                    "formacion": ui_inputs.weights.formacion,
-                    "preferencias_reclutador": ui_inputs.weights.preferencias_reclutador
-                }
+                "weights": job_section.weights
             }
             job_profile = await app.process_job_description(job_section.job_file, hiring_preferences)
             recruiter_preferences = await app.process_preferences(job_section.recruiter_skills)
