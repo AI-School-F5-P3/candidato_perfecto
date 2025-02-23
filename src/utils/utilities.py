@@ -25,6 +25,20 @@ def format_list_preview(items: List[str], max_items: int = 5) -> str:
 def create_score_row(candidate_data: Dict[str, Any], score_data: Dict[str, Any]) -> Dict[str, Any]:
     """Crea una fila de datos para el DataFrame de resultados"""
     import json
+    # Añadir campos esenciales
+    candidate_data.setdefault('job_skills', [])
+    candidate_data.setdefault('job_experience', 0)
+    candidate_data.setdefault('preferencias_score', 0.0)
+
+    # Convertir experiencia a strings para visualización
+    exp_preview = []
+    for exp in candidate_data.get('experiencia', []):
+        if isinstance(exp, dict):
+            exp_str = f"{exp.get('puesto', '')} ({exp.get('duracion', '')})"
+            exp_preview.append(exp_str)
+        else:
+            exp_preview.append(str(exp))
+
     # Convert nested dicts to strings for safe DataFrame creation.
     if "raw_data" in candidate_data and isinstance(candidate_data["raw_data"], dict):
         candidate_data["raw_data"] = json.dumps(candidate_data["raw_data"])
@@ -42,10 +56,10 @@ def create_score_row(candidate_data: Dict[str, Any], score_data: Dict[str, Any])
         'Score Formación': f"{score_data['component_scores']['formacion']:.1%}",
         'Score Preferencias': f"{score_data['component_scores']['preferencias_reclutador']:.1%}",
         'Habilidades': format_list_preview(candidate_data['habilidades']),
-        'Experiencia': format_list_preview(candidate_data['experiencia'], 3),
+        'Experiencia': format_list_preview(exp_preview, 3),
         'Formación': format_list_preview(candidate_data['formacion'], 2),
         'Razones Descalificación': ', '.join(score_data.get('disqualification_reasons', [])) or 'N/A',
-        'raw_data': candidate_data.get('raw_data')  # Mantiene los datos originales para referencia
+        'raw_data': json.dumps(candidate_data)  # Asegurar serialización
     }
 
 def sort_ranking_dataframe(df: pd.DataFrame) -> pd.DataFrame:

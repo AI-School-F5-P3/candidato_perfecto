@@ -41,9 +41,12 @@ class CandidateProfile:
     """Estructura estandarizada del currículum"""
     nombre_candidato: str
     habilidades: List[str]
-    experiencia: List[str]
+    experiencia: List[Dict]  # Cambiar de List[str] a List[Dict]
     formacion: List[str]
     raw_data: Optional[Dict] = None
+    job_skills: Optional[List[str]] = None      # Nuevo campo
+    job_experience: Optional[int] = None          # Nuevo campo
+    preferencias_score: Optional[float] = None    # Nuevo campo
 
 @dataclass
 class MatchScore:
@@ -250,19 +253,26 @@ class SemanticAnalyzer(TextAnalyzer):
         processed_text = self.text_processor.process_text(resume_text)
         
         prompt = f"""
-        Extract key information in Spanish from this resume:
-        - List specific technical skills and tools
-        - Include quantifiable achievements and years of experience
-        - Standardize education levels
-        
+        Extrae key information in Spanish from this resume:
+        - List specific technical skills and tools.
+        - Include quantifiable achievements and years of experience.
+        - Standardize education levels.
+        - For experience, output structured data in JSON format as follows:
+
         Output JSON with:
         {{
             "nombre_candidato": "full name",
             "habilidades": ["skill1", "skill2"],  
-            "experiencia": ["X_years_experience in...", "achievements"],
-            "formacion": ["education with levels"]
+            "experiencia": [
+                {{
+                    "texto_raw": "Desarrollador Python en X Corp (2020-2022)",
+                    "logros": ["Implementé sistema de recomendación"]
+                }}
+            ],
+            "formacion": ["education with levels"],
+            "habilidades_preferidas": ["python", "machine learning"]  # opcional
         }}
-        
+
         Resume: {processed_text}
         """
         
@@ -275,7 +285,6 @@ class SemanticAnalyzer(TextAnalyzer):
         profile_data = json.loads(response.choices[0].message.content)
         raw_data = profile_data.copy()
         
-        # Post-process LLM output
         profile_data["habilidades"] = [
             self.text_processor.normalize_skill(skill) 
             for skill in profile_data["habilidades"]
@@ -284,13 +293,92 @@ class SemanticAnalyzer(TextAnalyzer):
             self.text_processor.standardize_education(edu)
             for edu in profile_data["formacion"]
         ]
+        # Convertir cada experiencia a string antes de procesarla
         profile_data["experiencia"] = [
-            self.text_processor.extract_years_experience(exp)
+            self.text_processor.extract_years_experience(str(exp))
             for exp in profile_data["experiencia"]
         ]
         profile_data["raw_data"] = raw_data
+
+        # =============================================
+        # Nuevo: Procesar experiencia estructurada con conversión a string
+        # =============================================
+        def get_exp_text(exp) -> str:
+            if isinstance(exp, str):
+                return exp
+            elif isinstance(exp, dict):
+                return exp.get("texto_raw", str(exp))
+            return str(exp)
         
-        return CandidateProfile(**profile_data)
+        processed_experience = []
+        for exp in profile_data.get("experiencia", []):
+            exp_text = get_exp_text(exp)
+            processed_experience.append({
+                "puesto": await self._extract_position(exp_text),
+                "duracion": await self._extract_duration(exp_text),
+                "habilidades": await self._extract_skills(exp_text)
+            })
+        
+        def _calculate_required_experience(exp_requirements: List[str]) -> int:
+            years = 0
+            for req in exp_requirements:
+                match = re.search(r'(\d+)_years_experience', req)
+                if match:
+                    years += int(match.group(1))
+            return years
+
+        return CandidateProfile(
+            nombre_candidato=profile_data["nombre_candidato"],
+            habilidades=profile_data["habilidades"],
+            experiencia=processed_experience,  # Ahora es lista de dicts
+            formacion=profile_data["formacion"],
+            # Se integran los nuevos campos usando datos de profile_data o valores por defecto:
+            job_skills=profile_data.get("habilidades_preferidas", []),
+            job_experience=_calculate_required_experience(profile_data.get("experiencia", [])),
+            preferencias_score=0.0,  # Valor por defecto ya que no se calcula aquí
+            raw_data=json.dumps(profile_data)  # Asegurar formato string
+        )
+
+    async def _extract_position(self, exp_text: str) -> str:
+        try:
+            prompt = f"""Extrae solo el nombre del puesto de este texto en español: "{exp_text}" """
+            response = await self.client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=20
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            logging.error(f"Error extrayendo puesto: {str(e)}")
+            return "Posición no especificada"
+
+    async def _extract_duration(self, exp_text: str) -> str:
+        try:
+            prompt = f"""Extrae la duración en español de este texto: "{exp_text}". 
+Ejemplo: "2 años", "6 meses" """
+            response = await self.client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=15
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            logging.error(f"Error extrayendo duración: {str(e)}")
+            return "Duración no especificada"
+
+    async def _extract_skills(self, exp_text: str) -> List[str]:
+        try:
+            prompt = f"""Lista habilidades técnicas en español de este texto (solo nombres, separados por coma): 
+"{exp_text}" """
+            response = await self.client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=50
+            )
+            return [skill.strip() for skill in response.choices[0].message.content.split(",")]
+        except Exception as e:
+            logging.error(f"Error extrayendo habilidades: {str(e)}")
+            return []
 
     async def standardize_killer_criteria(self, criteria: Dict[str, List[str]]) -> Dict[str, List[str]]:
         """Standardize killer criteria into structured format"""
@@ -362,7 +450,7 @@ class MatchingEngine(TextAnalyzer):
 
         # Process killer_habilidades (skills)
         killer_skills = killer_criteria.get("killer_habilidades", [])
-        if killer_skills:
+        if (killer_skills):
             # Normalize candidate skills (assumed to be a list of strings)
             candidate_skills = [skill.lower().strip() for skill in candidate.habilidades]
             for req_skill in killer_skills:
@@ -445,6 +533,7 @@ class MatchingEngine(TextAnalyzer):
             "qualified": killer_met,
             "reasons": killer_reasons
         }
+        candidate.preferencias_score = pref_sim  # Guardar score de preferencias
         return MatchScore(
             final_score=final,
             component_scores=comp_scores,

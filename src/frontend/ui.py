@@ -7,6 +7,7 @@ from dataclasses import dataclass
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 from frontend import comparative_analysis  # added import for comparative_analysis
 
 @dataclass
@@ -245,7 +246,58 @@ class UIComponents:
                     st.markdown("Detalles del candidato:")
                     display_candidate_details(row['raw_data'])
 
-            # Show requirement details in expandable sections
+            # =============================================
+            # Nuevo: Gráfico radar para competencias clave
+            # =============================================
+            st.markdown("### Distribución de Competencias Clave")
+            top_candidates = df[df['Estado'] == 'Calificado'].head(3)
+            if not top_candidates.empty:
+                categories = ['Habilidades', 'Experiencia', 'Formación', 'Preferencias']
+                fig = go.Figure()
+                for _, row in top_candidates.iterrows():
+                    scores = [
+                        float(row['Score Habilidades'].rstrip('%'))/100,
+                        float(row['Score Experiencia'].rstrip('%'))/100,
+                        float(row['Score Formación'].rstrip('%'))/100,
+                        float(row['Score Preferencias'].rstrip('%'))/100
+                    ]
+                    fig.add_trace(go.Scatterpolar(
+                        r=scores,
+                        theta=categories,
+                        fill='toself',
+                        name=row['Nombre Candidato']
+                    ))
+                fig.update_layout(
+                    polar=dict(radialaxis=dict(visible=True, range=[0, 1])),
+                    showlegend=True,
+                    margin=dict(l=20, r=20, t=40, b=20)
+                )
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("No hay candidatos calificados para mostrar el gráfico de competencias")
+
+            # =============================================
+            # Nuevo: Explicación de ponderaciones
+            # =============================================
+            with st.expander("🔍 Cómo se calculan los scores", expanded=False):
+                st.markdown("""
+                **Fórmula de puntuación final**:  
+                `(Habilidades × Peso) + (Experiencia × Peso) + (Formación × Peso) + (Preferencias × Peso)`  
+
+                - Los pesos son configurables por vacante y deben sumar 1.0  
+                - Los criterios eliminatorios se verifican primero  
+                - Scores se normalizan entre 0% y 100%  
+                """)
+                if hasattr(job_profile, 'weights'):
+                    st.markdown("**Pesos actuales para esta vacante:**")
+                    weights = job_profile.weights
+                    st.write(f"- Habilidades: {weights.get('habilidades', 0):.0%}")
+                    st.write(f"- Experiencia: {weights.get('experiencia', 0):.0%}")
+                    st.write(f"- Formación: {weights.get('formacion', 0):.0%}")
+                    st.write(f"- Preferencias: {weights.get('preferencias_reclutador', 0)::.0%}")
+
+            # =============================================
+            # ...resto del código existente (detalle de requisitos, etc.)...
             with st.expander("Ver Requisitos del Puesto"):
                 st.json({
                     "nombre_vacante": job_profile.nombre_vacante,
@@ -269,21 +321,94 @@ class UIComponents:
             st.error("Error al mostrar los resultados. Verifique los datos y vuelva a intentar.")
             logging.error(f"Error in display_ranking: {str(e)})")
 
-def display_candidate_details(raw_data: str) -> None:
-    """
-    Convierte el JSON contenido en raw_data en una tabla formateada y la muestra.
-    """
-    import json
+# Reemplazar la función display_candidate_details existente por la siguiente:
+def display_candidate_details(raw_data: any) -> None:
+    """Muestra detalles ampliados del candidato"""
+    import json, re
     try:
-        data_dict = json.loads(raw_data)
+        # Convertir raw_data a dict de forma segura
+        if isinstance(raw_data, str):
+            data_dict = json.loads(raw_data)
+        elif isinstance(raw_data, dict):
+            data_dict = raw_data.copy()
+        else:
+            raise ValueError("Formato de datos no soportado")
+        
+        # Asegurar campos críticos
+        data_dict.setdefault('job_skills', [])
+        data_dict.setdefault('job_experience', 0)
+        data_dict.setdefault('experiencia', [])
+        data_dict.setdefault('formacion', [])
+
+        # =============================================
+        # Análisis Comparativo (mejorado)
+        # =============================================
+        st.markdown("### Análisis Comparativo")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("✅ **Fortalezas Principales**")
+            # Habilidades
+            matched_skills = len(set(data_dict['habilidades']) & set(data_dict['job_skills']))
+            st.write(f"- Coincidencia en {matched_skills}/{len(data_dict['job_skills'])} habilidades clave")
+            
+            # Experiencia
+            exp_years = 0
+            for exp in data_dict['experiencia']:
+                if isinstance(exp, dict) and 'duracion' in exp:
+                    match = re.search(r'\d+', str(exp['duracion']))
+                    if match:
+                        exp_years += int(match.group())
+            st.write(f"- {exp_years} años de experiencia relevante")
+            
+            # Formación
+            has_higher_education = any(edu in data_dict['formacion'] for edu in ['master', 'grado'])
+            st.write("- Formación acorde al puesto" if has_higher_education else "- Formación básica")
+
+        with col2:
+            st.markdown("⚠️ **Áreas de Mejora**")
+            # Habilidades faltantes
+            missing_skills = set(data_dict['job_skills']) - set(data_dict['habilidades'])
+            if missing_skills:
+                st.write(f"- Faltan {len(missing_skills)} habilidades: {', '.join(list(missing_skills)[:3])}...")
+            
+            # Experiencia
+            if exp_years < data_dict['job_experience']:
+                st.write(f"- Experiencia insuficiente: requiere {data_dict['job_experience']} años")
+    
+            # Preferencias
+            if data_dict.get('preferencias_score', 0) < 0.7:
+                st.write(f"- Alineamiento con preferencias: {data_dict['preferencias_score']:.0%}")
+
+        # =============================================
+        # Timeline de Experiencia (robusto)
+        # =============================================
+        st.markdown("📅 **Historial Profesional**")
+        valid_experience = [
+            exp for exp in data_dict['experiencia']
+            if isinstance(exp, dict) and 'puesto' in exp
+        ][:3]  # Limitar a 3 entradas
+        
+        if valid_experience:
+            timeline_data = {
+                "Posición": [exp.get('puesto', 'Sin especificar') for exp in valid_experience],
+                "Duración": [exp.get('duracion', 'No disponible') for exp in valid_experience],
+                "Habilidades": [", ".join(exp.get('habilidades', [])) for exp in valid_experience]
+            }
+            st.dataframe(
+                pd.DataFrame(timeline_data),
+                use_container_width=True,
+                hide_index=True,
+                column_config={
+                    "Posición": st.column_config.TextColumn(width="large"),
+                    "Duración": st.column_config.TextColumn(width="medium"),
+                    "Habilidades": st.column_config.ListColumn("Tecnologías usadas")
+                }
+            )
+        else:
+            st.warning("No se encontró experiencia estructurada en el CV")
+            
     except Exception as e:
-        st.error("Error procesando los detalles del candidato.")
-        return
-    # Convertir valores de tipo lista en cadenas
-    rows = []
-    for key, value in data_dict.items():
-        if isinstance(value, list):
-            value = ", ".join(str(v) for v in value)
-        rows.append((key, value))
-    df = pd.DataFrame(rows, columns=["Campo", "Valor"])
-    st.table(df)
+        st.error("Error mostrando detalles del candidato")
+        logging.error(f"display_candidate_details error: {str(e)} | Data: {str(raw_data)[:200]}")
