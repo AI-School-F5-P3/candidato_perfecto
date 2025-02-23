@@ -2,7 +2,7 @@ import streamlit as st
 from pathlib import Path
 from hr_analysis_system import JobProfile
 import logging
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Any
 from dataclasses import dataclass
 import pandas as pd
 import seaborn as sns
@@ -19,14 +19,20 @@ class WeightSettings:
     total_weight: float
 
 @dataclass
-class UIInputs:
-    """Almacena todos los inputs de usuario de la interfaz"""
-    job_file: object
+class JobSection:
+    """Contiene los datos de cada vacante"""
+    job_file: Any
     recruiter_skills: str
-    resume_files: List[object]
     killer_criteria: Dict[str, List[str]]
+    weights: Any = None  # Nuevo campo para pesos específicos (WeightSettings)
+
+@dataclass
+class UIInputs:
+    """Almacena los inputs de la interfaz para la funcionalidad multivacante"""
+    job_sections: List[JobSection]
+    resume_files: List[Any]
     weights: WeightSettings
-    important_skills: str
+    # Se eliminan los campos de recruiter_skills y killer_criteria globales
 
 class UIComponents:
     """Maneja todos los componentes de la interfaz de usuario"""
@@ -162,87 +168,119 @@ class UIComponents:
 
     @staticmethod
     def create_main_sections() -> UIInputs:
-        """Crea las secciones principales de la interfaz"""
+        """Crea las secciones principales de la interfaz con soporte para múltiples vacantes"""
+        job_sections = []
         with st.container():
-            # Sección de Descripción del Puesto
             st.markdown('<div class="main-section">', unsafe_allow_html=True)
-            st.markdown('<div class="section-header">Descripción del Puesto</div>', unsafe_allow_html=True)
-            job_file = st.file_uploader(
-                "Suba la descripción del puesto (TXT o PDF)", 
-                type=['txt', 'pdf'],
-                key="job_upload"
-            )
-            st.markdown('</div>', unsafe_allow_html=True)
-            
-            # Sección de Preferencias del Reclutador
-            st.markdown('<div class="main-section">', unsafe_allow_html=True)
-            st.markdown('<div class="section-header">Preferencias del reclutador (Opcional)</div>', unsafe_allow_html=True)
-            recruiter_skills = st.text_area(
-                "Preferencias del reclutador (una por línea)",
-                height=120,
-                key="skills_input",
-                help="Campo opcional. Puede dejarlo vacío si no hay preferencias específicas."
-            )
-            st.markdown('</div>', unsafe_allow_html=True)
-            
-            # Sección de Criterios Eliminatorios
-            st.markdown('<div class="main-section">', unsafe_allow_html=True)
-            st.markdown('<div class="section-header">Criterios Eliminatorios (Opcional)</div>', unsafe_allow_html=True)
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                killer_habilidades = st.text_area(
-                    "Habilidades obligatorias (una por línea)",
-                    height=120,
-                    key="killer_skills_input",
-                    help="Campo opcional. Puede dejarlo vacío si no hay habilidades obligatorias."
-                )
-                
-            with col2:
-                killer_experiencia = st.text_area(
-                    "Experiencia obligatoria (una por línea)",
-                    height=120,
-                    key="killer_exp_input",
-                    help="Campo opcional. Puede dejarlo vacío si no hay experiencia obligatoria."
-                )
-                
-            st.markdown('</div>', unsafe_allow_html=True)
-            
-            # Sección de Subida de CVs
-            st.markdown('<div class="main-section">', unsafe_allow_html=True)
-            st.markdown('<div class="section-header">CVs de Candidatos</div>', unsafe_allow_html=True)
-            resume_files = st.file_uploader(
-                "Suba los CVs de los candidatos (TXT o PDF)", 
+            st.markdown('<div class="section-header">Descripción(es) de la Vacante</div>', unsafe_allow_html=True)
+            job_files = st.file_uploader(
+                "Suba las descripciones del puesto (TXT o PDF)",
                 type=['txt', 'pdf'],
                 accept_multiple_files=True,
-                key="cv_upload"
+                key="job_upload_multi"
             )
             st.markdown('</div>', unsafe_allow_html=True)
-
-        # Procesar criterios eliminatorios
-        killer_criteria = {
-            "killer_habilidades": [
-                skill.strip() 
-                for skill in (killer_habilidades or "").split('\n') 
-                if skill.strip()
-            ],
-            "killer_experiencia": [
-                exp.strip() 
-                for exp in (killer_experiencia or "").split('\n') 
-                if exp.strip()
-            ]
-        }
-
-        weights = UIComponents.create_weight_sliders()
+            
+            if job_files:
+                st.markdown("### Configurar cada vacante")
+                for idx, job_file in enumerate(job_files):
+                    with st.expander(f"Vacante {idx+1}: {job_file.name}"):
+                        recruiter_skills = st.text_area(
+                            "Preferencias del reclutador (una por línea)",
+                            height=120,
+                            key=f"skills_input_{idx}",
+                            help="Ingrese las preferencias específicas para esta vacante."
+                        )
+                        killer_skills = st.text_area(
+                            "Habilidades eliminatorias (una por línea)",
+                            height=120,
+                            key=f"killer_skills_input_{idx}",
+                            help="Ingrese las habilidades obligatorias para esta vacante."
+                        )
+                        killer_experiencia = st.text_area(
+                            "Experiencia eliminatoria (una por línea)",
+                            height=120,
+                            key=f"killer_exp_input_{idx}",
+                            help="Ingrese la experiencia mínima requerida para esta vacante."
+                        )
+                        killer_criteria = {
+                            "killer_habilidades": [
+                                skill.strip()
+                                for skill in (killer_skills or "").split('\n')
+                                if skill.strip()
+                            ],
+                            "killer_experiencia": [
+                                exp.strip()
+                                for exp in (killer_experiencia or "").split('\n')
+                                if exp.strip()
+                            ]
+                        }
+                        st.markdown("#### Configure los pesos para esta vacante (deben sumar 1.0)")
+                        vac_hab = st.slider(
+                            "Habilidades",
+                            min_value=0.0,
+                            max_value=1.0,
+                            value=0.3,
+                            step=0.05,
+                            key=f"vac_weight_habilidades_{idx}"
+                        )
+                        vac_exp = st.slider(
+                            "Experiencia",
+                            min_value=0.0,
+                            max_value=1.0,
+                            value=0.3,
+                            step=0.05,
+                            key=f"vac_weight_experiencia_{idx}"
+                        )
+                        vac_for = st.slider(
+                            "Formación",
+                            min_value=0.0,
+                            max_value=1.0,
+                            value=0.2,
+                            step=0.05,
+                            key=f"vac_weight_formacion_{idx}"
+                        )
+                        vac_pref = st.slider(
+                            "Preferencias del Reclutador",
+                            min_value=0.0,
+                            max_value=1.0,
+                            value=0.2,
+                            step=0.05,
+                            key=f"vac_weight_preferencias_{idx}"
+                        )
+                        vac_total = round(vac_hab + vac_exp + vac_for + vac_pref, 2)
+                        st.markdown(f"Total: **{vac_total}** (debe ser 1.0)")
+                        if vac_total != 1.0:
+                            st.error("⚠️ Los pesos no suman 1.0")
+                        job_sections.append(JobSection(
+                            job_file=job_file,
+                            recruiter_skills=recruiter_skills,
+                            killer_criteria=killer_criteria,
+                            weights={
+                                "habilidades": vac_hab,
+                                "experiencia": vac_exp,
+                                "formacion": vac_for,
+                                "preferencias_reclutador": vac_pref
+                            }
+                        ))
+            
+            # Sección de CVs
+            with st.container():
+                st.markdown('<div class="main-section">', unsafe_allow_html=True)
+                st.markdown('<div class="section-header">CVs de Candidatos</div>', unsafe_allow_html=True)
+                resume_files = st.file_uploader(
+                    "Suba los CVs de los candidatos (TXT o PDF)",
+                    type=['txt', 'pdf'],
+                    accept_multiple_files=True,
+                    key="cv_upload_multi"
+                )
+                st.markdown('</div>', unsafe_allow_html=True)
         
+        weights = UIComponents.create_weight_sliders()
         return UIInputs(
-            job_file=job_file,
-            recruiter_skills=recruiter_skills,
+            job_sections=job_sections,
             resume_files=resume_files,
-            killer_criteria=killer_criteria,
-            weights=weights,
-            important_skills=recruiter_skills  # Asegurarse de incluir este campo
+            weights=weights
         )
 
     @staticmethod
@@ -336,15 +374,6 @@ class UIComponents:
                     "experiencia_obligatoria": killer_criteria.get("killer_experiencia", [])
                 })
             
-            # Reemplazar el botón existente con:
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col2:
-                navigation_button()
-            
         except Exception as e:
             st.error("Error al mostrar los resultados. Verifique los datos y vuelva a intentar.")
-            logging.error(f"Error in display_ranking: {str(e)}")
-
-def navigation_button():
-    if st.button("Realizar análisis comparativo", use_container_width=True):
-        st.session_state.show_comparative = True
+            logging.error(f"Error in display_ranking: {str(e)})")

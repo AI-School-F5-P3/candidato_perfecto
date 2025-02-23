@@ -324,8 +324,8 @@ async def load_drive_cvs(app):
         logging.error(f"Google Drive Error: {str(e)}")
 
 async def analyze_candidates(ui_inputs, app):
-    if not ui_inputs.job_file:
-        st.warning("⚠️ Por favor, suba un archivo de descripción del puesto")
+    if not ui_inputs.job_sections:
+        st.warning("⚠️ Por favor, suba al menos una descripción de puesto")
         return
         
     if not ('drive_cvs' in st.session_state or ui_inputs.resume_files):
@@ -336,35 +336,38 @@ async def analyze_candidates(ui_inputs, app):
         st.error("Por favor, ajuste los pesos para que sumen exactamente 1.0")
         return
     
-    # Prepara las preferencias y pesos
-    hiring_preferences = {
-        "habilidades_preferidas": [
-            skill.strip() 
-            for skill in (ui_inputs.recruiter_skills or "").split('\n')  # Cambiar important_skills por recruiter_skills
-            if skill.strip()
-        ],
-        "weights": {
-            "habilidades": ui_inputs.weights.habilidades,
-            "experiencia": ui_inputs.weights.experiencia,
-            "formacion": ui_inputs.weights.formacion,
-            "preferencias_reclutador": ui_inputs.weights.preferencias_reclutador
-        }
-    }
+    # Procesa los CVs (se mantiene igual)
+    if 'drive_cvs' in st.session_state:
+        candidate_profiles = await app.process_resumes(st.session_state.drive_cvs)
+    else:
+        candidate_profiles = await app.process_resumes(ui_inputs.resume_files)
     
-    try:
-        # Procesa la descripción del trabajo y preferencias
-        job_profile = await app.process_job_description(ui_inputs.job_file, hiring_preferences)
-        recruiter_preferences = await app.process_preferences(ui_inputs.recruiter_skills)
-        standardized_killer_criteria = await app.analyzer.standardize_killer_criteria(ui_inputs.killer_criteria)
-        
-        # Procesa los CVs según la fuente
-        if 'drive_cvs' in st.session_state:
-            candidate_profiles = await app.process_resumes(st.session_state.drive_cvs)
-        else:
-            candidate_profiles = await app.process_resumes(ui_inputs.resume_files)
-        
-        if candidate_profiles:
-            # Realiza el ranking
+    if not candidate_profiles:
+        st.warning("No se pudieron procesar los CVs. Por favor, verifique los archivos.")
+        return
+
+    # Para cada vacante se procesa la descripción, preferencias y criterios, y se analiza el ranking
+    for idx, job_section in enumerate(ui_inputs.job_sections):
+        st.markdown(f"---\n### Análisis para la Vacante {idx+1}: {job_section.job_file.name}")
+        try:
+            # Prepara preferencias propias para la vacante
+            hiring_preferences = {
+                "habilidades_preferidas": [
+                    skill.strip() 
+                    for skill in (job_section.recruiter_skills or "").split('\n')
+                    if skill.strip()
+                ],
+                "weights": {
+                    "habilidades": ui_inputs.weights.habilidades,
+                    "experiencia": ui_inputs.weights.experiencia,
+                    "formacion": ui_inputs.weights.formacion,
+                    "preferencias_reclutador": ui_inputs.weights.preferencias_reclutador
+                }
+            }
+            job_profile = await app.process_job_description(job_section.job_file, hiring_preferences)
+            recruiter_preferences = await app.process_preferences(job_section.recruiter_skills)
+            standardized_killer_criteria = await app.analyzer.standardize_killer_criteria(job_section.killer_criteria)
+            
             rankings = await app.ranking_system.rank_candidates(
                 job_profile,
                 recruiter_preferences,
@@ -373,39 +376,16 @@ async def analyze_candidates(ui_inputs, app):
                 hiring_preferences["weights"]
             )
             
-            logging.info("Ranking de candidatos completado.")
             styled_df = app.create_ranking_dataframe(rankings)
-            
-            # Create and save debug information
-            debug_df = app.create_debug_dataframe(job_profile, rankings)
-            debug_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs", "debug")
-            os.makedirs(debug_dir, exist_ok=True)
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            debug_filename = os.path.join(debug_dir, f"debug_{timestamp}.csv")
-            debug_df.to_csv(debug_filename, index=False)
-            logging.info(f"Debug CSV guardado en {debug_filename}")
-            
-            # Store results in session state
-            st.session_state['analysis_results'] = {
-                'df': styled_df,
-                'job_profile': job_profile,
-                'recruiter_preferences': recruiter_preferences,
-                'killer_criteria': standardized_killer_criteria,
-                'debug_csv': debug_filename
-            }
-            
             UIComponents.display_ranking(
                 df=styled_df,
                 job_profile=job_profile,
                 recruiter_preferences=recruiter_preferences,
                 killer_criteria=standardized_killer_criteria
             )
-        else:
-            st.warning("No se pudieron procesar los CVs. Por favor, verifique los archivos.")
-                
-    except Exception as e:
-        logging.error(f"Error durante el análisis: {str(e)}")
-        st.error(f"Error durante el análisis: {str(e)}")
+        except Exception as e:
+            logging.error(f"Error durante el análisis en la vacante {idx+1}: {str(e)}")
+            st.error(f"Error en el análisis para la vacante {idx+1}: {str(e)}")
 
 if __name__ == "__main__":
     try:
