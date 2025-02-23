@@ -242,7 +242,8 @@ class UIComponents:
                 with st.expander(expander_title):
                     if row['Estado'] == 'Descalificado':
                         st.error(f"Razones de descalificación: {row['Razones Descalificación']}")
-                    st.json(row['raw_data'])
+                    st.markdown("Detalles del candidato:")
+                    display_candidate_details(row['raw_data'])
 
             # Show requirement details in expandable sections
             with st.expander("Ver Requisitos del Puesto"):
@@ -267,3 +268,22 @@ class UIComponents:
         except Exception as e:
             st.error("Error al mostrar los resultados. Verifique los datos y vuelva a intentar.")
             logging.error(f"Error in display_ranking: {str(e)})")
+
+def display_candidate_details(raw_data: str) -> None:
+    """
+    Convierte el JSON contenido en raw_data en una tabla formateada y la muestra.
+    """
+    import json
+    try:
+        data_dict = json.loads(raw_data)
+    except Exception as e:
+        st.error("Error procesando los detalles del candidato.")
+        return
+    # Convertir valores de tipo lista en cadenas
+    rows = []
+    for key, value in data_dict.items():
+        if isinstance(value, list):
+            value = ", ".join(str(v) for v in value)
+        rows.append((key, value))
+    df = pd.DataFrame(rows, columns=["Campo", "Valor"])
+    st.table(df)
