@@ -150,19 +150,18 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 - [9.Implicaciones de Rendimiento](#implicaciones-de-rendimiento) 
 ---
 ## 1.Diagrama de Flujo
-Falta
 <details>
+  <summary>Ver más</summary>
+    
+<div align="center">
+    <img src="hr-system-drawio V2.drawio.png" alt="Logo de IA Recruiter" />
+</div>
+
+
     
 ## 2.Funcionamiento
 <details>
   <summary>Ver más</summary>
-
-  <div align="center">
-    <img src="docs/img/hr-system-drawio V2.drawio.png" alt="Logo de IA Recruiter" />
-
-    
-<details>
-
     
 ### 1. Proceso
 ### 1.1 Inicio de la Aplicación
