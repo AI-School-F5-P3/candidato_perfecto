@@ -323,7 +323,7 @@ class UIComponents:
 
 # Reemplazar la función display_candidate_details existente por la siguiente:
 def display_candidate_details(raw_data: any) -> None:
-    """Muestra detalles ampliados del candidato"""
+    """Muestra detalles ampliados del candidato, divididos en secciones con resumen y visualización mejorada"""
     import json, re
     try:
         # Convertir raw_data a dict de forma segura
@@ -339,54 +339,64 @@ def display_candidate_details(raw_data: any) -> None:
         data_dict.setdefault('job_experience', 0)
         data_dict.setdefault('experiencia', [])
         data_dict.setdefault('formacion', [])
-
-        # =============================================
-        # Análisis Comparativo (mejorado)
-        # =============================================
-        st.markdown("### Análisis Comparativo")
         
-        col1, col2 = st.columns(2)
+        # --- Resumen del candidato ---
+        exp_years = 0
+        for exp in data_dict.get('experiencia', []):
+            if isinstance(exp, dict) and 'duracion' in exp:
+                match = re.search(r'\d+', str(exp['duracion']))
+                if match:
+                    exp_years += int(match.group())
+        habilidades_coincidentes = len(set(data_dict.get('habilidades', [])) & set(data_dict.get('job_skills', [])))
+        total_job_skills = len(data_dict.get('job_skills', []))
         
-        with col1:
-            st.markdown("✅ **Fortalezas Principales**")
-            # Habilidades
-            matched_skills = len(set(data_dict['habilidades']) & set(data_dict['job_skills']))
-            st.write(f"- Coincidencia en {matched_skills}/{len(data_dict['job_skills'])} habilidades clave")
-            
-            # Experiencia
-            exp_years = 0
-            for exp in data_dict['experiencia']:
-                if isinstance(exp, dict) and 'duracion' in exp:
-                    match = re.search(r'\d+', str(exp['duracion']))
-                    if match:
-                        exp_years += int(match.group())
-            st.write(f"- {exp_years} años de experiencia relevante")
-            
-            # Formación
-            has_higher_education = any(edu in data_dict['formacion'] for edu in ['master', 'grado'])
-            st.write("- Formación acorde al puesto" if has_higher_education else "- Formación básica")
-
-        with col2:
-            st.markdown("⚠️ **Áreas de Mejora**")
-            # Habilidades faltantes
-            missing_skills = set(data_dict['job_skills']) - set(data_dict['habilidades'])
+        st.markdown("## Resumen del Candidato")
+        st.markdown(f"**Nombre:** {data_dict.get('nombre_candidato', 'No especificado')}")
+        st.markdown(f"**Años de experiencia:** {exp_years if exp_years > 0 else 'No especificado'}")
+        st.markdown(f"**Habilidades coincidentes:** {habilidades_coincidentes}/{total_job_skills if total_job_skills>0 else 'No especificado'}")
+        st.markdown("---")
+        
+        # --- Sección: Fortalezas ---
+        st.markdown("### ✅ Fortalezas Principales")
+        with st.container():
+            strengths = []
+            if total_job_skills:
+                strengths.append(f"**Habilidades:** {habilidades_coincidentes} de {total_job_skills} requeridas.")
+            else:
+                strengths.append("No se han definido habilidades requeridas.")
+            strengths.append(f"**Experiencia:** {exp_years} años comprobados." if exp_years > 0 else "No se detectó experiencia relevante.")
+            if any(edu in data_dict.get('formacion', []) for edu in ['master', 'grado']):
+                strengths.append("Formación acorde al puesto.")
+            else:
+                strengths.append("Formación básica, oportunidad de mejorar.")
+            for s in strengths:
+                st.markdown(f"- {s}")
+        
+        # --- Sección: Áreas de Mejora ---
+        st.markdown("### ⚠️ Áreas de Mejora")
+        with st.container():
+            improvements = []
+            missing_skills = set(data_dict.get('job_skills', [])) - set(data_dict.get('habilidades', []))
             if missing_skills:
-                st.write(f"- Faltan {len(missing_skills)} habilidades: {', '.join(list(missing_skills)[:3])}...")
-            
-            # Experiencia
-            if exp_years < data_dict['job_experience']:
-                st.write(f"- Experiencia insuficiente: requiere {data_dict['job_experience']} años")
-    
-            # Preferencias
+                improvements.append(f"Habilidades faltantes: {', '.join(list(missing_skills)[:3])}{'...' if len(missing_skills)>3 else ''}.")
+            else:
+                improvements.append("No se detectaron faltas en habilidades requeridas.")
+            required_exp = data_dict.get('job_experience', 0)
+            if exp_years < required_exp:
+                improvements.append(f"Experiencia insuficiente: requiere {required_exp} años, tiene {exp_years} años.")
+            else:
+                improvements.append("Experiencia cumple o supera los requisitos.")
             if data_dict.get('preferencias_score', 0) < 0.7:
-                st.write(f"- Alineamiento con preferencias: {data_dict['preferencias_score']:.0%}")
-
-        # =============================================
-        # Timeline de Experiencia (robusto)
-        # =============================================
-        st.markdown("📅 **Historial Profesional**")
+                improvements.append(f"Bajo alineamiento con preferencias: {data_dict.get('preferencias_score', 0):.0%}.")
+            else:
+                improvements.append("Alineamiento con preferencias adecuado.")
+            for imp in improvements:
+                st.markdown(f"- {imp}")
+        
+        # --- Sección: Historial Profesional ---
+        st.markdown("### 📅 Historial Profesional")
         valid_experience = [
-            exp for exp in data_dict['experiencia']
+            exp for exp in data_dict.get('experiencia', [])
             if isinstance(exp, dict) and 'puesto' in exp
         ][:3]  # Limitar a 3 entradas
         
@@ -401,13 +411,13 @@ def display_candidate_details(raw_data: any) -> None:
                 use_container_width=True,
                 hide_index=True,
                 column_config={
-                    "Posición": st.column_config.TextColumn(width="large"),
-                    "Duración": st.column_config.TextColumn(width="medium"),
+                    "Posición": st.column_config.TextColumn("Posición", width="large"),
+                    "Duración": st.column_config.TextColumn("Duración", width="medium"),
                     "Habilidades": st.column_config.ListColumn("Tecnologías usadas")
                 }
             )
         else:
-            st.warning("No se encontró experiencia estructurada en el CV")
+            st.warning("Sin historial profesional registrado.")
             
     except Exception as e:
         st.error("Error mostrando detalles del candidato")
