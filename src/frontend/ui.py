@@ -31,8 +31,7 @@ class UIInputs:
     """Almacena los inputs de la interfaz para la funcionalidad multivacante"""
     job_sections: List[JobSection]
     resume_files: List[Any]
-    weights: WeightSettings
-    # Se eliminan los campos de recruiter_skills y killer_criteria globales
+    # Se eliminó el campo global weights
 
 class UIComponents:
     """Maneja todos los componentes de la interfaz de usuario"""
@@ -57,114 +56,6 @@ class UIComponents:
             """,
             unsafe_allow_html=True
         )
-
-    @staticmethod
-    def create_weight_sliders() -> WeightSettings:
-        """Crea y gestiona los deslizadores de peso en la barra lateral"""
-        with st.sidebar:
-            # Aplicar estilo compacto a la barra lateral
-            st.markdown("""
-                <style>
-                [data-testid="stSidebar"] {
-                    min-width: 180px !important;
-                    max-width: 250px !important;
-                }
-                div[data-testid="stVerticalBlock"] > div {
-                    padding: 0 !important;
-                    margin: 0 !important;
-                }
-                .stSlider [data-baseweb="slider"] {
-                    margin: 0 !important;
-                    padding: 0.25rem 0 !important;
-                }
-                label[data-testid="stWidgetLabel"] {
-                    font-size: 0.8em !important;
-                    margin: 0 !important;
-                    padding: 0 !important;
-                }
-                [data-testid="stText"] {
-                    font-size: 0.8em !important;
-                    margin: 0 !important;
-                    padding: 0 !important;
-                }
-                .section-header {
-                    margin: 0 0 0.25rem 0 !important;
-                    padding: 0 0 0.25rem 0 !important;
-                }
-                </style>
-                """, 
-                unsafe_allow_html=True
-            )
-            
-            st.markdown('<div class="section-header">Pesos por sección</div>', unsafe_allow_html=True)
-            
-            with st.container():
-                st.markdown('<div class="weights-container">', unsafe_allow_html=True)
-                habilidades = st.slider(
-                    "Habilidades",
-                    min_value=0.0,
-                    max_value=1.0,
-                    value=0.3,
-                    step=0.05,
-                    key="habilidades_slider"
-                )
-                experiencia = st.slider(
-                    "Experiencia",
-                    min_value=0.0,
-                    max_value=1.0,
-                    value=0.3,
-                    step=0.05,
-                    key="exp_slider"
-                )
-                formacion = st.slider(
-                    "Formación",
-                    min_value=0.0,
-                    max_value=1.0,
-                    value=0.2,
-                    step=0.05,
-                    key="formacion_slider"
-                )
-                preferencias = st.slider(
-                    "Preferencias del Reclutador",
-                    min_value=0.0,
-                    max_value=1.0,
-                    value=0.2,
-                    step=0.05,
-                    key="preferencias_slider"
-                )
-                
-                total_weight = round(habilidades + experiencia + formacion + preferencias, 2)
-                
-                st.markdown(
-                    f"""
-                    <div style='
-                        background-color: #f0f2f6;
-                        padding: 0.25rem;
-                        border-radius: 4px;
-                        margin: 0.25rem 0;
-                        font-size: 0.8em;
-                        text-align: center;
-                        line-height: 1.2;
-                    '>
-                        Suma: <b>{total_weight}</b>
-                        <div style='font-size: 0.75em; color: #666;'>
-                            (debe ser 1.0)
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-                
-                if total_weight != 1.0:
-                    st.error("⚠️", icon="⚠️")
-
-                return WeightSettings(
-                    habilidades=habilidades,
-                    experiencia=experiencia,
-                    formacion=formacion,
-                    preferencias_reclutador=preferencias,
-                    total_weight=total_weight
-                )
 
     @staticmethod
     def create_main_sections() -> UIInputs:
@@ -276,11 +167,10 @@ class UIComponents:
                 )
                 st.markdown('</div>', unsafe_allow_html=True)
         
-        weights = UIComponents.create_weight_sliders()
+        # Se elimina la asignación de pesos globales ya que se usan los de cada vacante
         return UIInputs(
             job_sections=job_sections,
-            resume_files=resume_files,
-            weights=weights
+            resume_files=resume_files
         )
 
     @staticmethod
