@@ -49,7 +49,7 @@
 - Automatización del proceso de importación de CVs directamente desde Google Drive.
 - Optimización del flujo de trabajo y reducción de errores manuales en la gestión de datos.
 
-
+<details>
 ---
 
 ## Beneficios de la Aplicación
@@ -77,14 +77,13 @@
 **IA Recruiter** es la solución definitiva para empresas que buscan optimizar su proceso de selección con tecnología avanzada. 🚀
 
 
-
+<details>
 ---
 
 ## Tecnologías y Bibliotecas
 <details>
   <summary>Ver más</summary>
-  
---
+
 Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas tecnologías y bibliotecas que faciliten la implementación de sus funcionalidades clave. A continuación, se presenta una lista de tecnologías y bibliotecas relevantes:
 
 ### 💻 Lenguajes de Programación
@@ -117,7 +116,7 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 
 
 
-
+<details>
 --- 
 
 ### Documentación
