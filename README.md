@@ -8,7 +8,7 @@
 
 ## Índice  
 - [Descripción de la Aplicación](#descripcion-de-la-aplicacion)  
-- [ 🌟 Funcionalidades Clave](#funcionalidades-clave)  
+- [Funcionalidades Clave](#funcionalidades-clave)  
 - [Beneficios de la Aplicación](#beneficios-de-la-aplicacion)  
 - [Público Objetivo](#publico-objetivo)  
 - [Tecnologías y Bibliotecas](#tecnologias-y-bibliotecas)  
@@ -25,9 +25,9 @@
 
 
 
-## 🌟 Funcionalidades Clave
+## Funcionalidades Clave
 <details>
-  <summary>Funcionalidades Clave</summary>
+  <summary>Ver</summary>
 
 ### 🔍 Análisis y Clasificación de Candidatos
 - Evaluación de **20 CVs** proporcionados, utilizando algoritmos de IA Generativa para identificar el grado de adecuación de cada perfil a una vacante.
@@ -50,12 +50,11 @@
 - Optimización del flujo de trabajo y reducción de errores manuales en la gestión de datos.
 
 </details>
+
 ---
 
 ## Beneficios de la Aplicación
 
-<details>
-  <summary> ## Beneficios de la Aplicación</summary>
 
 - ⏳ **Optimización de tiempo** en la selección de candidatos.
 - 🎯 **Mayor precisión** en la identificación del talento adecuado.
@@ -63,7 +62,6 @@
 - ☁️ **Fácil integración** con herramientas de almacenamiento en la nube.
 
 
-</details>
 ---
 
 ## Público Objetivo
@@ -75,15 +73,14 @@
 
 **IA Recruiter** es la solución definitiva para empresas que buscan optimizar su proceso de selección con tecnología avanzada. 🚀
 
-
-
 ---
 
 ## Tecnologías y Bibliotecas
+Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas tecnologías y bibliotecas que faciliten la implementación de sus funcionalidades clave. A continuación, se presenta una lista de tecnologías y bibliotecas relevantes:
+
 <details>
   <summary>Ver más</summary>
 
-Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas tecnologías y bibliotecas que faciliten la implementación de sus funcionalidades clave. A continuación, se presenta una lista de tecnologías y bibliotecas relevantes:
 
 ### 💻 Lenguajes de Programación
 - **Python**: Ideal para el desarrollo de aplicaciones de IA y análisis de datos.
