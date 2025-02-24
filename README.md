@@ -1,7 +1,6 @@
 
 
 #  CandidatoPerfecto 
-#  CandidatoPerfecto 
 
 <div align="center">
     <img src="logoNFQ.png" alt="Logo de IA Recruiter" />
@@ -489,6 +488,3 @@ Detener la Aplicación
 - Se ejecuta la aplicación con **Streamlit**.  
 - Se indica cómo detener la aplicación cuando sea necesario.
 
-### Conclusión
-    
-La combinación de estas tecnologías y bibliotecas permitirá desarrollar una aplicación robusta y eficiente que cumpla con los objetivos de **CandidatoPerfecto**, optimizando el proceso de selección de talento mediante el uso de inteligencia artificial y garantizando un enfoque ético y normativo.
