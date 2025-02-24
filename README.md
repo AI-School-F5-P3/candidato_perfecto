@@ -13,7 +13,7 @@
 - [Público Objetivo](#público-objetivo)  
 - [Tecnologías y Bibliotecas](#tecnologías-y-bibliotecas)  
 - [Documentación](#documentación)  
-- [Conclusión](#conclusión)
+- [Conclusión](#conclusion)
 - [Prueba nuestra App](#prueba-nuestra-app!) 
 --- 
 
