@@ -49,7 +49,7 @@
 - Automatización del proceso de importación de CVs directamente desde Google Drive.
 - Optimización del flujo de trabajo y reducción de errores manuales en la gestión de datos.
 
-<details>
+</details>
 ---
 
 ## Beneficios de la Aplicación
@@ -63,12 +63,11 @@
 - ☁️ **Fácil integración** con herramientas de almacenamiento en la nube.
 
 
-<details>
+</details>
 ---
 
 ## Público Objetivo
-<details>
-  <summary>Ver más</summary>
+
 
 - 🏢 Empresas y departamentos de Recursos Humanos.
 - 🕵️‍♂️ Agencias de reclutamiento y selección de personal.
@@ -77,7 +76,7 @@
 **IA Recruiter** es la solución definitiva para empresas que buscan optimizar su proceso de selección con tecnología avanzada. 🚀
 
 
-<details>
+
 ---
 
 ## Tecnologías y Bibliotecas
@@ -113,10 +112,7 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 ### Contenedores y Despliegue
 - **Docker**: Para crear contenedores que faciliten el despliegue de la aplicación.
 
-
-
-
-<details>
+</details>
 --- 
 
 ### Documentación
@@ -131,7 +127,9 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 - [6.Estructura de Pruebas](#estructurad-de-pruebas) 
 - [7.Dependencias Principales](#dependencias-principales) 
 - [8.Manejo de Errores](#manejor-de-errores) 
-- [9.Implicaciones de Rendimiento](#implicaciones-de-rendimiento) 
+- [9.Implicaciones de Rendimiento](#implicaciones-de-rendimiento)
+
+</details>
 ---
 ## 1.Diagrama de Flujo
 <details>
