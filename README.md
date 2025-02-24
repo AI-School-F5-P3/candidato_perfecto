@@ -55,7 +55,7 @@
 ## Beneficios de la Aplicación
 
 <details>
-  <summary>Ver más</summary>
+  <summary> ## Beneficios de la Aplicación</summary>
 
 - ⏳ **Optimización de tiempo** en la selección de candidatos.
 - 🎯 **Mayor precisión** en la identificación del talento adecuado.
