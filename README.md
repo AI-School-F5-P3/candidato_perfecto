@@ -480,8 +480,7 @@ Detener la Aplicación
 ### 6. Listo! Ahora puedes acceder a la aplicación desde tu navegador en
 - http://localhost:8501/
 
-### 7. Explicación
-🔹 **Explicación:**  
+### 7. Explicación 
 - Se clona el repositorio y se accede a la carpeta del proyecto.  
 - Se recomienda crear un entorno virtual para aislar las dependencias.  
 - Se instalan los paquetes necesarios desde `requirements.txt`.  
