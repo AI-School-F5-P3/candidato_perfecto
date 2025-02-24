@@ -27,7 +27,7 @@
 
 ## 🌟 Funcionalidades Clave
 <details>
-  <summary>Ver más</summary>
+  <summary>Funcionalidades Clave</summary>
 
 ### 🔍 Análisis y Clasificación de Candidatos
 - Evaluación de **20 CVs** proporcionados, utilizando algoritmos de IA Generativa para identificar el grado de adecuación de cada perfil a una vacante.
