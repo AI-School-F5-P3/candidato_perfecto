@@ -67,3 +67,34 @@ class GoogleDriveIntegration:
                 cv_contents.append(text)
         
         return cv_contents
+
+    async def process_selected_cvs(self, file_ids: List[str]) -> List[str]:
+        """
+        Procesa los CVs seleccionados de Google Drive
+        
+        Args:
+            file_ids (List[str]): Lista de IDs de archivos seleccionados
+            
+        Returns:
+            List[str]: Lista de contenidos de los CVs procesados
+        """
+        try:
+            cv_texts = []
+            
+            for file_id in file_ids:
+                try:
+                    # Usar el método process_cv existente que ya maneja la descarga
+                    # y procesamiento del archivo
+                    text = await self.process_cv(file_id)
+                    if text:
+                        cv_texts.append(text)
+                        
+                except Exception as e:
+                    logging.error(f"Error procesando archivo {file_id}: {str(e)}")
+                    continue
+            
+            return cv_texts
+            
+        except Exception as e:
+            logging.error(f"Error en process_selected_cvs: {str(e)}")
+            raise Exception(f"Error procesando CVs de Drive: {str(e)}")

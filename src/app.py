@@ -299,26 +299,32 @@ def render_main_page():
                 asyncio.run(load_drive_cvs(st.session_state.app))
     
     # Usar el selector de Drive de UIComponents
+    selected_files = None
     if 'drive_files' in st.session_state and st.session_state.drive_files:
         selected_files = UIComponents.render_drive_section()
         
-        if selected_files:
-            if st.button("Procesar CVs seleccionados", key="process_selected"):
-                with st.spinner("Procesando CVs seleccionados..."):
-                    drive_client = GoogleDriveIntegration(
-                        credentials_path=st.session_state.app.gdrive_credentials,
-                        folder_id=st.session_state.app.gdrive_folder_id
+    if st.button("Analizar Candidatos", key="analyze_button"):
+        if selected_files and len(selected_files) > 0:
+            try:
+                # Envolvemos la lógica asíncrona en una función async
+                async def process_and_analyze():
+                    drive_integration = GoogleDriveIntegration(
+                        st.session_state.app.gdrive_credentials,
+                        st.session_state.app.gdrive_folder_id
                     )
-                    selected_ids = [
+                    # Get the actual file IDs from the drive_files dictionary
+                    file_ids = [
                         st.session_state.drive_files[filename] 
                         for filename in selected_files
                     ]
-                    cv_texts = asyncio.run(drive_client.process_selected_cvs(selected_ids))
-                    st.session_state.drive_cvs = cv_texts
-                    st.success(f"✅ {len(cv_texts)} CVs cargados desde Google Drive")
+                    cv_texts = await drive_integration.process_selected_cvs(file_ids)
+                    await analyze_candidates(ui_inputs, st.session_state.app, cv_texts)
 
-    if st.button("Analizar Candidatos", key="analyze_button"):
-        asyncio.run(analyze_candidates(ui_inputs, st.session_state.app))
+                # Ejecutamos la función asíncrona
+                asyncio.run(process_and_analyze())
+            except Exception as e:
+                logging.error(f"Error procesando CVs: {str(e)}")
+                st.error("Error procesando los CVs seleccionados")
 
 def main():
     """Función principal que maneja el flujo de la aplicación"""
@@ -374,12 +380,20 @@ def main():
         else:
             st.info("Primero debe realizar un análisis de candidatos para exportar a Excel")
 
-async def analyze_candidates(ui_inputs, app):
+async def analyze_candidates(ui_inputs, app, cv_texts=None):
+    """
+    Analiza los candidatos basado en los inputs de la UI y los CVs
+    
+    Args:
+        ui_inputs: Inputs from UI components
+        app: Instance of HRAnalysisApp
+        cv_texts: Optional list of CV texts from Drive
+    """
     if not ui_inputs.job_file:
         st.warning("⚠️ Por favor, suba un archivo de descripción del puesto")
         return
         
-    if not ('drive_cvs' in st.session_state or ui_inputs.resume_files):
+    if not (cv_texts or ui_inputs.resume_files):
         st.warning("⚠️ Por favor, cargue CVs desde Google Drive o suba archivos manualmente")
         return
         
@@ -409,9 +423,9 @@ async def analyze_candidates(ui_inputs, app):
         standardized_killer_criteria = await app.analyzer.standardize_killer_criteria(ui_inputs.killer_criteria)
         
         # Procesa los CVs según la fuente
-        if 'drive_cvs' in st.session_state:
-            candidate_profiles = await app.process_resumes(st.session_state.drive_cvs)
-        else:
+        if cv_texts:  # Use provided CV texts from Drive
+            candidate_profiles = await app.process_resumes(cv_texts)
+        else:  # Use manually uploaded files
             candidate_profiles = await app.process_resumes(ui_inputs.resume_files)
         
         if candidate_profiles:
