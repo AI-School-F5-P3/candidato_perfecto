@@ -461,6 +461,10 @@ venv\Scripts\activate      # En Windows
 pip install -r requirements.txt
 
 ```
+1. Debes tener una API_KEY para usar los modelos.
+2. Debes tener otra API_KEy de google para usar google Drive
+   
+
 ### 4. Ejecutar la Aplicación
 ```
 streamlit run src/app.py
