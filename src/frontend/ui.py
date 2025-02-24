@@ -9,6 +9,9 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from frontend import comparative_analysis  # added import for comparative_analysis
+from datetime import datetime
+from utils.utilities import export_rankings_to_excel
+from io import BytesIO
 
 @dataclass
 class WeightSettings:
@@ -191,6 +194,28 @@ class UIComponents:
         try:
             st.markdown('<div class="section-header">Resultados por Vacante</div>', unsafe_allow_html=True)
             
+            # Add Export to Excel button before the tabs
+            if len(df_list) > 0:
+                col1, col2 = st.columns([3, 1])
+                with col2:
+                    # Crear el buffer de Excel
+                    buffer = BytesIO()
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    filename = f"resultados_ranking_{timestamp}.xlsx"
+                    
+                    # Preparar los datos para Excel
+                    vacancy_names = [f"Vacante {i+1}" for i in range(len(df_list))]
+                    success = export_rankings_to_excel(df_list, vacancy_names, buffer)
+                    
+                    if success:
+                        st.download_button(
+                            label="📥 Exportar a Excel",
+                            data=buffer.getvalue(),
+                            file_name=filename,
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            key="download_excel"
+                        )
+
             # Crear pestañas para cada vacante
             if len(df_list) > 0:
                 tabs = st.tabs([f"Vacante {i+1}: {job_profiles[i].nombre_vacante}" for i in range(len(df_list))])
@@ -396,4 +421,4 @@ async def display_candidate_details(raw_data: any, job_profile: JobProfile) -> N
         st.error(f"Error procesando datos del candidato: {str(e)}")
         logging.error(f"Error en display_candidate_details: {str(e)}")
         if raw_data:
-            st.write("Datos originales:", raw_data)
+            st.write("Datos originales:", raw_data) 

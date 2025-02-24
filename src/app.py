@@ -7,6 +7,7 @@ import pandas as pd
 from typing import List, Optional
 import os
 from datetime import datetime
+from pathlib import Path
 import sys
 
 # Añade la ruta del proyecto al PYTHONPATH
@@ -26,7 +27,7 @@ from hr_analysis_system import (
 import matplotlib.pyplot as plt
 import seaborn as sns
 from frontend.ui import UIComponents
-from utils.utilities import setup_logging, create_score_row, sort_ranking_dataframe
+from utils.utilities import setup_logging, create_score_row, sort_ranking_dataframe, export_rankings_to_excel
 from utils.file_handler import FileHandler
 from utils.google_drive import GoogleDriveIntegration
 from src.config import Config
@@ -397,6 +398,10 @@ async def analyze_candidates(ui_inputs, app):
             killer_criteria_list.append(job_section.killer_criteria)
             debug_files.append(debug_filename)  # Añadir ruta del archivo de debug
 
+            # Create output directory if it doesn't exist
+            output_dir = Path("output")
+            output_dir.mkdir(exist_ok=True)
+            
         # Store results in session state
         st.session_state['analysis_results'] = {
             'df_list': df_list,
