@@ -307,33 +307,21 @@ class UIComponents:
                         </div>
                         """, unsafe_allow_html=True)
 
-                        # Detalles de los candidatos para esta vacante
-                        st.markdown("### Detalles de Candidatos")
-                        for idx, row in df.iterrows():
-                            expander_title = f"Ver datos del candidato: {row['Nombre Candidato']}"
-                            if row['Estado'] == 'Descalificado':
-                                expander_title += " (Descalificado)"
-                            
-                            with st.expander(expander_title):
-                                if row['Estado'] == 'Descalificado':
-                                    st.error(f"Razones de descalificación: {row['Razones Descalificación']}")
-                                await display_candidate_details(row['raw_data'], job_profile)
-
                         # Expandibles de información adicional
                         with st.expander("🔍 Cómo se calculan los scores"):
-                            # ... (mantener el código existente del expander de scores)
+                            # ...existing code...
                             pass
 
                         with st.expander("Ver Requisitos del Puesto"):
-                            # ... (mantener el código existente del expander de requisitos)
+                            # ...existing code...
                             pass
 
                         with st.expander("Ver Preferencias del Reclutador"):
-                            # ... (mantener el código existente del expander de preferencias)
+                            # ...existing code...
                             pass
 
                         with st.expander("Ver Criterios Eliminatorios"):
-                            # ... (mantener el código existente del expander de criterios)
+                            # ...existing code...
                             pass
 
             else:
@@ -342,92 +330,3 @@ class UIComponents:
         except Exception as e:
             st.error("Error al mostrar los resultados. Verifique los datos y vuelva a intentar.")
             logging.error(f"Error in display_ranking: {str(e)}")
-
-# Reemplazar la función display_candidate_details existente por la siguiente:
-import uuid  # Importar uuid para generar identificadores únicos
-
-import hashlib
-
-import ast  # Nuevo importe
-
-import json
-
-async def display_candidate_details(raw_data: any, job_profile: JobProfile) -> None:
-    """Muestra detalles del candidato sin análisis GPT"""
-    import json
-    import hashlib
-    
-    def safe_deserialize(data):
-        if isinstance(data, dict):
-            return data
-        
-        if isinstance(data, str):
-            cleaned_data = data.strip()
-            try:
-                return json.loads(cleaned_data)
-            except json.JSONDecodeError:
-                try:
-                    import ast
-                    return ast.literal_eval(cleaned_data)
-                except:
-                    import re
-                    nombre_match = re.search(r'nombre["\']?\s*:\s*["\']([^"\']+)["\']', cleaned_data, re.I)
-                    habilidades_match = re.findall(r'habilidades["\']?\s*:\s*\[(.*?)\]', cleaned_data, re.I | re.S)
-                    experiencia_match = re.findall(r'experiencia["\']?\s*:\s*\[(.*?)\]', cleaned_data, re.I | re.S)
-                    formacion_match = re.findall(r'formacion["\']?\s*:\s*\[(.*?)\]', cleaned_data, re.I | re.S)
-                    
-                    return {
-                        'nombre_candidato': nombre_match.group(1) if nombre_match else 'Nombre no disponible',
-                        'habilidades': [h.strip() for h in habilidades_match[0].split(',')] if habilidades_match else [],
-                        'experiencia': [e.strip() for e in experiencia_match[0].split(',')] if experiencia_match else [],
-                        'formacion': [f.strip() for f in formacion_match[0].split(',')] if formacion_match else [],
-                        'raw_text': cleaned_data
-                    }
-        return {'error': 'No se pudieron procesar los datos', 'raw_data': str(data)}
-
-    def normalize_list(data):
-        if isinstance(data, list):
-            return [str(item).strip() for item in data if item]
-        elif isinstance(data, str):
-            return [data.strip()]
-        return []
-
-    try:
-        # Procesar datos del candidato
-        data_dict = safe_deserialize(raw_data)
-        
-        if not data_dict or (isinstance(data_dict, dict) and 'error' in data_dict):
-            st.error("No se pudieron procesar los datos del candidato correctamente")
-            st.write("Datos originales:", raw_data)
-            return
-
-        # Normalizar datos
-        nombre = str(data_dict.get('nombre_candidato', 'Nombre no disponible'))
-        habilidades = normalize_list(data_dict.get('habilidades', []))
-        experiencia = normalize_list(data_dict.get('experiencia', []))
-        formacion = normalize_list(data_dict.get('formacion', []))
-
-        # Mostrar datos técnicos
-        st.markdown("### 📌 Datos Técnicos")
-        cols = st.columns(3)
-        
-        with cols[0]:
-            st.markdown("**Habilidades**")
-            for hab in habilidades:
-                st.write(f"- {hab}")
-            
-        with cols[1]:
-            st.markdown("**Experiencia**")
-            for exp in experiencia:
-                st.write(f"- {exp}")
-                
-        with cols[2]:
-            st.markdown("**Formación**")
-            for form in formacion:
-                st.write(f"- {form}")
-
-    except Exception as e:
-        st.error(f"Error procesando datos del candidato: {str(e)}")
-        logging.error(f"Error en display_candidate_details: {str(e)}")
-        if raw_data:
-            st.write("Datos originales:", raw_data)
