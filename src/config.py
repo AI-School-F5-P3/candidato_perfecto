@@ -10,6 +10,11 @@ class ModelConfig:
     embedding_model: str = "text-embedding-3-small"  # Modelo para cálculo de similitud semántica
 
 @dataclass
+class GoogleDriveConfig:
+    # Folder origen de los cvs en Google Drive
+    folder_id: str = "1HiJatHPiHgtjMcQI34Amwjwlr5VQ535s"    
+
+@dataclass
 class MatchingConfig:
     """Configuración de parámetros de coincidencia"""
     # Umbral de similitud mínima para criterios eliminatorios (70%)
@@ -60,3 +65,4 @@ class Config:
     MODEL = ModelConfig()
     MATCHING = MatchingConfig()
     DISPLAY = DisplayConfig()
+    GDRIVE = GoogleDriveConfig()

@@ -60,7 +60,6 @@ class MatchScore:
         if self.debug_info is None:
             self.debug_info = {}
 
-  # Usamos el modelo GPT-3.5 Turbo
 
 class IEmbeddingProvider(ABC):
     """Interfaz abstracta para proveedores de embeddings"""
@@ -73,7 +72,7 @@ class OpenAIEmbeddingProvider(IEmbeddingProvider):
     """Implementación OpenAI del proveedor de embeddings"""
     def __init__(self, api_key: str):
         self.client = AsyncOpenAI(api_key=api_key)
-        self.model = "text-embedding-3-small"
+        self.model = Config.MODEL.embedding_model
 
 
     async def get_embedding(self, text: str) -> List[float]:
@@ -161,7 +160,7 @@ class SemanticAnalyzer(TextAnalyzer):
     def __init__(self, embedding_provider: IEmbeddingProvider):
         super().__init__(embedding_provider)
         self.client = AsyncOpenAI(api_key=embedding_provider.client.api_key)
-        self.model = "gpt-3.5-turbo"
+        self.model = Config.MODEL.chat_model
         self.text_processor = TextProcessor()
 
     async def standardize_job_description(self, description: str, hiring_preferences: dict) -> JobProfile:
