@@ -62,6 +62,24 @@ class UIComponents:
         )
 
     @staticmethod
+    def _check_duplicate_files(files: List[Any]) -> Tuple[List[str], List[Any]]:
+        """
+        Verifica archivos duplicados y retorna los nombres duplicados y lista limpia
+        """
+        seen = {}
+        duplicates = []
+        unique_files = []
+        
+        for file in files:
+            if file.name in seen:
+                duplicates.append(file.name)
+            else:
+                seen[file.name] = True
+                unique_files.append(file)
+                
+        return duplicates, unique_files
+
+    @staticmethod
     def create_main_sections() -> UIInputs:
         """Crea las secciones principales de la interfaz con soporte para múltiples vacantes"""
         job_sections = []
@@ -75,6 +93,12 @@ class UIComponents:
                 key="job_upload_multi"
             )
             st.markdown('</div>', unsafe_allow_html=True)
+            
+            # Validación de archivos duplicados en vacantes
+            if job_files:
+                duplicates, job_files = UIComponents._check_duplicate_files(job_files)
+                if duplicates:
+                    st.warning(f"⚠️ Se ignoraron los siguientes archivos duplicados de vacantes: {', '.join(duplicates)}")
             
             # Validación del límite de vacantes
             if job_files and len(job_files) > 5:
@@ -175,6 +199,12 @@ class UIComponents:
                     key="cv_upload_multi"
                 )
                 st.markdown('</div>', unsafe_allow_html=True)
+
+                # Validación de archivos duplicados en CVs
+                if resume_files:
+                    duplicates, resume_files = UIComponents._check_duplicate_files(resume_files)
+                    if duplicates:
+                        st.warning(f"⚠️ Se ignoraron los siguientes CVs duplicados: {', '.join(duplicates)}")
         
         # Se elimina la asignación de pesos globales ya que se usan los de cada vacante
         return UIInputs(
