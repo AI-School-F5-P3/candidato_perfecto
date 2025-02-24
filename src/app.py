@@ -348,9 +348,8 @@ async def analyze_candidates(ui_inputs, app):
         return
 
     # Para cada vacante se procesa la descripción, preferencias y criterios, y se analiza el ranking
-    for idx, job_section in enumerate(ui_inputs.job_sections):
-        st.markdown(f"---\n### Análisis para la Vacante {idx+1}: {job_section.job_file.name}")
-        try:
+    try:
+        for idx, job_section in enumerate(ui_inputs.job_sections):
             # Prepara preferencias propias para la vacante usando los pesos del job_section
             hiring_preferences = {
                 "habilidades_preferidas": [
@@ -372,16 +371,33 @@ async def analyze_candidates(ui_inputs, app):
                 hiring_preferences["weights"]
             )
             
-            styled_df = app.create_ranking_dataframe(rankings)
-            UIComponents.display_ranking(
-                df=styled_df,
-                job_profile=job_profile,
-                recruiter_preferences=recruiter_preferences,
-                killer_criteria=standardized_killer_criteria
+            ranking_df = app.create_ranking_dataframe(rankings)
+            
+            # Crear listas para acumular resultados
+            if 'df_list' not in locals():
+                df_list = []
+                job_profiles = []
+                recruiter_preferences_list = []
+                killer_criteria_list = []
+
+            # Añadir resultados a las listas
+            df_list.append(ranking_df)
+            job_profiles.append(job_profile)
+            recruiter_preferences_list.append(recruiter_preferences)
+            killer_criteria_list.append(job_section.killer_criteria)
+
+        # Realizar una única llamada al display_ranking con todas las listas
+        if len(df_list) > 0:
+            await UIComponents.display_ranking(
+                df_list,
+                job_profiles,
+                recruiter_preferences_list,
+                killer_criteria_list
             )
-        except Exception as e:
-            logging.error(f"Error durante el análisis en la vacante {idx+1}: {str(e)}")
-            st.error(f"Error en el análisis para la vacante {idx+1}: {str(e)}")
+
+    except Exception as e:
+        logging.error(f"Error durante el análisis: {str(e)}")
+        st.error(f"Error en el análisis: {str(e)}")
 
 if __name__ == "__main__":
     try:
