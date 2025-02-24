@@ -5,6 +5,7 @@ import pandas as pd
 import logging
 import asyncio
 from typing import List, Dict, Optional
+import plotly.graph_objects as go  # Añadir esta importación
 
 async def render_comparative_analysis(df_list: List[pd.DataFrame]) -> None:
     """Render comparative analysis report for candidates with vacancy selection"""
@@ -104,12 +105,39 @@ def render_comparative_charts(comparative_df: pd.DataFrame) -> None:
             st.error("No hay datos disponibles para generar los gráficos")
             return
             
-        required_cols = ['Nombre Candidato', 'Score Habilidades', 'Score Experiencia', 'Score Formación']
+        required_cols = ['Nombre Candidato', 'Score Habilidades', 'Score Experiencia', 'Score Formación', 'Score Preferencias']
         if not all(col in comparative_df.columns for col in required_cols):
             st.error("Faltan columnas requeridas en los datos")
             return
+
+        # Gráfico de radar
+        st.markdown("### Distribución de Competencias Clave")
+        categories = ['Habilidades', 'Experiencia', 'Formación', 'Preferencias']
+        fig = go.Figure()
+        
+        for _, row in comparative_df.iterrows():
+            scores = [
+                float(row['Score Habilidades'].rstrip('%'))/100,
+                float(row['Score Experiencia'].rstrip('%'))/100,
+                float(row['Score Formación'].rstrip('%'))/100,
+                float(row['Score Preferencias'].rstrip('%'))/100
+            ]
+            fig.add_trace(go.Scatterpolar(
+                r=scores,
+                theta=categories,
+                fill='toself',
+                name=row['Nombre Candidato']
+            ))
             
-        # Preparar datos para visualización
+        fig.update_layout(
+            polar=dict(radialaxis=dict(visible=True, range=[0, 1])),
+            showlegend=True,
+            margin=dict(l=20, r=20, t=40, b=20)
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+        # Gráfico de barras existente
+        st.markdown("### Comparación de Scores por Categoría")
         score_cols = ['Score Habilidades', 'Score Experiencia', 'Score Formación']
         plot_data = comparative_df[['Nombre Candidato'] + score_cols].copy()
         

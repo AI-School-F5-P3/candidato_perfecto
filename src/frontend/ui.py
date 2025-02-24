@@ -307,32 +307,6 @@ class UIComponents:
                         </div>
                         """, unsafe_allow_html=True)
 
-                        # Gráfico de radar para esta vacante
-                        st.markdown("### Distribución de Competencias Clave")
-                        top_candidates = df[df['Estado'] == 'Calificado'].head(3)
-                        if not top_candidates.empty:
-                            categories = ['Habilidades', 'Experiencia', 'Formación', 'Preferencias']
-                            fig = go.Figure()
-                            for _, row in top_candidates.iterrows():
-                                scores = [
-                                    float(row['Score Habilidades'].rstrip('%'))/100,
-                                    float(row['Score Experiencia'].rstrip('%'))/100,
-                                    float(row['Score Formación'].rstrip('%'))/100,
-                                    float(row['Score Preferencias'].rstrip('%'))/100
-                                ]
-                                fig.add_trace(go.Scatterpolar(
-                                    r=scores,
-                                    theta=categories,
-                                    fill='toself',
-                                    name=row['Nombre Candidato']
-                                ))
-                            fig.update_layout(
-                                polar=dict(radialaxis=dict(visible=True, range=[0, 1])),
-                                showlegend=True,
-                                margin=dict(l=20, r=20, t=40, b=20)
-                            )
-                            st.plotly_chart(fig, use_container_width=True)
-
                         # Detalles de los candidatos para esta vacante
                         st.markdown("### Detalles de Candidatos")
                         for idx, row in df.iterrows():
