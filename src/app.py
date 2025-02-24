@@ -20,14 +20,16 @@ from hr_analysis_system import (
     CandidateProfile,
     OpenAIEmbeddingProvider,
     MatchScore,
-    PreferenciaReclutadorProfile  # Se añadió esta importación
+    PreferenciaReclutadorProfile
 )
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 from frontend.ui import UIComponents
 from utils.utilities import setup_logging, create_score_row, sort_ranking_dataframe
 from utils.file_handler import FileHandler
 from utils.google_drive import GoogleDriveIntegration
+from src.config import Config
 
 # Configuración inicial de Streamlit y logging
 st.set_page_config(page_title="El candidato perfecto", layout="wide")
@@ -62,7 +64,7 @@ class OpenAITextGenerationProvider:
         """
         try:
             response = await self.client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model=Config.MODEL.chat_model,
                 messages=[
                     {"role": "system", "content": "Eres un experto en recursos humanos."},
                     {"role": "user", "content": prompt}
@@ -94,7 +96,7 @@ class HRAnalysisApp:
             "google_credentials",
             "service-account-key.json"
         )
-        self.gdrive_folder_id = "1HiJatHPiHgtjMcQI34Amwjwlr5VQ535s"
+        self.gdrive_folder_id = Config.GDRIVE.folder_id
         self.text_generation_provider = OpenAITextGenerationProvider(api_key)
         self.comparative_analysis = ComparativeAnalysis(self.text_generation_provider)
         logging.info("Componentes de análisis inicializados.")
@@ -340,7 +342,7 @@ async def analyze_candidates(ui_inputs, app):
     hiring_preferences = {
         "habilidades_preferidas": [
             skill.strip() 
-            for skill in (ui_inputs.recruiter_skills or "").split('\n')  # Cambiar important_skills por recruiter_skills
+            for skill in (ui_inputs.recruiter_skills or "").split('\n')
             if skill.strip()
         ],
         "weights": {
