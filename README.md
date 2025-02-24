@@ -1,19 +1,20 @@
 
 
 #  CandidatoPerfecto 
+#  CandidatoPerfecto 
 
 <div align="center">
     <img src="logoNFQ.png" alt="Logo de IA Recruiter" />
 </div>
 
 ## Índice  
-- [Descripción de la Aplicación](#descripcion-de-la-aplicacion)  
+- [Descripción de la Aplicación](#descripción-de-la-aplicación)  
 - [Funcionalidades Clave](#funcionalidades-clave)  
-- [Beneficios de la Aplicación](#beneficios-de-la-aplicacion)  
-- [Público Objetivo](#publico-objetivo)  
-- [Tecnologías y Bibliotecas](#tecnologias-y-bibliotecas)  
-- [Documentación](#documentacion)  
-- [Conclusión](#conclusion)  
+- [Beneficios de la Aplicación](#beneficios-de-la-aplicación)  
+- [Público Objetivo](#público-objetivo)  
+- [Tecnologías y Bibliotecas](#tecnologías-y-bibliotecas)  
+- [Documentación](#documentación)  
+- [Conclusión](#conclusión)  
 - [Prueba nuestra App](#prueba-nuestra-app)  
 --- 
 
@@ -106,30 +107,28 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 
 --- 
 
-### Documentación
+## Documentación
 
-- [1.Diagrama de Flujo](#1.-diagrama-de-flujo) 
-- [2. Funcionamiento](#funcionamiento) 
-- [3.Componentes Principales](#componentes-principales) 
-- [4.Flujo desglosado](#flujo-desglosado) 
-- [5.Condiguración](#configuracion) 
-- [6.Estructura de Pruebas](#estructurad-de-pruebas) 
-- [7.Dependencias Principales](#dependencias-principales) 
-- [8.Manejo de Errores](#manejor-de-errores) 
-- [9.Implicaciones de Rendimiento](#implicaciones-de-rendimiento)
+- [1. Diagrama de Flujo](#1-diagrama-de-flujo) 
+- [2. Funcionamiento](#2-funcionamiento) 
+- [3. Componentes Principales](#3-componentes-principales) 
+- [4. Flujo desglosado](#4-flujo-desglosado) 
+- [5. Configuración](#5-configuración) 
+- [6. Estructura de Pruebas](#6-estructura-de-pruebas) 
+- [7. Dependencias Principales](#7-dependencias) 
+- [8. Manejo de Errores](#8-manejo-de-errores) 
+- [9. Implicaciones de Rendimiento](#9-implicaciones-de-rendimiento)
 
 ---
-## 1.Diagrama de Flujo
-<details>
-  <summary>Ver más</summary>
-    
+## 1. Diagrama de Flujo
+
 <div align="center">
     <img src="diagrama/hr-system-drawio V2.drawio.png" alt="Logo de IA Recruiter" />
 </div>
 
 
     
-## 2.Funcionamiento
+## 2. Funcionamiento
     
 ### 1. Proceso
 ### 1.1 Inicio de la Aplicación
@@ -263,7 +262,7 @@ async def analyze_candidates(ui_inputs, app):
 
 
 
-## 3.Componentes Principales
+## 3. Componentes Principales
 
 1. **hr_analysis_system.py**
    - Contiene la lógica de negocio principal y las estructuras de datos
@@ -443,42 +442,46 @@ El sistema implementa un manejo integral de errores:
    - Operaciones eficientes con DataFrame
 
 
-### Prueba nuestra App
+## Conclusión
+    
+La combinación de estas tecnologías y bibliotecas permitirá desarrollar una aplicación robusta y eficiente que cumpla con los objetivos de **CandidatoPerfecto**, optimizando el proceso de selección de talento mediante el uso de inteligencia artificial y garantizando un enfoque ético y normativo.
 
-## 🚀 Instrucciones de Uso
+## Prueba nuestra App
+
+### 🚀 Instrucciones de Uso
 Sigue estos pasos para instalar y ejecutar la aplicación correctamente.
 
-## 1. Clonar el Repositorio  
+### 1. Clonar el Repositorio  
 ```bash
 git clone https://github.com/tu_usuario/tu_repositorio.git
 cd tu_repositorio
 ```
-## 2. Crear un Entorno Virtual (Opcional pero Recomendado)
+### 2. Crear un Entorno Virtual (Opcional pero Recomendado)
 ```
 python -m venv venv
 source venv/bin/activate  # En macOS/Linux
 venv\Scripts\activate      # En Windows
 ```
-## 3. Instala dependencias
+### 3. Instala dependencias
 ```
 pip install -r requirements.txt
 
 ```
-## 4. Ejecutar la Aplicación
+### 4. Ejecutar la Aplicación
 ```
 streamlit run src/app.py
 
 ```
 
-## 5. Detener la applicación
+### 5. Detener la applicación
 ```
 Detener la Aplicación
 ```
 
-## 6. Listo! Ahora puedes acceder a la aplicación desde tu navegador en
-- http://localhost:8501/`
+### 6. Listo! Ahora puedes acceder a la aplicación desde tu navegador en
+- http://localhost:8501/
 
-## 7. Explicación
+### 7. Explicación
 🔹 **Explicación:**  
 - Se clona el repositorio y se accede a la carpeta del proyecto.  
 - Se recomienda crear un entorno virtual para aislar las dependencias.  
@@ -486,7 +489,6 @@ Detener la Aplicación
 - Se ejecuta la aplicación con **Streamlit**.  
 - Se indica cómo detener la aplicación cuando sea necesario.
 
-- 
 ### Conclusión
     
 La combinación de estas tecnologías y bibliotecas permitirá desarrollar una aplicación robusta y eficiente que cumpla con los objetivos de **CandidatoPerfecto**, optimizando el proceso de selección de talento mediante el uso de inteligencia artificial y garantizando un enfoque ético y normativo.
