@@ -299,8 +299,6 @@ async def analyze_candidates(ui_inputs, app):
 
 
 ## 4. Flujo desglosado
-<details>
-  <summary>Ver más</summary>
 
 1. **Procesamiento de Entrada**
    ```
@@ -341,8 +339,6 @@ async def analyze_candidates(ui_inputs, app):
 ---
     
 ## 5. Configuración
-<details>
-  <summary>Ver más</summary>
 
 El sistema utiliza un módulo de configuración central (`config.py`) con los siguientes componentes:
 
@@ -363,8 +359,6 @@ El sistema utiliza un módulo de configuración central (`config.py`) con los si
 
     
 ## 6. Estructura de Pruebas
-<details>
-  <summary>Ver más</summary>
 
 El conjunto de pruebas está organizado en los siguientes componentes:
 
@@ -382,8 +376,6 @@ El conjunto de pruebas está organizado en los siguientes componentes:
 
 
 ## 7. Dependencias
-<details>
-  <summary>Ver más</summary>
 
  Las dependencias clave están organizadas por funcionalidad:
 
@@ -408,8 +400,6 @@ El conjunto de pruebas está organizado en los siguientes componentes:
 
 
 ## 8. Manejo de Errores
-<details>
-  <summary>Ver más</summary>
 
 El sistema implementa un manejo integral de errores:
 
@@ -435,8 +425,7 @@ El sistema implementa un manejo integral de errores:
 
 
 ## 9. Implicaciones de Rendimiento
-<details>
-  <summary>Ver más</summary>
+
 
 1. **Operaciones Asíncronas**
    - Lectura de archivos asíncrona
@@ -455,8 +444,6 @@ El sistema implementa un manejo integral de errores:
 
 
 ### Prueba nuestra App
-<details>
-  <summary>Ver más</summary>
 
 ## 🚀 Instrucciones de Uso
 Sigue estos pasos para instalar y ejecutar la aplicación correctamente.
@@ -497,8 +484,9 @@ Detener la Aplicación
 - Se recomienda crear un entorno virtual para aislar las dependencias.  
 - Se instalan los paquetes necesarios desde `requirements.txt`.  
 - Se ejecuta la aplicación con **Streamlit**.  
-- Se indica cómo detener la aplicación cuando sea necesario.  
+- Se indica cómo detener la aplicación cuando sea necesario.
 
+- 
 ### Conclusión
     
 La combinación de estas tecnologías y bibliotecas permitirá desarrollar una aplicación robusta y eficiente que cumpla con los objetivos de **CandidatoPerfecto**, optimizando el proceso de selección de talento mediante el uso de inteligencia artificial y garantizando un enfoque ético y normativo.
