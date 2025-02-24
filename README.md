@@ -26,8 +26,6 @@
 
 
 ## Funcionalidades Clave
-<details>
-  <summary>Ver</summary>
 
 ### 🔍 Análisis y Clasificación de Candidatos
 - Evaluación de **20 CVs** proporcionados, utilizando algoritmos de IA Generativa para identificar el grado de adecuación de cada perfil a una vacante.
@@ -49,7 +47,6 @@
 - Automatización del proceso de importación de CVs directamente desde Google Drive.
 - Optimización del flujo de trabajo y reducción de errores manuales en la gestión de datos.
 
-</details>
 
 ---
 
@@ -110,11 +107,10 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 - **Docker**: Para crear contenedores que faciliten el despliegue de la aplicación.
 
 </details>
+
 --- 
 
 ### Documentación
-<details>
-  <summary>Ver más</summary>
 
 - [1.Diagrama de Flujo](#1.-diagrama-de-flujo) 
 - [2. Funcionamiento](#funcionamiento) 
@@ -126,7 +122,6 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 - [8.Manejo de Errores](#manejor-de-errores) 
 - [9.Implicaciones de Rendimiento](#implicaciones-de-rendimiento)
 
-</details>
 ---
 ## 1.Diagrama de Flujo
 <details>
@@ -139,8 +134,6 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 
     
 ## 2.Funcionamiento
-<details>
-  <summary>Ver más</summary>
     
 ### 1. Proceso
 ### 1.1 Inicio de la Aplicación
