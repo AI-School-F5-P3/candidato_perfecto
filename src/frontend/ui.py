@@ -76,6 +76,11 @@ class UIComponents:
             )
             st.markdown('</div>', unsafe_allow_html=True)
             
+            # Validación del límite de vacantes
+            if job_files and len(job_files) > 5:
+                st.warning("⚠️ Máximo 5 vacantes simultáneas para garantizar rendimiento")
+                job_files = job_files[:5]  # Limitar a las primeras 5 vacantes
+            
             if job_files:
                 st.markdown("### Configurar cada vacante")
                 for idx, job_file in enumerate(job_files):
@@ -421,4 +426,4 @@ async def display_candidate_details(raw_data: any, job_profile: JobProfile) -> N
         st.error(f"Error procesando datos del candidato: {str(e)}")
         logging.error(f"Error en display_candidate_details: {str(e)}")
         if raw_data:
-            st.write("Datos originales:", raw_data) 
+            st.write("Datos originales:", raw_data)
