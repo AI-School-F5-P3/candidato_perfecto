@@ -8,7 +8,7 @@
 
 ## Índice  
 - [Descripción de la Aplicación](#descripcion-de-la-aplicacion)  
-- [🌟 Funcionalidades Clave](#funcionalidades-clave)  
+- [ 🌟 Funcionalidades Clave](#funcionalidades-clave)  
 - [Beneficios de la Aplicación](#beneficios-de-la-aplicacion)  
 - [Público Objetivo](#publico-objetivo)  
 - [Tecnologías y Bibliotecas](#tecnologias-y-bibliotecas)  
