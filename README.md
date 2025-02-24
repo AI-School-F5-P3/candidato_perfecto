@@ -63,7 +63,7 @@
 - ☁️ **Fácil integración** con herramientas de almacenamiento en la nube.
 
 
-
+<details>
 ---
 
 ## Público Objetivo
@@ -124,7 +124,7 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 <details>
   <summary>Ver más</summary>
 
-- [1.Diagrama de Flujo](#diagrama-de-flujo) 
+- [1.Diagrama de Flujo](#1.-diagrama-de-flujo) 
 - [2. Funcionamiento](#funcionamiento) 
 - [3.Componentes Principales](#componentes-principales) 
 - [4.Flujo desglosado](#flujo-desglosado) 
@@ -139,7 +139,7 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
   <summary>Ver más</summary>
     
 <div align="center">
-    <img src=diagrama/"hr-system-drawio V2.drawio.png" alt="Logo de IA Recruiter" />
+    <img src="diagrama/hr-system-drawio V2.drawio.png" alt="Logo de IA Recruiter" />
 </div>
 
 
