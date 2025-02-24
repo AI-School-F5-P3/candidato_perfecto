@@ -297,13 +297,13 @@ def main():
         if (
             'analysis_results' in st.session_state 
             and st.session_state.analysis_results 
-            and 'df' in st.session_state.analysis_results
+            and 'df_list' in st.session_state.analysis_results
         ):
-            logging.debug(f"analysis_results state: {st.session_state.analysis_results}")
+            logging.debug("Loading comparative analysis with multiple vacancies")
             from frontend import comparative_analysis
             try:
                 asyncio.run(comparative_analysis.render_comparative_analysis(
-                    st.session_state.analysis_results['df']
+                    st.session_state.analysis_results['df_list']
                 ))
             except Exception as e:
                 logging.error(f"Error en análisis comparativo: {str(e)}")

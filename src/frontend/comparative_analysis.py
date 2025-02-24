@@ -4,22 +4,33 @@ import seaborn as sns
 import pandas as pd
 import logging
 import asyncio
-from typing import List, Dict
+from typing import List, Dict, Optional
 
-async def render_comparative_analysis(df: pd.DataFrame) -> None:
-    """Render comparative analysis report for candidates"""
+async def render_comparative_analysis(df_list: List[pd.DataFrame]) -> None:
+    """Render comparative analysis report for candidates with vacancy selection"""
     try:
-        if df is None or 'Estado' not in df.columns:
+        if not df_list:
             st.error("No hay datos disponibles para el análisis comparativo")
             return
 
         st.markdown("## 📊 Análisis Comparativo de Candidatos")
         
+        # Selector de vacante
+        vacancy_names = [f"Vacante {i+1}" for i in range(len(df_list))]
+        selected_vacancy = st.selectbox(
+            "🎯 Seleccione la vacante a analizar:",
+            range(len(vacancy_names)),
+            format_func=lambda x: vacancy_names[x]
+        )
+        
+        # Obtener DataFrame de la vacante seleccionada
+        current_df = df_list[selected_vacancy]
+        
         # Filtrar solo candidatos calificados
-        qualified_df = df[df['Estado'] == 'Calificado']
+        qualified_df = current_df[current_df['Estado'] == 'Calificado']
         
         if qualified_df.empty:
-            st.warning("No hay candidatos calificados para comparar.")
+            st.warning(f"No hay candidatos calificados para comparar en la {vacancy_names[selected_vacancy]}.")
             return
             
         # Selector múltiple de candidatos
@@ -45,17 +56,27 @@ async def render_comparative_analysis(df: pd.DataFrame) -> None:
             
             for _, row in selected_df.iterrows():
                 with st.expander(f"📝 Análisis de {row['Nombre Candidato']}"):
+                    # Extraer datos técnicos del raw_data
+                    technical_data = row.get('raw_data', {})
                     candidate_text = (
+                        f"Candidato para {vacancy_names[selected_vacancy]}:\n"
+                        f"Nombre: {row['Nombre Candidato']}\n"
                         f"Experiencia: {row.get('Experiencia', 'No disponible')}\n"
                         f"Habilidades: {row.get('Habilidades', 'No disponible')}\n"
                         f"Formación: {row.get('Formación', 'No disponible')}\n"
-                        f"Score Final: {row.get('Score Final', 'No disponible')}"
+                        f"Score Final: {row.get('Score Final', 'No disponible')}\n"
+                        f"Datos Técnicos Adicionales: {technical_data}"
                     )
                     
                     prompt = (
                         "Como experto en recursos humanos, analiza el siguiente perfil "
-                        "de candidato y genera un resumen conciso destacando fortalezas, "
-                        f"áreas de mejora y fit con el puesto:\n\n{candidate_text}"
+                        "considerando el puesto específico al que aplica. Genera un análisis "
+                        "detallado que incluya:\n"
+                        "1. Fortalezas principales\n"
+                        "2. Áreas de mejora\n"
+                        "3. Fit con el puesto específico\n"
+                        "4. Recomendaciones para entrevista\n\n"
+                        f"{candidate_text}"
                     )
                     
                     with st.spinner(f"Analizando perfil de {row['Nombre Candidato']}..."):
