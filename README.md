@@ -8,13 +8,13 @@
 
 ## Índice  
 - [Descripción de la Aplicación](#descripcion-de-la-aplicacion)  
-- [🌟 Funcionalidades Clave](#-funcionalidades-clave)  
-- [Beneficios de la Aplicación](#beneficios-de-la-aplicación)  
-- [Público Objetivo](#público-objetivo)  
-- [Tecnologías y Bibliotecas](#tecnologías-y-bibliotecas)  
-- [Documentación](#documentación)  
-- [Conclusión](#conclusion)
-- [Prueba nuestra App](#prueba-nuestra-app!) 
+- [🌟 Funcionalidades Clave](#funcionalidades-clave)  
+- [Beneficios de la Aplicación](#beneficios-de-la-aplicacion)  
+- [Público Objetivo](#publico-objetivo)  
+- [Tecnologías y Bibliotecas](#tecnologias-y-bibliotecas)  
+- [Documentación](#documentacion)  
+- [Conclusión](#conclusion)  
+- [Prueba nuestra App](#prueba-nuestra-app)  
 --- 
 
 ## Descripción de la Aplicación
