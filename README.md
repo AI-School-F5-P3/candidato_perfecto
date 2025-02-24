@@ -63,7 +63,6 @@
 
 ## Público Objetivo
 
-
 - 🏢 Empresas y departamentos de Recursos Humanos.
 - 🕵️‍♂️ Agencias de reclutamiento y selección de personal.
 - 👩‍💼 Profesionales que buscan optimizar procesos de contratación con IA.
@@ -74,9 +73,6 @@
 
 ## Tecnologías y Bibliotecas
 Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas tecnologías y bibliotecas que faciliten la implementación de sus funcionalidades clave. A continuación, se presenta una lista de tecnologías y bibliotecas relevantes:
-
-<details>
-  <summary>Ver más</summary>
 
 
 ### 💻 Lenguajes de Programación
@@ -106,7 +102,7 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 ### Contenedores y Despliegue
 - **Docker**: Para crear contenedores que faciliten el despliegue de la aplicación.
 
-</details>
+
 
 --- 
 
