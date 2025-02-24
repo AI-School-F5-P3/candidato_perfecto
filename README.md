@@ -7,7 +7,7 @@
 </div>
 
 ## Índice  
-- [Descripción de la Aplicación](#descripción-de-la-aplicación)  
+- [Descripción de la Aplicación](#descripcion-de-la-aplicacion)  
 - [🌟 Funcionalidades Clave](#-funcionalidades-clave)  
 - [Beneficios de la Aplicación](#beneficios-de-la-aplicación)  
 - [Público Objetivo](#público-objetivo)  
