@@ -117,9 +117,9 @@ def render_comparative_charts(comparative_df: pd.DataFrame) -> None:
             plot_data[col] = plot_data[col].str.rstrip('%').astype(float) / 100
 
         # Crear gráfico de barras comparativo
-        fig, ax = plt.subplots(figsize=(10, 6))
+        fig, ax = plt.subplots(figsize=(5, 1))
         x = range(len(plot_data['Nombre Candidato']))
-        width = 0.25
+        width = 0.10
 
         for i, col in enumerate(score_cols):
             ax.bar([xi + i*width for xi in x], plot_data[col], width, 
