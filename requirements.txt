@@ -19,6 +19,7 @@ python-dotenv>=1.0.0
 # Visualization
 matplotlib>=3.7.0
 seaborn>=0.12.0
+plotly>=6.0.0
 
 # Type hints support
 typing-extensions>=4.8.0
