@@ -1,14 +1,9 @@
 import streamlit as st
-from pathlib import Path
 from hr_analysis_system import JobProfile
 import logging
 from typing import Dict, List, Tuple, Any
 from dataclasses import dataclass
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-import plotly.graph_objects as go
-from frontend import comparative_analysis  # added import for comparative_analysis
 from datetime import datetime
 from utils.utilities import export_rankings_to_excel
 from io import BytesIO
@@ -28,14 +23,13 @@ class JobSection:
     job_file: Any
     recruiter_skills: str
     killer_criteria: Dict[str, List[str]]
-    weights: Any = None  # Nuevo campo para pesos específicos (WeightSettings)
+    weights: Any = None
 
 @dataclass
 class UIInputs:
     """Almacena los inputs de la interfaz para la funcionalidad multivacante"""
     job_sections: List[JobSection]
     resume_files: List[Any]
-    # Se eliminó el campo global weights
 
 class UIComponents:
     """Maneja todos los componentes de la interfaz de usuario"""
@@ -206,7 +200,6 @@ class UIComponents:
                     if duplicates:
                         st.warning(f"⚠️ Se ignoraron los siguientes CVs duplicados: {', '.join(duplicates)}")
         
-        # Se elimina la asignación de pesos globales ya que se usan los de cada vacante
         return UIInputs(
             job_sections=job_sections,
             resume_files=resume_files
@@ -306,23 +299,6 @@ class UIComponents:
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
-
-                        # Expandibles de información adicional
-                        with st.expander("🔍 Cómo se calculan los scores"):
-                            # ...existing code...
-                            pass
-
-                        with st.expander("Ver Requisitos del Puesto"):
-                            # ...existing code...
-                            pass
-
-                        with st.expander("Ver Preferencias del Reclutador"):
-                            # ...existing code...
-                            pass
-
-                        with st.expander("Ver Criterios Eliminatorios"):
-                            # ...existing code...
-                            pass
 
             else:
                 st.warning("No hay resultados para mostrar")
