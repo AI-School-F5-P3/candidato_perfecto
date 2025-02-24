@@ -89,11 +89,6 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 ### 🌐 Frontend
 - **Streamlit**: Para construir interfaces de usuario interactivas.
 
-
-### 🗄️ Base de Datos
-- **PostgreSQL**: Para almacenar datos de candidatos y vacantes.
-- **MongoDB**: Una base de datos NoSQL que puede ser útil para almacenar datos no estructurados.
-
 ### ☁️ Integración con Google Drive
 - **Google Drive API**: Para permitir la importación automática de CVs desde Google Drive.
 -  Fácil integración con herramientas de almacenamiento en la nube.
