@@ -1,6 +1,6 @@
 import streamlit as st
 from pathlib import Path
-from hr_analysis_system import JobProfile
+from src.hr_analysis_system import JobProfile
 import logging
 from typing import Dict, List, Tuple, Any
 from dataclasses import dataclass
@@ -34,6 +34,117 @@ class UIInputs:
     resume_files: List[Any]
     # Se eliminó el campo global weights
 
+class DriveFileSelector:
+    """Componente para selección de archivos de Drive con búsqueda y desplegable"""
+    @staticmethod
+    def render_search_and_select(files: dict) -> List[str]:
+        if not files:
+            return []
+            
+        # Por defecto, todos los archivos están seleccionados
+        if 'drive_search' not in st.session_state:
+            st.session_state.drive_search = ""
+        if 'selected_files' not in st.session_state:
+            st.session_state.selected_files = list(files.keys())
+        
+        # Estilo personalizado para el contenedor
+        st.markdown("""
+            <style>
+            .drive-selector {
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 15px;
+                margin: 10px 0;
+            }
+            .file-count {
+                background-color: #e7f3fe;
+                border-radius: 20px;
+                padding: 5px 15px;
+                color: #0066cc;
+                font-weight: bold;
+                display: inline-block;
+            }
+            .search-box {
+                border: 2px solid #ddd;
+                border-radius: 6px;
+                padding: 5px;
+            }
+            .button-container {
+                display: flex;
+                gap: 10px;
+                margin: 10px 0;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+            
+        # Layout principal con diseño mejorado
+        st.markdown('<div class="drive-selector">', unsafe_allow_html=True)
+        
+        # Cabecera con contador
+        count_col, search_col = st.columns([1, 3])
+        with count_col:
+            st.markdown(
+                f'<div class="file-count">📄 {len(st.session_state.selected_files)} / {len(files)} CVs</div>', 
+                unsafe_allow_html=True
+            )
+        
+        with search_col:
+            search_term = st.text_input(
+                "🔍 Filtrar CVs por nombre",
+                value=st.session_state.drive_search,
+                key="drive_search_input",
+                placeholder="Escriba para filtrar..."
+            ).lower()
+        
+        # Filtrar archivos según búsqueda
+        filtered_files = {
+            k: v for k, v in files.items() 
+            if search_term in k.lower()
+        }
+        
+        # Desplegable para lista de CVs con diseño mejorado
+        with st.expander("📋 Gestionar selección de CVs", expanded=False):
+            select_col1, select_col2 = st.columns(2)
+            with select_col1:
+                if st.button("✅ Seleccionar todos", 
+                            use_container_width=True,
+                            type="primary"):
+                    st.session_state.selected_files = list(filtered_files.keys())
+                    st.rerun()
+            with select_col2:
+                if st.button("❌ Deseleccionar todos", 
+                            use_container_width=True):
+                    st.session_state.selected_files = []
+                    st.rerun()
+            
+            st.markdown("---")
+            
+            # Grid de checkboxes con 2 columnas
+            col1, col2 = st.columns(2)
+            files_list = list(filtered_files.keys())
+            mid_point = len(files_list) // 2
+            
+            for i, column in enumerate([col1, col2]):
+                with column:
+                    start_idx = i * mid_point
+                    end_idx = (i + 1) * mid_point if i == 0 else len(files_list)
+                    
+                    for filename in files_list[start_idx:end_idx]:
+                        display_name = filename.split(" (Modificado")[0]
+                        is_selected = st.checkbox(
+                            f"📄 {display_name}",
+                            value=True,  # Siempre marcado por defecto
+                            key=f"file_{filename}"
+                        )
+                        if is_selected and filename not in st.session_state.selected_files:
+                            st.session_state.selected_files.append(filename)
+                        elif not is_selected and filename in st.session_state.selected_files:
+                            st.session_state.selected_files.remove(filename)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        return st.session_state.selected_files
+
 class UIComponents:
     """Maneja todos los componentes de la interfaz de usuario"""
     @staticmethod
@@ -57,6 +168,11 @@ class UIComponents:
             """,
             unsafe_allow_html=True
         )
+
+    @staticmethod
+    def setup_page_config() -> None:
+        """Configura la página de Streamlit"""
+        st.set_page_config(page_title="El candidato perfecto", layout="wide")
 
     @staticmethod
     def create_main_sections() -> UIInputs:
@@ -173,6 +289,17 @@ class UIComponents:
             job_sections=job_sections,
             resume_files=resume_files
         )
+
+    @staticmethod
+    def render_drive_section():
+        """Renderiza la sección de selección de archivos de Drive"""
+        st.markdown("---")
+        st.subheader("Cargar CVs desde Google Drive")
+        
+        if 'drive_files' in st.session_state and st.session_state.drive_files:
+            selected_files = DriveFileSelector.render_search_and_select(st.session_state.drive_files)
+            return selected_files
+        return []
 
     @staticmethod
     async def display_ranking(df_list: List[pd.DataFrame], 

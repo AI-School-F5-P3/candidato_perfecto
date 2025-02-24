@@ -24,7 +24,7 @@ class GoogleDriveIntegration:
         query = f"'{self.folder_id}' in parents and (mimeType='application/pdf' or mimeType='application/vnd.openxmlformats-officedocument.wordprocessingml.document')"
         results = self.service.files().list(
             q=query,
-            fields="files(id, name)"
+            fields="files(id, name, modifiedTime)"  # Añadido modifiedTime para mejor información
         ).execute()
         return results.get('files', [])
 
@@ -38,19 +38,63 @@ class GoogleDriveIntegration:
             _, done = downloader.next_chunk()
         return file_stream.getvalue()
 
-    async def process_drive_cvs(self) -> List[str]:
-        """Procesa todos los CVs de la carpeta de Drive"""
+    async def process_cv(self, file_id: str) -> str:
+        """Procesa un único CV desde Drive"""
+        try:
+            content = await self.download_file(file_id)
+            file_info = self.service.files().get(fileId=file_id, fields="name").execute()
+            fake_file = io.BytesIO(content)
+            fake_file.name = file_info['name']
+            text = await self.file_handler.read_file_content(fake_file)
+            logging.info(f"CV procesado: {file_info['name']}")
+            return text
+        except Exception as e:
+            logging.error(f"Error procesando archivo {file_id}: {str(e)}")
+            return ""
+
+    async def process_cvs(self, file_ids: List[str] = None) -> List[str]:
+        """
+        Procesa CVs de Drive. Si no se proporcionan IDs, procesa todos los CVs de la carpeta.
+        """
+        if file_ids is None:
+            files = await self.list_cv_files()
+            file_ids = [file['id'] for file in files]
+
         cv_contents = []
-        files = await self.list_cv_files()
-        for file in files:
-            try:
-                content = await self.download_file(file['id'])
-                # Simula un objeto de archivo para compatibilidad con FileHandler
-                fake_file = io.BytesIO(content)
-                fake_file.name = file['name']
-                text = await self.file_handler.read_file_content(fake_file)
+        for file_id in file_ids:
+            text = await self.process_cv(file_id)
+            if text:
                 cv_contents.append(text)
-                logging.info(f"CV procesado: {file['name']}")
-            except Exception as e:
-                logging.error(f"Error procesando {file['name']}: {str(e)}")
+        
         return cv_contents
+
+    async def process_selected_cvs(self, file_ids: List[str]) -> List[str]:
+        """
+        Procesa los CVs seleccionados de Google Drive
+        
+        Args:
+            file_ids (List[str]): Lista de IDs de archivos seleccionados
+            
+        Returns:
+            List[str]: Lista de contenidos de los CVs procesados
+        """
+        try:
+            cv_texts = []
+            
+            for file_id in file_ids:
+                try:
+                    # Usar el método process_cv existente que ya maneja la descarga
+                    # y procesamiento del archivo
+                    text = await self.process_cv(file_id)
+                    if text:
+                        cv_texts.append(text)
+                        
+                except Exception as e:
+                    logging.error(f"Error procesando archivo {file_id}: {str(e)}")
+                    continue
+            
+            return cv_texts
+            
+        except Exception as e:
+            logging.error(f"Error en process_selected_cvs: {str(e)}")
+            raise Exception(f"Error procesando CVs de Drive: {str(e)}")

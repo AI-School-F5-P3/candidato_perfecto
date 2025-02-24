@@ -248,6 +248,28 @@ class ComparativeAnalysis:
             st.error("Error al mostrar el informe comparativo. Verifique los datos y vuelva a intentar.")
             return []
 
+async def load_drive_cvs(app):
+    """Función asíncrona para cargar CVs desde Google Drive"""
+    try:
+        if st.session_state.drive_files is None:
+            with st.spinner("Cargando lista de archivos de Drive..."):
+                drive_client = GoogleDriveIntegration(
+                    credentials_path=app.gdrive_credentials,
+                    folder_id=app.gdrive_folder_id
+                )
+                files = await drive_client.list_cv_files()
+                if not files:
+                    st.warning("No se encontraron CVs en la carpeta de Google Drive")
+                    return
+                st.session_state.drive_files = {
+                    f"{file['name']} (Modificado: {file['modifiedTime']})": file['id'] 
+                    for file in files
+                }
+                
+    except Exception as e:
+        st.error(f"❌ Error al cargar desde Google Drive: {str(e)}")
+        logging.error(f"Google Drive Error: {str(e)}")
+
 def render_main_page():
     """Renderiza la página principal de la aplicación"""
     st.markdown('<h1 class="title">El candidato perfecto</h1>', unsafe_allow_html=True)
@@ -265,12 +287,39 @@ def render_main_page():
     st.markdown("---")
     st.subheader("Cargar CVs desde Google Drive")
     
-    if st.button("🔄 Cargar CVs desde Google Drive", key="drive_button"):
-        with st.spinner("Descargando CVs desde Google Drive..."):
-            asyncio.run(load_drive_cvs(st.session_state.app))
-            
+    col1, _ = st.columns([1, 3])
+    with col1:
+        if st.button("🔄 Cargar CVs de Drive", key="list_drive_button"):
+            with st.spinner("Cargando archivos de Drive..."):
+                asyncio.run(load_drive_cvs(st.session_state.app))
+    
+    # Usar el selector de Drive de UIComponents
+    selected_files = None
+    if 'drive_files' in st.session_state and st.session_state.drive_files:
+        selected_files = UIComponents.render_drive_section()
+        
     if st.button("Analizar Candidatos", key="analyze_button"):
-        asyncio.run(analyze_candidates(ui_inputs, st.session_state.app))
+        if selected_files and len(selected_files) > 0:
+            try:
+                # Envolvemos la lógica asíncrona en una función async
+                async def process_and_analyze():
+                    drive_integration = GoogleDriveIntegration(
+                        st.session_state.app.gdrive_credentials,
+                        st.session_state.app.gdrive_folder_id
+                    )
+                    # Get the actual file IDs from the drive_files dictionary
+                    file_ids = [
+                        st.session_state.drive_files[filename] 
+                        for filename in selected_files
+                    ]
+                    cv_texts = await drive_integration.process_selected_cvs(file_ids)
+                    await analyze_candidates(ui_inputs, st.session_state.app, cv_texts)
+
+                # Ejecutamos la función asíncrona
+                asyncio.run(process_and_analyze())
+            except Exception as e:
+                logging.error(f"Error procesando CVs: {str(e)}")
+                st.error("Error procesando los CVs seleccionados")
 
 def main():
     """Función principal que maneja el flujo de la aplicación"""
