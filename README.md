@@ -36,9 +36,8 @@
 - Recepción de la descripción detallada del puesto y las preferencias del hiring manager.
 - Análisis profundo de los requisitos del puesto para una mejor correspondencia con los candidatos.
 
-### ⚖️ Cumplimiento Normativo y Ético ---> COMPLETAR
-- Implementación de filtros y principios éticos para garantizar una selección justa y transparente.
-- Consideración de regulaciones vigentes en el uso de IA para la contratación.
+### ⚖️ Cumplimiento Normativo y Ético
+- Consideración de regulaciones vigentes en el uso de IA para la contratación (ver modelo y versión).
 
 ### 📊 Generación de Reportes y Visualización de Datos
 - Representación visual de los resultados del ranking para facilitar la toma de decisiones.
@@ -118,7 +117,7 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 ## 1. Diagrama de Flujo
 
 <div align="center">
-    <img src="docs/image/hr-system-drawio V2.drawio.png" alt="Logo de IA Recruiter" />
+    <img src="docs/img/hr-system-drawio V2.drawio.png" alt="Logo de IA Recruiter" />
 </div>
 
 
