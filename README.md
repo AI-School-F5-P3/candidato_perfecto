@@ -118,7 +118,7 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 ## 1. Diagrama de Flujo
 
 <div align="center">
-    <img src="docs/hr-system-drawio V2.drawio.png" alt="Logo de IA Recruiter" />
+    <img src="docs/image/hr-system-drawio V2.drawio.png" alt="Logo de IA Recruiter" />
 </div>
 
 
