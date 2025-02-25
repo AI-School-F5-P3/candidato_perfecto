@@ -232,7 +232,7 @@ class UIComponents:
                     filename = f"resultados_ranking_{timestamp}.xlsx"
                     
                     # Preparar los datos para Excel
-                    vacancy_names = [f"Vacante {i+1}" for i in range(len(df_list))]
+                    vacancy_names = [job_profile.nombre_vacante for job_profile in job_profiles]
                     success = export_rankings_to_excel(df_list, vacancy_names, buffer)
                     
                     if success:
