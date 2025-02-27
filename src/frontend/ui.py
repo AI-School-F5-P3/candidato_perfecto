@@ -261,7 +261,37 @@ class UIComponents:
         UIComponents.load_custom_css()
         
         # Header con título principal
-        st.markdown('<div class="main-title">Sistema de Análisis de Candidatos</div>', unsafe_allow_html=True)
+        st.markdown('<div class="main-title">El Candidato Perfecto - Sistema de Análisis de Candidatos</div>', unsafe_allow_html=True)
+        # Header con título principal y expander de información
+        with st.expander("ℹ️ Información del Sistema", expanded=False):
+            st.markdown("""
+            ### 🔍 Acerca del Sistema
+            El Candidato Perfecto es una herramienta avanzada de análisis que utiliza IA para evaluar candidatos y ayudar en la toma de decisiones de contratación.
+            
+            ### ✨ Capacidades
+            - **Análisis múltiple**: Procesa varias vacantes simultáneamente
+            - **IA semántica**: Evalúa similitud contextual entre requisitos y perfiles
+            - **Criterios eliminatorios**: Descalifica automáticamente candidatos que no cumplen requisitos obligatorios
+            - **Ponderación personalizada**: Ajuste de pesos para habilidades, experiencia, formación y preferencias
+            - **Exportación de resultados**: Genera reportes en Excel para análisis posterior
+            - **Integración con Google Drive**: Importa CVs directamente desde la nube
+            
+            ### 📋 Guía de uso
+            1. **Cargue archivos**: Suba descripciones de vacantes y CVs de candidatos (local o Drive)
+            
+            2. **Configure cada vacante**:
+               - Defina preferencias específicas del reclutador
+               - Establezca criterios eliminatorios (habilidades y experiencia obligatorias)
+               - Ajuste los pesos de evaluación (deben sumar 1.0)
+               
+            3. **Ejecute el análisis**: Haga clic en el botón de analizar candidatos
+            
+            4. **Revise resultados**:
+               - Explore el ranking de candidatos por vacante
+               - Verifique estadísticas de candidatos calificados vs descalificados
+               - Exporte los resultados completos a Excel
+            """, unsafe_allow_html=True)
+        
         
         # Crear contenedor para seleccionar archivos
         st.markdown('<div class="section-title">Cargar Archivos</div>', unsafe_allow_html=True)

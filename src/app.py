@@ -253,14 +253,6 @@ class ComparativeAnalysis:
 
 def render_main_page():
     """Renderiza la página principal de la aplicación"""
-    st.markdown('<h1 class="title">El candidato perfecto</h1>', unsafe_allow_html=True)
-    st.write("""
-    El sistema recopila información de una vacante junto con las preferencias del equipo reclutador 
-    y las características obligatorias a cumplir por los candidatos. Con esta información, se analizan 
-    los curriculum vitae de los candidatos y se obtiene un ranking de idoneidad basado en habilidades, 
-    experiencia y formación. También se identifican los candidatos que no cumplen con los requisitos 
-    obligatorios. Los pesos de ponderación pueden ser ajustados si así se requiere.
-    """)
     
     ui_inputs = UIComponents.create_main_sections()
             
