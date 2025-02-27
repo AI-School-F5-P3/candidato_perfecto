@@ -1,0 +1,1017 @@
+{
+  "vacante": {
+    "nombre_vacante": "Desarrollador Java Senior",
+    "original_data": "",
+    "habilidades": [
+      "java se/ee",
+      "spring framework",
+      "hibernate",
+      "mysql/postgresql",
+      "git",
+      "docker/kubernetes"
+    ],
+    "experiencia": [
+      "5_years_experiences de experiencia en desarrollo java",
+      "dominio de spring framework y spring boot",
+      "experiencia en arquitectura de microservicios",
+      "conocimientos sólidos de bases de datos sql",
+      "experiencia en gestión de equipos"
+    ],
+    "formacion": [
+      "grado",
+      "certificaciones java (valorable)"
+    ],
+    "habilidades_preferidas": [
+      "pytorch"
+    ],
+    "killer_criteria": {
+      "killer_habilidades": [],
+      "killer_experiencia": [
+        "4_years_experiences de experiencia mínima"
+      ]
+    },
+    "weights": {
+      "habilidades": 0.3,
+      "experiencia": 0.3,
+      "formacion": 0.2,
+      "preferencias_reclutador": 0.2
+    }
+  },
+  "candidates": [
+    {
+      "nombre_candidato": "Ana López García",
+      "original_data": "{\"nombre_candidato\": \"Ana L\\u00f3pez Garc\\u00eda\", \"habilidades\": [\"Python\", \"R\", \"TensorFlow\", \"PyTorch\", \"scikit-learn\", \"SQL\", \"MongoDB\", \"Tableau\", \"Power BI\", \"Git\", \"Docker\"], \"experiencia\": [\"7 a\\u00f1os de experiencia en liderando proyectos de machine learning y an\\u00e1lisis predictivo\", \"Optimizaci\\u00f3n de modelos existentes, mejorando precisi\\u00f3n en un 35%\"], \"formacion\": [\"PhD en Estad\\u00edstica, Universidad Complutense de Madrid (2016)\", \"MSc en Data Science, Universidad Carlos III (2013)\"]}",
+      "dictionaries": {
+        "habilidades": [
+          "python",
+          "r",
+          "tensorflow",
+          "pytorch",
+          "scikit-learn",
+          "sql",
+          "mongodb",
+          "tableau",
+          "power bi",
+          "git",
+          "docker"
+        ],
+        "experiencia": [
+          "7_years_experiences de experiencia en liderando proyectos de machine learning y análisis predictivo",
+          "optimización de modelos existentes, mejorando precisión en un 35%"
+        ],
+        "formacion": [
+          "doctorado",
+          "master"
+        ]
+      },
+      "debug_info": {
+        "habilidades": {
+          "candidate": [
+            "python",
+            "r",
+            "tensorflow",
+            "pytorch",
+            "scikit-learn",
+            "sql",
+            "mongodb",
+            "tableau",
+            "power bi",
+            "git",
+            "docker"
+          ],
+          "job": [
+            "java se/ee",
+            "spring framework",
+            "hibernate",
+            "mysql/postgresql",
+            "git",
+            "docker/kubernetes"
+          ],
+          "cosine_similarity": 0.49168519447339415,
+          "weight": 0.3,
+          "weighted_score": 0.14750555834201823
+        },
+        "experiencia": {
+          "candidate": [
+            "7_years_experiences de experiencia en liderando proyectos de machine learning y análisis predictivo",
+            "optimización de modelos existentes, mejorando precisión en un 35%"
+          ],
+          "job": [
+            "5_years_experiences de experiencia en desarrollo java",
+            "dominio de spring framework y spring boot",
+            "experiencia en arquitectura de microservicios",
+            "conocimientos sólidos de bases de datos sql",
+            "experiencia en gestión de equipos"
+          ],
+          "cosine_similarity": 0.5018717087281545,
+          "weight": 0.3,
+          "weighted_score": 0.15056151261844633
+        },
+        "formacion": {
+          "candidate": [
+            "doctorado",
+            "master"
+          ],
+          "job": [
+            "grado",
+            "certificaciones java (valorable)"
+          ],
+          "cosine_similarity": 0.558115946506155,
+          "weight": 0.2,
+          "weighted_score": 0.11162318930123101
+        },
+        "preferencias_reclutador": {
+          "candidate": [
+            "python",
+            "r",
+            "tensorflow",
+            "pytorch",
+            "scikit-learn",
+            "sql",
+            "mongodb",
+            "tableau",
+            "power bi",
+            "git",
+            "docker"
+          ],
+          "preferences": [
+            "pytorch"
+          ],
+          "cosine_similarity": 0.9999999799999996,
+          "weight": 0.2,
+          "weighted_score": 0.19999999599999993
+        },
+        "killer": {
+          "qualified": true,
+          "reasons": []
+        }
+      }
+    },
+    {
+      "nombre_candidato": "Miguel Ángel Sánchez",
+      "original_data": "{\"nombre_candidato\": \"Miguel \\u00c1ngel S\\u00e1nchez\", \"habilidades\": [\"Java SE/EE\", \"Spring Framework\", \"Spring Boot\", \"Hibernate\", \"Oracle\", \"PostgreSQL\", \"Jenkins\", \"Docker\", \"Kubernetes\"], \"experiencia\": [\"8 a\\u00f1os de experiencia como desarrollador Java senior en aplicaciones empresariales\", \"Liderazgo de equipo de 8 desarrolladores, arquitectura de microservicios con Spring Boot, optimizaci\\u00f3n de rendimiento y escalabilidad, implementaci\\u00f3n de CI/CD\"], \"formacion\": [\"Ingenier\\u00eda Inform\\u00e1tica, Universidad Aut\\u00f3noma de Madrid (2015) - Oracle Certified Professional Java SE 11\"]}",
+      "dictionaries": {
+        "habilidades": [
+          "java se/ee",
+          "spring framework",
+          "spring boot",
+          "hibernate",
+          "oracle",
+          "postgresql",
+          "jenkins",
+          "docker",
+          "kubernetes"
+        ],
+        "experiencia": [
+          "8_years_experiences de experiencia como desarrollador java senior en aplicaciones empresariales",
+          "liderazgo de equipo de 8 desarrolladores, arquitectura de microservicios con spring boot, optimización de rendimiento y escalabilidad, implementación de ci/cd"
+        ],
+        "formacion": [
+          "grado"
+        ]
+      },
+      "debug_info": {
+        "habilidades": {
+          "candidate": [
+            "java se/ee",
+            "spring framework",
+            "spring boot",
+            "hibernate",
+            "oracle",
+            "postgresql",
+            "jenkins",
+            "docker",
+            "kubernetes"
+          ],
+          "job": [
+            "java se/ee",
+            "spring framework",
+            "hibernate",
+            "mysql/postgresql",
+            "git",
+            "docker/kubernetes"
+          ],
+          "cosine_similarity": 0.8049466080811575,
+          "weight": 0.3,
+          "weighted_score": 0.24148398242434724
+        },
+        "experiencia": {
+          "candidate": [
+            "8_years_experiences de experiencia como desarrollador java senior en aplicaciones empresariales",
+            "liderazgo de equipo de 8 desarrolladores, arquitectura de microservicios con spring boot, optimización de rendimiento y escalabilidad, implementación de ci/cd"
+          ],
+          "job": [
+            "5_years_experiences de experiencia en desarrollo java",
+            "dominio de spring framework y spring boot",
+            "experiencia en arquitectura de microservicios",
+            "conocimientos sólidos de bases de datos sql",
+            "experiencia en gestión de equipos"
+          ],
+          "cosine_similarity": 0.6095421479789792,
+          "weight": 0.3,
+          "weighted_score": 0.18286264439369376
+        },
+        "formacion": {
+          "candidate": [
+            "grado"
+          ],
+          "job": [
+            "grado",
+            "certificaciones java (valorable)"
+          ],
+          "cosine_similarity": 0.6307445415908038,
+          "weight": 0.2,
+          "weighted_score": 0.12614890831816078
+        },
+        "preferencias_reclutador": {
+          "candidate": [
+            "java se/ee",
+            "spring framework",
+            "spring boot",
+            "hibernate",
+            "oracle",
+            "postgresql",
+            "jenkins",
+            "docker",
+            "kubernetes"
+          ],
+          "preferences": [
+            "pytorch"
+          ],
+          "cosine_similarity": 0.25936544104352643,
+          "weight": 0.2,
+          "weighted_score": 0.05187308820870529
+        },
+        "killer": {
+          "qualified": true,
+          "reasons": []
+        }
+      }
+    },
+    {
+      "nombre_candidato": "Laura Fernández Díaz",
+      "original_data": "{\"nombre_candidato\": \"Laura Fern\\u00e1ndez D\\u00edaz\", \"habilidades\": [\"Java\", \"Spring Framework\", \"MySQL\", \"Git\", \"Maven\"], \"experiencia\": [\"4 a\\u00f1os de experiencia en desarrollo de aplicaciones empresariales con Java\", \"Implementaci\\u00f3n de servicios REST, mantenimiento de bases de datos\"], \"formacion\": [\"Grado en Ingenier\\u00eda Inform\\u00e1tica, UPC (2019)\", \"Certificaci\\u00f3n Java SE 8 Programmer\"]}",
+      "dictionaries": {
+        "habilidades": [
+          "java",
+          "spring framework",
+          "mysql",
+          "git",
+          "maven"
+        ],
+        "experiencia": [
+          "4_years_experiences de experiencia en desarrollo de aplicaciones empresariales con java",
+          "implementación de servicios rest, mantenimiento de bases de datos"
+        ],
+        "formacion": [
+          "grado",
+          "certificación java se 8 programmer"
+        ]
+      },
+      "debug_info": {
+        "habilidades": {
+          "candidate": [
+            "java",
+            "spring framework",
+            "mysql",
+            "git",
+            "maven"
+          ],
+          "job": [
+            "java se/ee",
+            "spring framework",
+            "hibernate",
+            "mysql/postgresql",
+            "git",
+            "docker/kubernetes"
+          ],
+          "cosine_similarity": 0.6273029767185069,
+          "weight": 0.3,
+          "weighted_score": 0.18819089301555206
+        },
+        "experiencia": {
+          "candidate": [
+            "4_years_experiences de experiencia en desarrollo de aplicaciones empresariales con java",
+            "implementación de servicios rest, mantenimiento de bases de datos"
+          ],
+          "job": [
+            "5_years_experiences de experiencia en desarrollo java",
+            "dominio de spring framework y spring boot",
+            "experiencia en arquitectura de microservicios",
+            "conocimientos sólidos de bases de datos sql",
+            "experiencia en gestión de equipos"
+          ],
+          "cosine_similarity": 0.6082570608095519,
+          "weight": 0.3,
+          "weighted_score": 0.18247711824286555
+        },
+        "formacion": {
+          "candidate": [
+            "grado",
+            "certificación java se 8 programmer"
+          ],
+          "job": [
+            "grado",
+            "certificaciones java (valorable)"
+          ],
+          "cosine_similarity": 0.8665599644143801,
+          "weight": 0.2,
+          "weighted_score": 0.17331199288287602
+        },
+        "preferencias_reclutador": {
+          "candidate": [
+            "java",
+            "spring framework",
+            "mysql",
+            "git",
+            "maven"
+          ],
+          "preferences": [
+            "pytorch"
+          ],
+          "cosine_similarity": 0.239564533668897,
+          "weight": 0.2,
+          "weighted_score": 0.0479129067337794
+        },
+        "killer": {
+          "qualified": true,
+          "reasons": []
+        }
+      }
+    },
+    {
+      "nombre_candidato": "Marina López Sánchez",
+      "original_data": "{\"nombre_candidato\": \"Marina L\\u00f3pez S\\u00e1nchez\", \"habilidades\": [\"Python\", \"Java\", \"Django\", \"Spring Boot\", \"React\", \"Angular\", \"PostgreSQL\", \"MongoDB\", \"Docker\", \"AWS\"], \"experiencia\": [\"5 a\\u00f1os de experiencia como desarrolladora full stack en m\\u00faltiples tecnolog\\u00edas\", \"Desarrollo de aplicaciones web, dise\\u00f1o de arquitectura, implementaci\\u00f3n de APIs REST, integraci\\u00f3n de APIs y optimizaci\\u00f3n de rendimiento\"], \"formacion\": [\"Ingenier\\u00eda Inform\\u00e1tica, Universidad Rey Juan Carlos (2018)\", \"M\\u00faltiples certificaciones en desarrollo web\"]}",
+      "dictionaries": {
+        "habilidades": [
+          "python",
+          "java",
+          "django",
+          "spring boot",
+          "react",
+          "angular",
+          "postgresql",
+          "mongodb",
+          "docker",
+          "aws"
+        ],
+        "experiencia": [
+          "5_years_experiences de experiencia como desarrolladora full stack en múltiples tecnologías",
+          "desarrollo de aplicaciones web, diseño de arquitectura, implementación de apis rest, integración de apis y optimización de rendimiento"
+        ],
+        "formacion": [
+          "grado",
+          "múltiples certificaciones en desarrollo web"
+        ]
+      },
+      "debug_info": {
+        "habilidades": {
+          "candidate": [
+            "python",
+            "java",
+            "django",
+            "spring boot",
+            "react",
+            "angular",
+            "postgresql",
+            "mongodb",
+            "docker",
+            "aws"
+          ],
+          "job": [
+            "java se/ee",
+            "spring framework",
+            "hibernate",
+            "mysql/postgresql",
+            "git",
+            "docker/kubernetes"
+          ],
+          "cosine_similarity": 0.5489459542976495,
+          "weight": 0.3,
+          "weighted_score": 0.16468378628929484
+        },
+        "experiencia": {
+          "candidate": [
+            "5_years_experiences de experiencia como desarrolladora full stack en múltiples tecnologías",
+            "desarrollo de aplicaciones web, diseño de arquitectura, implementación de apis rest, integración de apis y optimización de rendimiento"
+          ],
+          "job": [
+            "5_years_experiences de experiencia en desarrollo java",
+            "dominio de spring framework y spring boot",
+            "experiencia en arquitectura de microservicios",
+            "conocimientos sólidos de bases de datos sql",
+            "experiencia en gestión de equipos"
+          ],
+          "cosine_similarity": 0.5916406126518626,
+          "weight": 0.3,
+          "weighted_score": 0.17749218379555878
+        },
+        "formacion": {
+          "candidate": [
+            "grado",
+            "múltiples certificaciones en desarrollo web"
+          ],
+          "job": [
+            "grado",
+            "certificaciones java (valorable)"
+          ],
+          "cosine_similarity": 0.8078693375735,
+          "weight": 0.2,
+          "weighted_score": 0.16157386751470001
+        },
+        "preferencias_reclutador": {
+          "candidate": [
+            "python",
+            "java",
+            "django",
+            "spring boot",
+            "react",
+            "angular",
+            "postgresql",
+            "mongodb",
+            "docker",
+            "aws"
+          ],
+          "preferences": [
+            "pytorch"
+          ],
+          "cosine_similarity": 0.4215454427672073,
+          "weight": 0.2,
+          "weighted_score": 0.08430908855344146
+        },
+        "killer": {
+          "qualified": true,
+          "reasons": []
+        }
+      }
+    },
+    {
+      "nombre_candidato": "David García Pérez",
+      "original_data": "{\"nombre_candidato\": \"David Garc\\u00eda P\\u00e9rez\", \"habilidades\": [\"Python\", \"Django\", \"FastAPI\", \"PostgreSQL\", \"MongoDB\", \"Docker\", \"Kubernetes\", \"AWS\", \"Testing (Pytest)\"], \"experiencia\": [\"6 a\\u00f1os de experiencia en dise\\u00f1o de APIs y microservicios\", \"Liderazgo t\\u00e9cnico de equipo backend\", \"Optimizaci\\u00f3n de rendimiento de bases de datos\"], \"formacion\": [\"Ingenier\\u00eda Inform\\u00e1tica, Universidad Polit\\u00e9cnica de Valencia (2017)\", \"Certificaci\\u00f3n AWS Developer Associate\"]}",
+      "dictionaries": {
+        "habilidades": [
+          "python",
+          "django",
+          "fastapi",
+          "postgresql",
+          "mongodb",
+          "docker",
+          "kubernetes",
+          "aws",
+          "testing (pytest)"
+        ],
+        "experiencia": [
+          "6_years_experiences de experiencia en diseño de apis y microservicios",
+          "liderazgo técnico de equipo backend",
+          "optimización de rendimiento de bases de datos"
+        ],
+        "formacion": [
+          "grado",
+          "certificación aws developer associate"
+        ]
+      },
+      "debug_info": {
+        "habilidades": {
+          "candidate": [
+            "python",
+            "django",
+            "fastapi",
+            "postgresql",
+            "mongodb",
+            "docker",
+            "kubernetes",
+            "aws",
+            "testing (pytest)"
+          ],
+          "job": [
+            "java se/ee",
+            "spring framework",
+            "hibernate",
+            "mysql/postgresql",
+            "git",
+            "docker/kubernetes"
+          ],
+          "cosine_similarity": 0.4534697058816233,
+          "weight": 0.3,
+          "weighted_score": 0.136040911764487
+        },
+        "experiencia": {
+          "candidate": [
+            "6_years_experiences de experiencia en diseño de apis y microservicios",
+            "liderazgo técnico de equipo backend",
+            "optimización de rendimiento de bases de datos"
+          ],
+          "job": [
+            "5_years_experiences de experiencia en desarrollo java",
+            "dominio de spring framework y spring boot",
+            "experiencia en arquitectura de microservicios",
+            "conocimientos sólidos de bases de datos sql",
+            "experiencia en gestión de equipos"
+          ],
+          "cosine_similarity": 0.6001280593253929,
+          "weight": 0.3,
+          "weighted_score": 0.18003841779761787
+        },
+        "formacion": {
+          "candidate": [
+            "grado",
+            "certificación aws developer associate"
+          ],
+          "job": [
+            "grado",
+            "certificaciones java (valorable)"
+          ],
+          "cosine_similarity": 0.7807946657389955,
+          "weight": 0.2,
+          "weighted_score": 0.1561589331477991
+        },
+        "preferencias_reclutador": {
+          "candidate": [
+            "python",
+            "django",
+            "fastapi",
+            "postgresql",
+            "mongodb",
+            "docker",
+            "kubernetes",
+            "aws",
+            "testing (pytest)"
+          ],
+          "preferences": [
+            "pytorch"
+          ],
+          "cosine_similarity": 0.42162369443669767,
+          "weight": 0.2,
+          "weighted_score": 0.08432473888733955
+        },
+        "killer": {
+          "qualified": true,
+          "reasons": []
+        }
+      }
+    },
+    {
+      "nombre_candidato": "Carlos Martínez Ruiz",
+      "original_data": "{\"nombre_candidato\": \"Carlos Mart\\u00ednez Ruiz\", \"habilidades\": [\"Python\", \"Scikit-learn\", \"Pandas\", \"SQL\", \"Power BI\", \"Git\"], \"experiencia\": [\"4 a\\u00f1os de experiencia en an\\u00e1lisis de datos y machine learning\", \"Desarrollo de modelos predictivos, automatizaci\\u00f3n de procesos de ETL, creaci\\u00f3n de dashboards en Power BI\"], \"formacion\": [\"M\\u00e1ster en Big Data, UPC Barcelona (2019)\", \"Grado en Matem\\u00e1ticas, UAB (2018)\"]}",
+      "dictionaries": {
+        "habilidades": [
+          "python",
+          "scikit-learn",
+          "pandas",
+          "sql",
+          "power bi",
+          "git"
+        ],
+        "experiencia": [
+          "4_years_experiences de experiencia en análisis de datos y machine learning",
+          "desarrollo de modelos predictivos, automatización de procesos de etl, creación de dashboards en power bi"
+        ],
+        "formacion": [
+          "master",
+          "grado en matemáticas, uab (2018)"
+        ]
+      },
+      "debug_info": {
+        "habilidades": {
+          "candidate": [
+            "python",
+            "scikit-learn",
+            "pandas",
+            "sql",
+            "power bi",
+            "git"
+          ],
+          "job": [
+            "java se/ee",
+            "spring framework",
+            "hibernate",
+            "mysql/postgresql",
+            "git",
+            "docker/kubernetes"
+          ],
+          "cosine_similarity": 0.4426755508307488,
+          "weight": 0.3,
+          "weighted_score": 0.13280266524922463
+        },
+        "experiencia": {
+          "candidate": [
+            "4_years_experiences de experiencia en análisis de datos y machine learning",
+            "desarrollo de modelos predictivos, automatización de procesos de etl, creación de dashboards en power bi"
+          ],
+          "job": [
+            "5_years_experiences de experiencia en desarrollo java",
+            "dominio de spring framework y spring boot",
+            "experiencia en arquitectura de microservicios",
+            "conocimientos sólidos de bases de datos sql",
+            "experiencia en gestión de equipos"
+          ],
+          "cosine_similarity": 0.505553087782981,
+          "weight": 0.3,
+          "weighted_score": 0.1516659263348943
+        },
+        "formacion": {
+          "candidate": [
+            "master",
+            "grado en matemáticas, uab (2018)"
+          ],
+          "job": [
+            "grado",
+            "certificaciones java (valorable)"
+          ],
+          "cosine_similarity": 0.5869052789710982,
+          "weight": 0.2,
+          "weighted_score": 0.11738105579421965
+        },
+        "preferencias_reclutador": {
+          "candidate": [
+            "python",
+            "scikit-learn",
+            "pandas",
+            "sql",
+            "power bi",
+            "git"
+          ],
+          "preferences": [
+            "pytorch"
+          ],
+          "cosine_similarity": 0.42162369443669767,
+          "weight": 0.2,
+          "weighted_score": 0.08432473888733955
+        },
+        "killer": {
+          "qualified": true,
+          "reasons": []
+        }
+      }
+    },
+    {
+      "nombre_candidato": "Alejandro Torres Vega",
+      "original_data": "{\"nombre_candidato\": \"Alejandro Torres Vega\", \"habilidades\": [\"Java\", \"Spring Boot\", \"MySQL\", \"Git\"], \"experiencia\": [\"1 a\\u00f1o de experiencia como desarrollador Java junior en desarrollo empresarial\", \"Desarrollo de m\\u00f3dulos con Spring Boot, testing unitario y mantenimiento de c\\u00f3digo\"], \"formacion\": [\"Grado en Ingenier\\u00eda del Software, Universidad de Valencia (2022)\", \"Curso de Spring Framework y Microservicios (2022)\"]}",
+      "dictionaries": {
+        "habilidades": [
+          "java",
+          "spring boot",
+          "mysql",
+          "git"
+        ],
+        "experiencia": [
+          "1_years_experience de experiencia como desarrollador java junior en desarrollo empresarial",
+          "desarrollo de módulos con spring boot, testing unitario y mantenimiento de código"
+        ],
+        "formacion": [
+          "grado",
+          "curso de spring framework y microservicios (2022)"
+        ]
+      },
+      "debug_info": {
+        "habilidades": {
+          "candidate": [
+            "java",
+            "spring boot",
+            "mysql",
+            "git"
+          ],
+          "job": [
+            "java se/ee",
+            "spring framework",
+            "hibernate",
+            "mysql/postgresql",
+            "git",
+            "docker/kubernetes"
+          ],
+          "cosine_similarity": 0.5921120043859835,
+          "weight": 0.3,
+          "weighted_score": 0.17763360131579506
+        },
+        "experiencia": {
+          "candidate": [
+            "1_years_experience de experiencia como desarrollador java junior en desarrollo empresarial",
+            "desarrollo de módulos con spring boot, testing unitario y mantenimiento de código"
+          ],
+          "job": [
+            "5_years_experiences de experiencia en desarrollo java",
+            "dominio de spring framework y spring boot",
+            "experiencia en arquitectura de microservicios",
+            "conocimientos sólidos de bases de datos sql",
+            "experiencia en gestión de equipos"
+          ],
+          "cosine_similarity": 0.5978873278727999,
+          "weight": 0.3,
+          "weighted_score": 0.17936619836183995
+        },
+        "formacion": {
+          "candidate": [
+            "grado",
+            "curso de spring framework y microservicios (2022)"
+          ],
+          "job": [
+            "grado",
+            "certificaciones java (valorable)"
+          ],
+          "cosine_similarity": 0.748347974962045,
+          "weight": 0.2,
+          "weighted_score": 0.149669594992409
+        },
+        "preferencias_reclutador": {
+          "candidate": [
+            "java",
+            "spring boot",
+            "mysql",
+            "git"
+          ],
+          "preferences": [
+            "pytorch"
+          ],
+          "cosine_similarity": 0.25935290572024255,
+          "weight": 0.2,
+          "weighted_score": 0.051870581144048515
+        },
+        "killer": {
+          "qualified": false,
+          "reasons": [
+            "Experiencia insuficiente: requiere 4 años, tiene 1 años."
+          ]
+        }
+      }
+    },
+    {
+      "nombre_candidato": "Elena Rodríguez López",
+      "original_data": "{\"nombre_candidato\": \"Elena Rodr\\u00edguez L\\u00f3pez\", \"habilidades\": [\"Python\", \"Django\", \"PostgreSQL\", \"Git\", \"Docker b\\u00e1sico\"], \"experiencia\": [\"3 a\\u00f1os de experiencia en desarrollo backend\", \"Desarrollo de APIs con Django REST, mantenimiento de bases de datos PostgreSQL, implementaci\\u00f3n de tests automatizados\"], \"formacion\": [\"Grado en Ingenier\\u00eda del Software, Universidad de Sevilla (2020)\", \"Bootcamp Python Backend, Codehouse (2019)\"]}",
+      "dictionaries": {
+        "habilidades": [
+          "python",
+          "django",
+          "postgresql",
+          "git",
+          "docker básico"
+        ],
+        "experiencia": [
+          "3_years_experiences de experiencia en desarrollo backend",
+          "desarrollo de apis con django rest, mantenimiento de bases de datos postgresql, implementación de tests automatizados"
+        ],
+        "formacion": [
+          "grado",
+          "bootcamp python backend, codehouse (2019)"
+        ]
+      },
+      "debug_info": {
+        "habilidades": {
+          "candidate": [
+            "python",
+            "django",
+            "postgresql",
+            "git",
+            "docker básico"
+          ],
+          "job": [
+            "java se/ee",
+            "spring framework",
+            "hibernate",
+            "mysql/postgresql",
+            "git",
+            "docker/kubernetes"
+          ],
+          "cosine_similarity": 0.5043449579287487,
+          "weight": 0.3,
+          "weighted_score": 0.1513034873786246
+        },
+        "experiencia": {
+          "candidate": [
+            "3_years_experiences de experiencia en desarrollo backend",
+            "desarrollo de apis con django rest, mantenimiento de bases de datos postgresql, implementación de tests automatizados"
+          ],
+          "job": [
+            "5_years_experiences de experiencia en desarrollo java",
+            "dominio de spring framework y spring boot",
+            "experiencia en arquitectura de microservicios",
+            "conocimientos sólidos de bases de datos sql",
+            "experiencia en gestión de equipos"
+          ],
+          "cosine_similarity": 0.5793319657824005,
+          "weight": 0.3,
+          "weighted_score": 0.17379958973472015
+        },
+        "formacion": {
+          "candidate": [
+            "grado",
+            "bootcamp python backend, codehouse (2019)"
+          ],
+          "job": [
+            "grado",
+            "certificaciones java (valorable)"
+          ],
+          "cosine_similarity": 0.6307440180934949,
+          "weight": 0.2,
+          "weighted_score": 0.12614880361869898
+        },
+        "preferencias_reclutador": {
+          "candidate": [
+            "python",
+            "django",
+            "postgresql",
+            "git",
+            "docker básico"
+          ],
+          "preferences": [
+            "pytorch"
+          ],
+          "cosine_similarity": 0.4216391860804716,
+          "weight": 0.2,
+          "weighted_score": 0.08432783721609433
+        },
+        "killer": {
+          "qualified": false,
+          "reasons": [
+            "Experiencia insuficiente: requiere 4 años, tiene 3 años."
+          ]
+        }
+      }
+    },
+    {
+      "nombre_candidato": "Sara Navarro Martín",
+      "original_data": "{\"nombre_candidato\": \"Sara Navarro Mart\\u00edn\", \"habilidades\": [\"Python\", \"Django\", \"PostgreSQL\", \"Git\"], \"experiencia\": [\"Menos de 1 a\\u00f1o de experiencia en desarrollo backend con Python\", \"Desarrollo de APIs con Django, testing y documentaci\\u00f3n, mantenimiento de bases de datos\"], \"formacion\": [\"Grado en Ingenier\\u00eda Inform\\u00e1tica, Universidad del Pa\\u00eds Vasco (2022)\", \"Bootcamp Backend Desarrollo (2021)\"]}",
+      "dictionaries": {
+        "habilidades": [
+          "python",
+          "django",
+          "postgresql",
+          "git"
+        ],
+        "experiencia": [
+          "menos de 1_years_experience de experiencia en desarrollo backend con python",
+          "desarrollo de apis con django, testing y documentación, mantenimiento de bases de datos"
+        ],
+        "formacion": [
+          "grado",
+          "bootcamp backend desarrollo (2021)"
+        ]
+      },
+      "debug_info": {
+        "habilidades": {
+          "candidate": [
+            "python",
+            "django",
+            "postgresql",
+            "git"
+          ],
+          "job": [
+            "java se/ee",
+            "spring framework",
+            "hibernate",
+            "mysql/postgresql",
+            "git",
+            "docker/kubernetes"
+          ],
+          "cosine_similarity": 0.46111728481896574,
+          "weight": 0.3,
+          "weighted_score": 0.1383351854456897
+        },
+        "experiencia": {
+          "candidate": [
+            "menos de 1_years_experience de experiencia en desarrollo backend con python",
+            "desarrollo de apis con django, testing y documentación, mantenimiento de bases de datos"
+          ],
+          "job": [
+            "5_years_experiences de experiencia en desarrollo java",
+            "dominio de spring framework y spring boot",
+            "experiencia en arquitectura de microservicios",
+            "conocimientos sólidos de bases de datos sql",
+            "experiencia en gestión de equipos"
+          ],
+          "cosine_similarity": 0.4991803115136312,
+          "weight": 0.3,
+          "weighted_score": 0.14975409345408935
+        },
+        "formacion": {
+          "candidate": [
+            "grado",
+            "bootcamp backend desarrollo (2021)"
+          ],
+          "job": [
+            "grado",
+            "certificaciones java (valorable)"
+          ],
+          "cosine_similarity": 0.6307690021277381,
+          "weight": 0.2,
+          "weighted_score": 0.12615380042554764
+        },
+        "preferencias_reclutador": {
+          "candidate": [
+            "python",
+            "django",
+            "postgresql",
+            "git"
+          ],
+          "preferences": [
+            "pytorch"
+          ],
+          "cosine_similarity": 0.42157920802877025,
+          "weight": 0.2,
+          "weighted_score": 0.08431584160575406
+        },
+        "killer": {
+          "qualified": false,
+          "reasons": [
+            "Experiencia insuficiente: requiere 4 años, tiene 1 años."
+          ]
+        }
+      }
+    },
+    {
+      "nombre_candidato": "Pablo Moreno Gil",
+      "original_data": "{\"nombre_candidato\": \"Pablo Moreno Gil\", \"habilidades\": [\"Python\", \"Pandas\", \"Scikit-learn\", \"SQL\", \"Tableau\", \"Git\"], \"experiencia\": [\"1 a\\u00f1o de experiencia como Data Scientist Junior\", \"Desarrollo de modelos b\\u00e1sicos de ML, visualizaci\\u00f3n de datos con Tableau, limpieza y preparaci\\u00f3n de datos\"], \"formacion\": [\"M\\u00e1ster en Data Science, Universidad de M\\u00e1laga (2022)\", \"Grado en Estad\\u00edstica, Universidad de Granada (2021)\"]}",
+      "dictionaries": {
+        "habilidades": [
+          "python",
+          "pandas",
+          "scikit-learn",
+          "sql",
+          "tableau",
+          "git"
+        ],
+        "experiencia": [
+          "1_years_experience de experiencia como data scientist junior",
+          "desarrollo de modelos básicos de ml, visualización de datos con tableau, limpieza y preparación de datos"
+        ],
+        "formacion": [
+          "master",
+          "grado en estadística, universidad de granada (2021)"
+        ]
+      },
+      "debug_info": {
+        "habilidades": {
+          "candidate": [
+            "python",
+            "pandas",
+            "scikit-learn",
+            "sql",
+            "tableau",
+            "git"
+          ],
+          "job": [
+            "java se/ee",
+            "spring framework",
+            "hibernate",
+            "mysql/postgresql",
+            "git",
+            "docker/kubernetes"
+          ],
+          "cosine_similarity": 0.4427051828635145,
+          "weight": 0.3,
+          "weighted_score": 0.13281155485905435
+        },
+        "experiencia": {
+          "candidate": [
+            "1_years_experience de experiencia como data scientist junior",
+            "desarrollo de modelos básicos de ml, visualización de datos con tableau, limpieza y preparación de datos"
+          ],
+          "job": [
+            "5_years_experiences de experiencia en desarrollo java",
+            "dominio de spring framework y spring boot",
+            "experiencia en arquitectura de microservicios",
+            "conocimientos sólidos de bases de datos sql",
+            "experiencia en gestión de equipos"
+          ],
+          "cosine_similarity": 0.5023400697745828,
+          "weight": 0.3,
+          "weighted_score": 0.15070202093237484
+        },
+        "formacion": {
+          "candidate": [
+            "master",
+            "grado en estadística, universidad de granada (2021)"
+          ],
+          "job": [
+            "grado",
+            "certificaciones java (valorable)"
+          ],
+          "cosine_similarity": 0.5785694754719797,
+          "weight": 0.2,
+          "weighted_score": 0.11571389509439595
+        },
+        "preferencias_reclutador": {
+          "candidate": [
+            "python",
+            "pandas",
+            "scikit-learn",
+            "sql",
+            "tableau",
+            "git"
+          ],
+          "preferences": [
+            "pytorch"
+          ],
+          "cosine_similarity": 0.4216391860804716,
+          "weight": 0.2,
+          "weighted_score": 0.08432783721609433
+        },
+        "killer": {
+          "qualified": false,
+          "reasons": [
+            "Experiencia insuficiente: requiere 4 años, tiene 1 años."
+          ]
+        }
+      }
+    }
+  ]
+}
