@@ -547,19 +547,24 @@ class UIComponents:
                         def style_row(row):
                             styles = []
                             is_disqualified = row['Estado'] == 'Descalificado'
-                            for idx, _ in enumerate(row):
+                            
+                            for col in row.index:
                                 if is_disqualified:
                                     styles.append('background-color: var(--light-red)')
-                                elif row.index[idx] == 'Score Final':
-                                    score = float(row['Score Final'].rstrip('%')) / 100
-                                    if score >= 0.7:
-                                        styles.append('background-color: #e6ffe6')
-                                    elif score >= 0.4:
-                                        styles.append('background-color: var(--light-orange)')
-                                    else:
-                                        styles.append('background-color: var(--light-red)')
+                                elif col == 'Score Final':
+                                    try:
+                                        score = float(row['Score Final'].strip('%')) / 100
+                                        if score >= 0.7:
+                                            styles.append('background-color: #e6ffe6')
+                                        elif score >= 0.4:
+                                            styles.append('background-color: #fff3e0')
+                                        else:
+                                            styles.append('background-color: #ffebee')
+                                    except (ValueError, AttributeError):
+                                        # Si hay error al convertir el score, usar color por defecto
+                                        styles.append('background-color: white')
                                 else:
-                                    styles.append('')
+                                    styles.append('background-color: white')
                             return styles
 
                         styled_df = display_df.style.apply(style_row, axis=1)
