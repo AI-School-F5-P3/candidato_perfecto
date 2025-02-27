@@ -261,17 +261,38 @@ class UIComponents:
         # Aplicar el estilo personalizado
         UIComponents.load_custom_css()
         
-        # Header con título principal
-        # Header with logo and title
-        col_logo, col_title = st.columns([1, 2])
-        with col_logo:
-            logo_path = Path("src/logo3-removebg-preview.png")
+        # Add custom CSS for logo styling
+        st.markdown("""
+        <style>
+        .logo-container {
+            text-align: center !important;
+            padding: 1rem 0 !important;
+        }
+        .logo-container img {
+            max-width: 115px !important;
+            margin: 0 auto !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        # Create three columns to center the logo
+        left_col, left_col, center_col, right_col = st.columns([1.5, 1, 2, 1])
+        
+        # Use the center column for the logo
+        with center_col:
+            st.markdown('<div class="logo-container">', unsafe_allow_html=True)
+            
+            logo_path = Path("docs/img/logo3-removebg-preview.png")
             if logo_path.exists():
-                st.image(logo_path, width=100)
+                st.image(logo_path, width=115)
             else:
                 st.error("Logo file not found")
-        with col_title:
-            st.markdown('<div class="main-title">El Candidato Perfecto - Sistema de Análisis de Candidatos</div>', unsafe_allow_html=True)
+                
+            st.markdown('</div>', unsafe_allow_html=True)
+        # Title centered below logo
+        st.markdown('<div class="main-title">El Candidato Perfecto - Sistema de Análisis de Candidatos</div>', unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
         # Header con título principal y expander de información
         with st.expander("ℹ️ Información del Sistema", expanded=False):
             st.markdown("""
