@@ -15,6 +15,7 @@ COPY src/ ./src/
 COPY .streamlit/ ./.streamlit/
 COPY samples/ ./samples/
 COPY docs/ ./docs/
+COPY debug/ ./debug/
 
 # Set environment variables for Streamlit
 ENV STREAMLIT_SERVER_PORT=8501
