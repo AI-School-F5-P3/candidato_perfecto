@@ -7,6 +7,8 @@ import pandas as pd
 from datetime import datetime
 from utils.utilities import export_rankings_to_excel
 from io import BytesIO
+from utils.drive_utils import load_drive_cvs
+import asyncio
 
 @dataclass
 class WeightSettings:
@@ -286,15 +288,35 @@ class UIComponents:
         with col2:
             st.markdown('<div class="card-container">', unsafe_allow_html=True)
             st.markdown('<div class="section-header">👨‍💼 CVs de Candidatos</div>', unsafe_allow_html=True)
-            resume_files = st.file_uploader(
-                "Suba los CVs de los candidatos (TXT o PDF)",
-                type=['txt', 'pdf'],
-                accept_multiple_files=True,
-                key="cv_upload_multi"
-            )
             
-            if resume_files:
-                st.markdown(f'<div class="badge badge-blue">{len(resume_files)} archivos cargados</div>', unsafe_allow_html=True)
+            # Crear dos columnas para los métodos de carga
+            upload_col1, upload_col2 = st.columns(2)
+            
+            with upload_col1:
+                resume_files = st.file_uploader(
+                    "Suba los CVs de los candidatos (TXT o PDF)",
+                    type=['txt', 'pdf'],
+                    accept_multiple_files=True,
+                    key="cv_upload_multi"
+                )
+            
+            with upload_col2:
+                st.markdown('<div style="text-align: center; padding: 1rem 0;">', unsafe_allow_html=True)
+                if st.button("🔄 Cargar CVs desde Google Drive", key="drive_button", use_container_width=True):
+                    with st.spinner("Descargando CVs desde Google Drive..."):
+                        asyncio.run(load_drive_cvs(st.session_state.app))
+                st.markdown('</div>', unsafe_allow_html=True)
+            
+            # Mostrar contadores de archivos cargados
+            col_local, col_drive = st.columns(2)
+            with col_local:
+                if resume_files:
+                    st.markdown(f'<div class="badge badge-blue">{len(resume_files)} archivos locales</div>', unsafe_allow_html=True)
+            
+            with col_drive:
+                if 'drive_cvs' in st.session_state and st.session_state.drive_cvs:
+                    st.markdown(f'<div class="badge badge-green">{len(st.session_state.drive_cvs)} archivos de Drive</div>', unsafe_allow_html=True)
+            
             st.markdown('</div>', unsafe_allow_html=True)
             
         # Validación de archivos duplicados en vacantes

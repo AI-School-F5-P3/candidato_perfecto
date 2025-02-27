@@ -263,14 +263,6 @@ def render_main_page():
     """)
     
     ui_inputs = UIComponents.create_main_sections()
-    
-    # Sección de Google Drive
-    st.markdown("---")
-    st.subheader("Cargar CVs desde Google Drive")
-    
-    if st.button("🔄 Cargar CVs desde Google Drive", key="drive_button"):
-        with st.spinner("Descargando CVs desde Google Drive..."):
-            asyncio.run(load_drive_cvs(st.session_state.app))
             
     if st.button("Analizar Candidatos", key="analyze_button"):
         asyncio.run(analyze_candidates(ui_inputs, st.session_state.app))
@@ -311,20 +303,6 @@ def main():
                 st.error("Error al mostrar el análisis comparativo. Por favor, intente de nuevo.")
         else:
             st.info("Primero debe realizar un análisis de candidatos para ver la comparación")
-
-async def load_drive_cvs(app):
-    """Función asíncrona para cargar CVs desde Google Drive"""
-    try:
-        drive_client = GoogleDriveIntegration(
-            credentials_path=app.gdrive_credentials,
-            folder_id=app.gdrive_folder_id
-        )
-        cv_texts = await drive_client.process_drive_cvs()
-        st.session_state.drive_cvs = cv_texts
-        st.success(f"✅ {len(cv_texts)} CVs cargados desde Google Drive")
-    except Exception as e:
-        st.error(f"❌ Error al cargar desde Google Drive: {str(e)}")
-        logging.error(f"Google Drive Error: {str(e)}")
 
 async def analyze_candidates(ui_inputs, app):
     if not ui_inputs.job_sections:
