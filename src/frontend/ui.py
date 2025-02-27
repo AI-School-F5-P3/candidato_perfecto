@@ -9,6 +9,7 @@ from utils.utilities import export_rankings_to_excel
 from io import BytesIO
 from utils.drive_utils import load_drive_cvs
 import asyncio
+from pathlib import Path
 
 @dataclass
 class WeightSettings:
@@ -261,7 +262,16 @@ class UIComponents:
         UIComponents.load_custom_css()
         
         # Header con título principal
-        st.markdown('<div class="main-title">El Candidato Perfecto - Sistema de Análisis de Candidatos</div>', unsafe_allow_html=True)
+        # Header with logo and title
+        col_logo, col_title = st.columns([1, 2])
+        with col_logo:
+            logo_path = Path("src/logo3-removebg-preview.png")
+            if logo_path.exists():
+                st.image(logo_path, width=100)
+            else:
+                st.error("Logo file not found")
+        with col_title:
+            st.markdown('<div class="main-title">El Candidato Perfecto - Sistema de Análisis de Candidatos</div>', unsafe_allow_html=True)
         # Header con título principal y expander de información
         with st.expander("ℹ️ Información del Sistema", expanded=False):
             st.markdown("""
