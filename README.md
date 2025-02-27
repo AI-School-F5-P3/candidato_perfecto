@@ -3,7 +3,7 @@
 
 
 <div align="center">
-    <img src="docs/img/logoNFQ.png" alt="Logo de IA Recruiter" />
+    <img src="docs/img/logo3.png" alt="Logo de CandidatoPerfecto" width="50%"/>
 </div>
 
 
@@ -15,11 +15,13 @@
 - [Tecnologías y Bibliotecas](#tecnologías-y-bibliotecas)  
 - [Documentación](#documentación)  
 - [Conclusión](#conclusión)  
-- [Prueba nuestra App](#prueba-nuestra-app)  
+- [Prueba nuestra App](#prueba-nuestra-app)
+- [Ejecutar App en Docker](#ejecutar-app-en-docker)
+  
 --- 
 
 ## Descripción de la Aplicación
-**IA Recruiter** es una innovadora aplicación basada en Inteligencia Artificial que revoluciona el proceso de selección de talento. Diseñada para ayudar a empresas y reclutadores a encontrar al candidato ideal, la aplicación analiza y clasifica automáticamente un conjunto de perfiles profesionales para determinar cuáles se ajustan mejor a una vacante específica.
+**CandidatoPerfecto App** es una innovadora aplicación basada en Inteligencia Artificial que revoluciona el proceso de selección de talento. Diseñada para ayudar a empresas y reclutadores a encontrar al candidato ideal, la aplicación analiza y clasifica automáticamente un conjunto de perfiles profesionales para determinar cuáles se ajustan mejor a una vacante específica.
 
 
 ---
@@ -117,14 +119,18 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 ## 1. Diagrama de Flujo
 
 <div align="center">
-    <img src="docs/img/hr-system-drawio V2.drawio.png" alt="Logo de IA Recruiter" />
+    <img src="docs/img/hr-system-drawio V2.drawio.png" alt="Flujo" />
 </div>
 
 
     
 ## 2. Funcionamiento
+---
+
     
 ### 1. Proceso
+
+
 ### 1.1 Inicio de la Aplicación
 
 La aplicación se ejecuta mediante `app.py`.
@@ -153,9 +159,11 @@ La aplicación se ejecuta mediante `app.py`.
 - Se incluyen gráficos interactivos y opción para exportar los resultados a Excel.
 
 
-### 2. Análisis de la Descripción del Puesto
-### 2.1 Modelo Utilizado
 
+### 2. Análisis de la Descripción del Puesto
+
+
+### 2.1 Modelo Utilizado
 La aplicación utiliza un modelo de lenguaje grande (LLM) de OpenAI, que extrae y estandariza información clave de la descripción del puesto.
 
 ### 2.2 Proceso de Análisis
@@ -193,7 +201,9 @@ class SemanticAnalyzer(TextAnalyzer):
 ```
 
 
+
 ### 3. Comparación con los CVs
+
 ### 3.1 Proceso de Comparación
 
 - **Estandarización de los CVs**: Se analizan los CVs utilizando el mismo modelo LLM.
@@ -226,7 +236,9 @@ class SemanticAnalyzer(TextAnalyzer):
         )
 ```
 
+
 ### 4. Visualización del Ranking en Streamlit
+
 ### 4.1 Implementación en la Interfaz
 
 - Se muestra un ranking con los mejores candidatos.
@@ -255,8 +267,10 @@ async def analyze_candidates(ui_inputs, app):
 ```
 
 
+---
 
 ## 3. Componentes Principales
+
 
 1. **hr_analysis_system.py**
    - Contiene la lógica de negocio principal y las estructuras de datos
@@ -419,7 +433,6 @@ El sistema implementa un manejo integral de errores:
 
 ## 9. Implicaciones de Rendimiento
 
-
 1. **Operaciones Asíncronas**
    - Lectura de archivos asíncrona
    - Llamadas API no bloqueantes
@@ -436,10 +449,9 @@ El sistema implementa un manejo integral de errores:
    - Operaciones eficientes con DataFrame
 
 
-## Conclusión
-La combinación de estas tecnologías y bibliotecas permitirá desarrollar una aplicación robusta y eficiente que cumpla con los objetivos de **CandidatoPerfecto**, optimizando el proceso de selección de talento mediante el uso de inteligencia artificial y garantizando un enfoque ético y normativo.
 
 
+---
 ## Prueba nuestra App
 
 ### 🚀 Instrucciones de Uso
@@ -485,4 +497,83 @@ Detener la Aplicación
 - Se instalan los paquetes necesarios desde `requirements.txt`.  
 - Se ejecuta la aplicación con **Streamlit**.  
 - Se indica cómo detener la aplicación cuando sea necesario.
+
+
+---
+## Ejecutar App en Docker
+
+Guía paso a paso para crear y ejecutar una app en Docker en local
+
+### Preparación del entorno
+
+1. Primero, mover los ficheros Dockerfile y .dockerignore desde el directorio src al directorio raíz del proyecto:
+   ```bash
+   mv src/Dockerfile .
+   mv src/.dockerignore .
+   ```
+
+   También asegurarse de arrancar el servicio Docker Desktop antes de continuar.
+
+### Construcción de la imagen Docker
+
+1. Desde el directorio raíz del proyecto (candidato_perfecto), construir la imagen Docker:
+   ```bash
+   docker build -t candidato-perfecto:latest .
+   ```
+
+2. Una vez construida, verificar que la imagen exista:
+   ```bash
+   docker images | Select-String "candidato-perfecto"
+   ```
+
+   **NOTA:** Hasta aquí deberá repetir el proceso cada vez que haya modificaciones a las dependencias o al código.
+
+### Ejecución del servicio
+
+1. Ejecutar el contenedor localmente:
+   ```bash
+   docker run -d -p 8501:8501 -e OPENAI_API_KEY="YOUR-OPENAI-API-KEY" --name candidato-perfecto-app candidato-perfecto:latest
+   ```
+
+2. Acceder a la aplicación:
+   * Abrir el navegador y acceder a http://localhost:8501
+
+### Gestión del contenedor
+
+Para detener el contenedor:
+```bash
+# Detener el contenedor
+docker stop candidato-perfecto-app
+```
+
+Para reiniciarlo:
+```bash
+docker start candidato-perfecto-app
+```
+
+Si se regenera un container, hay que borrar primero el existente:
+```bash
+docker rm candidato-perfecto-app
+```
+
+### Ver los ficheros de auditoría
+
+Para ver los ficheros de auditoría en ./debug/files:
+
+1. Ejecutar este comando:
+   ```bash
+   docker exec -it candidato-perfecto-app /bin/bash
+   ```
+
+2. Navegar hasta el directorio ./debug/files
+
+3. Abrir el fichero deseado con el comando:
+   ```bash
+   cat AAMMDD_HHMM [Tabulador]
+   ```
+
+------
+
+## Conclusión
+La combinación de estas tecnologías y bibliotecas permitirá desarrollar una aplicación robusta y eficiente que cumpla con los objetivos de **CandidatoPerfecto**, optimizando el proceso de selección de talento mediante el uso de inteligencia artificial y garantizando un enfoque ético y normativo.
 
