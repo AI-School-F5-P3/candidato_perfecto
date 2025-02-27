@@ -27,6 +27,7 @@ old/
 models/
 docs/diagrams
 docs/debug
+debug/files
 app.log
 cand/
 

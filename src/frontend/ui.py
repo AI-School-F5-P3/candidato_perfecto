@@ -282,11 +282,25 @@ class UIComponents:
         with center_col:
             st.markdown('<div class="logo-container">', unsafe_allow_html=True)
             
-            logo_path = Path("docs/img/logo3-removebg-preview.png")
-            if logo_path.exists():
-                st.image(logo_path, width=115)
-            else:
-                st.error("Logo file not found")
+            # Using a more reliable path resolution that won't break the UI layout
+            try:
+                # Try multiple possible locations
+                possible_paths = [
+                    Path("docs/img/logo3-removebg-preview.png"),  # Current dir
+                    Path("../docs/img/logo3-removebg-preview.png"),  # One level up
+                    Path(__file__).parent.parent.parent / "docs" / "img" / "logo3-removebg-preview.png",  # Absolute
+                    Path("src/docs/img/logo3-removebg-preview.png")  # Docker path
+                ]
+                
+                logo_path = next((path for path in possible_paths if path.exists()), None)
+                
+                if logo_path:
+                    st.image(str(logo_path), width=115)
+                else:
+                    # Use a blank placeholder instead of error message to maintain UI appearance
+                    st.markdown('<div style="height:40px"></div>', unsafe_allow_html=True)
+            except Exception as e:
+                st.error(f"Error loading logo: {str(e)}")
                 
             st.markdown('</div>', unsafe_allow_html=True)
         # Title centered below logo

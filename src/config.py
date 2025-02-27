@@ -7,7 +7,8 @@ class ModelConfig:
     """Configuración de modelos de IA"""
     # Modelos de OpenAI utilizados para el análisis
     chat_model: str = "gpt-3.5-turbo"      # Modelo para análisis de texto y extracción de información
-    embedding_model: str = "text-embedding-3-small"  # Modelo para cálculo de similitud semántica
+    embedding_model: str = "text-embedding-3-large"  # Modelo para cálculo de similitud semántica
+
 
 @dataclass
 class GoogleDriveConfig:

@@ -11,3 +11,4 @@ venv/
 .gitignore
 README.md
 tests/
+debug/files/

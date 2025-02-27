@@ -163,7 +163,7 @@ class SemanticAnalyzer(TextAnalyzer):
         self.model = Config.MODEL.chat_model
         self.text_processor = TextProcessor()
 
-    async def standardize_job_description(self, description: str, hiring_preferences: dict) -> JobProfile:
+    async def standardize_job_description(self, description: str) -> JobProfile:
         """Standardize job description into structured JSON format"""
         # Pre-process and translate text
         processed_text = self.text_processor.process_text(description)
@@ -174,7 +174,7 @@ class SemanticAnalyzer(TextAnalyzer):
         - Experience should include years and key technical responsibilities 
         - Education should use standard terms (doctorado, master, grado)
         
-        Required skills from preferences: {', '.join(hiring_preferences.get('habilidades_preferidas', []))}
+
         
         Output JSON with:
         {{
@@ -189,7 +189,11 @@ class SemanticAnalyzer(TextAnalyzer):
         
         response = await self.client.chat.completions.create(
             model=self.model,
-            messages=[{"role": "user", "content": prompt}],
+            messages=[
+                {"role": "system", "content": "Output must be strictly in Spanish"},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.3,
             response_format={"type": "json_object"}
         )
         
@@ -229,7 +233,11 @@ class SemanticAnalyzer(TextAnalyzer):
         
         response = await self.client.chat.completions.create(
             model=self.model,
-            messages=[{"role": "user", "content": prompt}],
+            messages=[
+                {"role": "system", "content": "Output must be strictly in Spanish"},
+                {"role": "user", "content": prompt}
+            ],
+            temperature = 0.3,
             response_format={"type": "json_object"}
         )
         
@@ -267,7 +275,11 @@ class SemanticAnalyzer(TextAnalyzer):
         
         response = await self.client.chat.completions.create(
             model=self.model,
-            messages=[{"role": "user", "content": prompt}],
+            messages=[
+                {"role": "system", "content": "Output must be strictly in Spanish"},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.3,
             response_format={"type": "json_object"}
         )
         
@@ -319,7 +331,11 @@ class SemanticAnalyzer(TextAnalyzer):
         
         response = await self.client.chat.completions.create(
             model=self.model,
-            messages=[{"role": "user", "content": prompt}],
+            messages=[
+                {"role": "system", "content": "Output must be strictly in Spanish"},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.3,
             response_format={"type": "json_object"}
         )
         
