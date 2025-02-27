@@ -113,7 +113,7 @@ class HRAnalysisApp:
         try:
             job_content = await self.file_handler.read_file_content(job_file)
             logging.info("Procesando descripción del trabajo.")
-            return await self.analyzer.standardize_job_description(job_content, hiring_preferences)
+            return await self.analyzer.standardize_job_description(job_content)
         except Exception as e:
             logging.error(f"Error procesando descripción del trabajo: {str(e)}")
             raise
