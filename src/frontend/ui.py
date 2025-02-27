@@ -581,7 +581,7 @@ class UIComponents:
                             
                             for col in row.index:
                                 if is_disqualified:
-                                    styles.append('background-color: var(--light-red)')
+                                    styles.append('background-color: #ffebee')
                                 elif col == 'Score Final':
                                     try:
                                         score = float(row['Score Final'].strip('%')) / 100
