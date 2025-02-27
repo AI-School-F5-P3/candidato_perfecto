@@ -367,7 +367,7 @@ class UIComponents:
                 st.warning(f"⚠️ Se ignoraron los siguientes CVs duplicados: {', '.join(duplicates)}")
         
         if job_files:
-            st.markdown('<div class="section-title">Configuración de Vacantes</div>', unsafe_allow_html=True)
+            st.markdown('<div class="section-title">Configuración Opcional de Vacantes</div>', unsafe_allow_html=True)
             
             for idx, job_file in enumerate(job_files):
                 with st.expander(f"Vacante {idx+1}: {job_file.name}", expanded=(idx == 0)):
