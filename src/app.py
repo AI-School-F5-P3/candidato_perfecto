@@ -31,6 +31,7 @@ from utils.utilities import setup_logging, create_score_row, sort_ranking_datafr
 from utils.file_handler import FileHandler
 from utils.google_drive import GoogleDriveIntegration
 from src.config import Config
+from debug import DebugHandler, DebugCleaner  # Import the new debug modules
 
 # Configuración inicial de Streamlit y logging
 st.set_page_config(page_title="El candidato perfecto", layout="wide")
@@ -100,6 +101,13 @@ class HRAnalysisApp:
         self.gdrive_folder_id = Config.GDRIVE.folder_id
         self.text_generation_provider = OpenAITextGenerationProvider(api_key)
         self.comparative_analysis = ComparativeAnalysis(self.text_generation_provider)
+        
+        # Inicializa los componentes de debug
+        self.debug_handler = DebugHandler()
+        self.debug_cleaner = DebugCleaner()
+        # Limpiar archivos de debug antiguos al inicializar la aplicación
+        self.debug_cleaner.clean_old_files(days=7)
+        
         logging.info("Componentes de análisis inicializados.")
 
     async def process_drive_cvs(self) -> List[CandidateProfile]:
@@ -112,7 +120,7 @@ class HRAnalysisApp:
         """Procesa la descripción del puesto y las preferencias del reclutador"""
         try:
             job_content = await self.file_handler.read_file_content(job_file)
-            logging.info("Procesando descripción del trabajo.")
+            logging.info("Procesando descripción del trabajo.")       
             return await self.analyzer.standardize_job_description(job_content)
         except Exception as e:
             logging.error(f"Error procesando descripción del trabajo: {str(e)}")
@@ -345,13 +353,14 @@ async def analyze_candidates(ui_inputs, app):
         st.warning("No se pudieron procesar los CVs. Por favor, verifique los archivos.")
         return
 
-    # Crear directorio para archivos de depuración
-    debug_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs", "debug")
-    os.makedirs(debug_dir, exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-
     # Para cada vacante se procesa la descripción, preferencias y criterios, y se analiza el ranking
     try:
+        df_list = []
+        job_profiles = []
+        recruiter_preferences_list = []
+        killer_criteria_list = []
+        debug_files = []  # Lista para archivos de debug JSON
+        
         for idx, job_section in enumerate(ui_inputs.job_sections):
             # Prepara preferencias propias para la vacante usando los pesos del job_section
             hiring_preferences = {
@@ -363,6 +372,7 @@ async def analyze_candidates(ui_inputs, app):
                 "weights": job_section.weights
             }
             
+           
             job_profile = await app.process_job_description(job_section.job_file, hiring_preferences)
             recruiter_preferences = await app.process_preferences(job_section.recruiter_skills)
             standardized_killer_criteria = await app.analyzer.standardize_killer_criteria(job_section.killer_criteria)
@@ -377,26 +387,24 @@ async def analyze_candidates(ui_inputs, app):
             
             ranking_df = app.create_ranking_dataframe(rankings)
             
-            # Create and save debug information for this vacancy
-            debug_df = app.create_debug_dataframe(job_profile, rankings)
-            debug_filename = os.path.join(debug_dir, f"debug_vacancy_{idx+1}_{timestamp}.csv")
-            debug_df.to_csv(debug_filename, index=False)
-            logging.info(f"Debug CSV para vacante {idx+1} guardado en {debug_filename}")
-            
-            # Crear listas para acumular resultados si no existen
-            if 'df_list' not in locals():
-                df_list = []
-                job_profiles = []
-                recruiter_preferences_list = []
-                killer_criteria_list = []
-                debug_files = []  # Nueva lista para archivos de debug
+            # Create and save debug information as JSON using our new debug handler with enhanced data
+            debug_filename = app.debug_handler.save_debug_json(
+                job_profile, 
+                rankings,
+                vacancy_index=idx,
+                original_job_content="",  # Ensure this is passed correctly
+                recruiter_preferences=recruiter_preferences,
+                killer_criteria=standardized_killer_criteria,
+                job_section_weights=job_section.weights
+            )
+
 
             # Añadir resultados a las listas
             df_list.append(ranking_df)
             job_profiles.append(job_profile)
             recruiter_preferences_list.append(recruiter_preferences)
             killer_criteria_list.append(job_section.killer_criteria)
-            debug_files.append(debug_filename)  # Añadir ruta del archivo de debug
+            debug_files.append(debug_filename)
 
             # Create output directory if it doesn't exist
             output_dir = Path("output")
@@ -408,7 +416,7 @@ async def analyze_candidates(ui_inputs, app):
             'job_profiles': job_profiles,
             'recruiter_preferences_list': recruiter_preferences_list,
             'killer_criteria_list': killer_criteria_list,
-            'debug_files': debug_files  # Añadir lista de archivos de debug
+            'debug_files': debug_files
         }
 
         # Realizar una única llamada al display_ranking con todas las listas
