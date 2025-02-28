@@ -28,7 +28,7 @@ async def render_comparative_analysis(df_list: List[pd.DataFrame]) -> None:
         current_df = df_list[selected_vacancy]
         
         # Filtrar solo candidatos calificados
-        qualified_df = current_df[current_df['Estado'] == 'Calificado']
+        qualified_df = current_df[current_df['Obligatorias'] == 'Cumple']
         
         if qualified_df.empty:
             st.warning(f"No hay candidatos calificados para comparar en la {vacancy_names[selected_vacancy]}.")
@@ -136,7 +136,7 @@ def render_comparative_charts(comparative_df: pd.DataFrame) -> None:
         )
         st.plotly_chart(fig, use_container_width=True)
 
-        # Gráfico de barras existente
+        # Gráfico de barras mejorado
         st.markdown("### Comparación de Scores por Categoría")
         score_cols = ['Score Habilidades', 'Score Experiencia', 'Score Formación']
         plot_data = comparative_df[['Nombre Candidato'] + score_cols].copy()
@@ -144,22 +144,28 @@ def render_comparative_charts(comparative_df: pd.DataFrame) -> None:
         for col in score_cols:
             plot_data[col] = plot_data[col].str.rstrip('%').astype(float) / 100
 
-        # Crear gráfico de barras comparativo
-        fig, ax = plt.subplots(figsize=(5, 1))
-        x = range(len(plot_data['Nombre Candidato']))
-        width = 0.10
+        # Crear gráfico de barras comparativo con Plotly
+        fig = go.Figure()
+        
+        for col in score_cols:
+            fig.add_trace(go.Bar(
+            x=plot_data['Nombre Candidato'],
+            y=plot_data[col],
+            name=col.replace('Score ', ''),
+            text=plot_data[col].apply(lambda x: f'{x*100:.1f}%'),
+            textposition='auto'
+            ))
 
-        for i, col in enumerate(score_cols):
-            ax.bar([xi + i*width for xi in x], plot_data[col], width, 
-                  label=col.replace('Score ', ''))
-
-        ax.set_ylabel('Puntuación')
-        ax.set_title('Comparación de Scores por Categoría')
-        ax.set_xticks([xi + width for xi in x])
-        ax.set_xticklabels(plot_data['Nombre Candidato'], rotation=45)
-        ax.legend()
-        plt.tight_layout()
-        st.pyplot(fig)
+        fig.update_layout(
+            barmode='group',
+            xaxis_tickangle=-45,
+            yaxis=dict(title='Puntuación'),
+            title='Comparación de Scores por Categoría',
+            margin=dict(l=20, r=20, t=40, b=20),
+            height=400
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
 
     except Exception as e:
         logging.error(f"Error en render_comparative_charts: {str(e)}")
