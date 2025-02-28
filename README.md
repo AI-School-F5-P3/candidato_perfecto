@@ -4,7 +4,6 @@
 
 <div align="center">
     <img src="docs/img/logo3.png" alt="Logo de CandidatoPerfecto" width="50%"/>
-    <img src="docs/img/logo3.png" alt="Logo de CandidatoPerfecto" width="50%"/>
 </div>
 
 
