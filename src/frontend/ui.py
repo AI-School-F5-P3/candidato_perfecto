@@ -430,12 +430,12 @@ class UIComponents:
                         )
                         
                         # Criterios eliminatorios
-                        st.markdown('<div class="section-header">⛔ Criterios Eliminatorios</div>', unsafe_allow_html=True)
+                        st.markdown('<div class="section-header">⛔ Criterios Obligatorios</div>', unsafe_allow_html=True)
                         criterion1, criterion2 = st.columns(2)
                         
                         with criterion1:
                             killer_skills = st.text_area(
-                                "Habilidades eliminatorias",
+                                "Habilidades obligatorias",
                                 height=100,
                                 key=f"killer_skills_input_{idx}",
                                 help="Una habilidad por línea"
@@ -443,7 +443,7 @@ class UIComponents:
                             
                         with criterion2:
                             killer_experiencia = st.text_area(
-                                "Experiencia eliminatoria",
+                                "Experiencia obligatoria",
                                 height=100,
                                 key=f"killer_exp_input_{idx}",
                                 help="Una experiencia por línea"
@@ -591,7 +591,7 @@ class UIComponents:
 
                         def style_row(row):
                             styles = []
-                            is_disqualified = row['Estado'] == 'Descalificado'
+                            is_disqualified = row['Obligatorias'] == 'Incumple'  # Updated'
                             
                             for col in row.index:
                                 if is_disqualified:
@@ -633,22 +633,22 @@ class UIComponents:
                                 </div>
                                 <div class="legend-item">
                                     <div class="legend-color" style="background-color: #ffebee;"></div>
-                                    <span>Descalificado por criterios eliminatorios</span>
+                                    <span>Incumple criterios obligatorios</span>
                                 </div>
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
                         
                         # Estadísticas rápidas
-                        qualified = len(df[df['Estado'] != 'Descalificado'])
-                        disqualified = len(df[df['Estado'] == 'Descalificado'])
+                        qualified = len(df[df['Obligatorias'] != 'Incumple'])  # Updated)
+                        disqualified = len(df[df['Obligatorias'] == 'Incumple'])  # Updated)
                         high_scores = len(df[df['Score Final'].str.rstrip('%').astype(float) >= 70])
                         
                         stat1, stat2, stat3 = st.columns(3)
                         with stat1:
-                            st.metric("Candidatos calificados", qualified)
+                            st.metric("Cumplen obligatorias", qualified)
                         with stat2:
-                            st.metric("Candidatos descalificados", disqualified)
+                            st.metric("Incumplen obligatorias", disqualified)
                         with stat3:
                             st.metric("Candidatos con score alto (≥70%)", high_scores)
 
