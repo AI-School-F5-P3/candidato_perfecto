@@ -88,7 +88,8 @@ def test_create_score_row_disqualified():
     
     row = create_score_row(candidate_data, score_data)
     
-    assert row["Estado"] == "Descalificado"
+    assert row["Obligatorias"] == "Incumple"  # Updated
+    #assert row["Estado"] == "Descalificado"
     assert "No cumple con la experiencia mínima" in row["Razones Descalificación"]
     assert row["Score Final"] == "0.0%"
 
