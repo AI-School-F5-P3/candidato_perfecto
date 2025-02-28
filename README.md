@@ -4,6 +4,7 @@
 
 <div align="center">
     <img src="docs/img/logo3.png" alt="Logo de CandidatoPerfecto" width="50%"/>
+    <img src="docs/img/logo3.png" alt="Logo de CandidatoPerfecto" width="50%"/>
 </div>
 
 
@@ -18,9 +19,13 @@
 - [Prueba nuestra App](#prueba-nuestra-app)
 - [Ejecutar App en Docker](#ejecutar-app-en-docker)
   
+- [Prueba nuestra App](#prueba-nuestra-app)
+- [Ejecutar App en Docker](#ejecutar-app-en-docker)
+  
 --- 
 
 ## Descripción de la Aplicación
+**CandidatoPerfecto App** es una innovadora aplicación basada en Inteligencia Artificial que revoluciona el proceso de selección de talento. Diseñada para ayudar a empresas y reclutadores a encontrar al candidato ideal, la aplicación analiza y clasifica automáticamente un conjunto de perfiles profesionales para determinar cuáles se ajustan mejor a una vacante específica.
 **CandidatoPerfecto App** es una innovadora aplicación basada en Inteligencia Artificial que revoluciona el proceso de selección de talento. Diseñada para ayudar a empresas y reclutadores a encontrar al candidato ideal, la aplicación analiza y clasifica automáticamente un conjunto de perfiles profesionales para determinar cuáles se ajustan mejor a una vacante específica.
 
 
@@ -120,6 +125,7 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 
 <div align="center">
     <img src="docs/img/hr-system-drawio V2.drawio.png" alt="Flujo" />
+    <img src="docs/img/hr-system-drawio V2.drawio.png" alt="Flujo" />
 </div>
 
 
@@ -127,8 +133,12 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 ## 2. Funcionamiento
 ---
 
+---
+
     
 ### 1. Proceso
+
+
 
 
 ### 1.1 Inicio de la Aplicación
@@ -160,7 +170,10 @@ La aplicación se ejecuta mediante `app.py`.
 
 
 
+
 ### 2. Análisis de la Descripción del Puesto
+
+
 
 
 ### 2.1 Modelo Utilizado
@@ -202,7 +215,9 @@ class SemanticAnalyzer(TextAnalyzer):
 
 
 
+
 ### 3. Comparación con los CVs
+
 
 ### 3.1 Proceso de Comparación
 
@@ -237,7 +252,9 @@ class SemanticAnalyzer(TextAnalyzer):
 ```
 
 
+
 ### 4. Visualización del Ranking en Streamlit
+
 
 ### 4.1 Implementación en la Interfaz
 
@@ -268,8 +285,10 @@ async def analyze_candidates(ui_inputs, app):
 
 
 ---
+---
 
 ## 3. Componentes Principales
+
 
 
 1. **hr_analysis_system.py**
@@ -451,6 +470,7 @@ El sistema implementa un manejo integral de errores:
 
 
 
+---
 ---
 ## Prueba nuestra App
 
