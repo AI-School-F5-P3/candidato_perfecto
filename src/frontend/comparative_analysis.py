@@ -28,7 +28,7 @@ async def render_comparative_analysis(df_list: List[pd.DataFrame]) -> None:
         current_df = df_list[selected_vacancy]
         
         # Filtrar solo candidatos calificados
-        qualified_df = current_df[current_df['Estado'] == 'Calificado']
+        qualified_df = current_df[current_df['Obligatorias'] == 'Cumple']
         
         if qualified_df.empty:
             st.warning(f"No hay candidatos calificados para comparar en la {vacancy_names[selected_vacancy]}.")

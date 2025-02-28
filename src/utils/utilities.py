@@ -52,7 +52,7 @@ def create_score_row(candidate_data: Dict[str, Any], score_data: Dict[str, Any])
     # Construye un diccionario con los datos formateados para visualización
     return {
         'Nombre Candidato': candidate_data['nombre_candidato'],
-        'Estado': 'Descalificado' if score_data['disqualified'] else 'Calificado',
+        'Obligatorias': 'Incumple' if score_data['disqualified'] else 'Cumple',
         'Score Final': f"{score_data['final_score']:.1%}",
         'Score Habilidades': f"{score_data['component_scores']['habilidades']:.1%}",
         'Score Experiencia': f"{score_data['component_scores']['experiencia']:.1%}",
@@ -61,7 +61,7 @@ def create_score_row(candidate_data: Dict[str, Any], score_data: Dict[str, Any])
         'Habilidades': format_list_preview(candidate_data['habilidades']),
         'Experiencia': format_list_preview(exp_preview, 3),
         'Formación': format_list_preview(candidate_data['formacion'], 2),
-        'Razones Descalificación': ', '.join(score_data.get('disqualification_reasons', [])) or 'N/A',
+        'Razones Incumplimiento': ', '.join(score_data.get('disqualification_reasons', [])) or 'N/A',
         'raw_data': json.dumps(candidate_data)  # Asegurar serialización
     }
 
@@ -70,11 +70,11 @@ def sort_ranking_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     # Convierte las puntuaciones de porcentaje a números para ordenamiento
     df['Sort Score'] = df['Score Final'].str.rstrip('%').astype('float')
     
-    # Ordena primero por estado (Calificado antes que Descalificado) y luego por puntuación
+    # Ordena primero por estado (CalificadoCumple antes que Incumple) y luego por puntuación
     df = df.sort_values(
-        by=['Estado', 'Sort Score'], 
+        by=['Obligatorias', 'Sort Score'], 
         ascending=[True, False],
-        key=lambda x: x if x.name != 'Estado' else pd.Categorical(x, ['Calificado', 'Descalificado'])
+        key=lambda x: x if x.name != 'Obligatorias' else pd.Categorical(x, ['Cumple', 'Incumple'])
     )
     return df.drop('Sort Score', axis=1)  # Elimina la columna temporal de ordenamiento
 
