@@ -1,0 +1,11 @@
+Metadata-Version: 2.2
+Name: hr_analysis_system
+Version: 0.1
+Requires-Dist: openai
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: streamlit
+Requires-Dist: pytest
+Requires-Dist: pytest-asyncio
+Requires-Dist: pytest-cov
+Dynamic: requires-dist

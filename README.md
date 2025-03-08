@@ -1,4 +1,5 @@
 
+<<<<<<< HEAD
 #  CandidatoPerfecto 
 
 <div align="center">
@@ -8,25 +9,57 @@
 ## Índice  
 - [Descripción de la Aplicación](#descripción-de-la-aplicación)  
 - [🌟 Funcionalidades Clave](#-funcionalidades-clave)  
+=======
+#  El Candidato Perfecto
+
+
+<div align="center">
+    <img src="docs/img/logo3.png" alt="Logo de CandidatoPerfecto" width="50%"/>
+</div>
+
+
+## Índice  
+- [Descripción de la Aplicación](#descripción-de-la-aplicación)  
+- [Funcionalidades Clave](#funcionalidades-clave)  
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 - [Beneficios de la Aplicación](#beneficios-de-la-aplicación)  
 - [Público Objetivo](#público-objetivo)  
 - [Tecnologías y Bibliotecas](#tecnologías-y-bibliotecas)  
 - [Documentación](#documentación)  
+<<<<<<< HEAD
 - [Conclusión](#conclusión)
 - [Prueba nuestra App](#prueba-nuestra-app!) 
 --- 
 
 ## Descripción de la Aplicación
 **IA Recruiter** es una innovadora aplicación basada en Inteligencia Artificial que revoluciona el proceso de selección de talento. Diseñada para ayudar a empresas y reclutadores a encontrar al candidato ideal, la aplicación analiza y clasifica automáticamente un conjunto de perfiles profesionales para determinar cuáles se ajustan mejor a una vacante específica.
+=======
+- [Conclusión](#conclusión)  
+- [Prueba nuestra App](#prueba-nuestra-app)
+- [Ejecutar App en Docker](#ejecutar-app-en-docker)
+  
+- [Prueba nuestra App](#prueba-nuestra-app)
+- [Ejecutar App en Docker](#ejecutar-app-en-docker)
+  
+--- 
+
+## Descripción de la Aplicación
+**CandidatoPerfecto App** es una innovadora aplicación basada en Inteligencia Artificial que revoluciona el proceso de selección de talento. Diseñada para ayudar a empresas y reclutadores a encontrar al candidato ideal, la aplicación analiza y clasifica automáticamente un conjunto de perfiles profesionales para determinar cuáles se ajustan mejor a una vacante específica.
+**CandidatoPerfecto App** es una innovadora aplicación basada en Inteligencia Artificial que revoluciona el proceso de selección de talento. Diseñada para ayudar a empresas y reclutadores a encontrar al candidato ideal, la aplicación analiza y clasifica automáticamente un conjunto de perfiles profesionales para determinar cuáles se ajustan mejor a una vacante específica.
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 
 
 ---
 
 
 
+<<<<<<< HEAD
 ## 🌟 Funcionalidades Clave
 <details>
   <summary>Ver más</summary>
+=======
+## Funcionalidades Clave
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 
 ### 🔍 Análisis y Clasificación de Candidatos
 - Evaluación de **20 CVs** proporcionados, utilizando algoritmos de IA Generativa para identificar el grado de adecuación de cada perfil a una vacante.
@@ -36,9 +69,14 @@
 - Recepción de la descripción detallada del puesto y las preferencias del hiring manager.
 - Análisis profundo de los requisitos del puesto para una mejor correspondencia con los candidatos.
 
+<<<<<<< HEAD
 ### ⚖️ Cumplimiento Normativo y Ético ---> COMPLETAR
 - Implementación de filtros y principios éticos para garantizar una selección justa y transparente.
 - Consideración de regulaciones vigentes en el uso de IA para la contratación.
+=======
+### ⚖️ Cumplimiento Normativo y Ético
+- Consideración de regulaciones vigentes en el uso de IA para la contratación (ver modelo y versión).
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 
 ### 📊 Generación de Reportes y Visualización de Datos
 - Representación visual de los resultados del ranking para facilitar la toma de decisiones.
@@ -48,27 +86,39 @@
 - Automatización del proceso de importación de CVs directamente desde Google Drive.
 - Optimización del flujo de trabajo y reducción de errores manuales en la gestión de datos.
 
+<<<<<<< HEAD
 </details>
+=======
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 
 ---
 
 ## Beneficios de la Aplicación
 
+<<<<<<< HEAD
 <details>
   <summary>Ver más</summary>
+=======
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 
 - ⏳ **Optimización de tiempo** en la selección de candidatos.
 - 🎯 **Mayor precisión** en la identificación del talento adecuado.
 - 🔍 **Transparencia y equidad** en el proceso de reclutamiento.
 - ☁️ **Fácil integración** con herramientas de almacenamiento en la nube.
 
+<<<<<<< HEAD
 </details>
+=======
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 
 ---
 
 ## Público Objetivo
+<<<<<<< HEAD
 <details>
   <summary>Ver más</summary>
+=======
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 
 - 🏢 Empresas y departamentos de Recursos Humanos.
 - 🕵️‍♂️ Agencias de reclutamiento y selección de personal.
@@ -76,6 +126,7 @@
 
 **IA Recruiter** es la solución definitiva para empresas que buscan optimizar su proceso de selección con tecnología avanzada. 🚀
 
+<<<<<<< HEAD
 </details>
 
 ---
@@ -96,10 +147,22 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 - **TensorFlow**: Para construir y entrenar modelos de IA generativa.
 - **PyTorch**: Otra opción popular para el desarrollo de modelos de aprendizaje profundo.
 - **scikit-learn**: Para tareas de análisis de datos y clasificación.
+=======
+---
+
+## Tecnologías y Bibliotecas
+Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas tecnologías y bibliotecas que faciliten la implementación de sus funcionalidades clave. A continuación, se presenta una lista de tecnologías y bibliotecas relevantes:
+
+
+### 💻 Lenguajes de Programación
+- **Python**: Ideal para el desarrollo de aplicaciones de IA y análisis de datos.
+
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 
 ### 🗣️ Procesamiento de Lenguaje Natural (NLP)
 - **spaCy**: Para el procesamiento de texto y análisis semántico de los CVs.
 - **NLTK**: Otra biblioteca para el procesamiento de lenguaje natural.
+<<<<<<< HEAD
 - **Transformers (Hugging Face)**: Para utilizar modelos preentrenados de NLP, como BERT o GPT, que pueden ayudar en la clasificación de textos.
 
 ### 📈 Visualización de Datos
@@ -118,11 +181,20 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
 ### 🗄️ Base de Datos
 - **PostgreSQL**: Para almacenar datos de candidatos y vacantes.
 - **MongoDB**: Una base de datos NoSQL que puede ser útil para almacenar datos no estructurados.
+=======
+
+### 📈 Visualización de Datos
+- **Bibliotecas integradas en Streamlit**: Para crear gráficos y visualizaciones de datos.
+
+### 🌐 Frontend
+- **Streamlit**: Para construir interfaces de usuario interactivas.
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 
 ### ☁️ Integración con Google Drive
 - **Google Drive API**: Para permitir la importación automática de CVs desde Google Drive.
 -  Fácil integración con herramientas de almacenamiento en la nube.
 
+<<<<<<< HEAD
 ### ⚖️ Librerías
 
 ### Contenedores y Despliegue
@@ -155,15 +227,57 @@ Para desarrollar la aplicación **IA Recruiter**, se pueden utilizar diversas te
     
 <div align="center">
     <img src="hr-system-drawio V2.drawio.png" alt="Logo de IA Recruiter" />
+=======
+
+### Contenedores y Despliegue
+- **Docker**: Para crear contenedores que faciliten el despliegue de la aplicación.
+
+
+
+--- 
+
+## Documentación
+
+- [1. Diagrama de Flujo](#1-diagrama-de-flujo) 
+- [2. Funcionamiento](#2-funcionamiento) 
+- [3. Componentes Principales](#3-componentes-principales) 
+- [4. Flujo desglosado](#4-flujo-desglosado) 
+- [5. Configuración](#5-configuración) 
+- [6. Estructura de Pruebas](#6-estructura-de-pruebas) 
+- [7. Dependencias Principales](#7-dependencias) 
+- [8. Manejo de Errores](#8-manejo-de-errores) 
+- [9. Implicaciones de Rendimiento](#9-implicaciones-de-rendimiento)
+
+---
+## 1. Diagrama de Flujo
+
+<div align="center">
+    <img src="docs/img/hr-system-drawio V2.drawio.png" alt="Flujo" />
+    <img src="docs/img/hr-system-drawio V2.drawio.png" alt="Flujo" />
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 </div>
 
 
     
+<<<<<<< HEAD
 ## 2.Funcionamiento
 <details>
   <summary>Ver más</summary>
     
 ### 1. Proceso
+=======
+## 2. Funcionamiento
+---
+
+---
+
+    
+### 1. Proceso
+
+
+
+
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 ### 1.1 Inicio de la Aplicación
 
 La aplicación se ejecuta mediante `app.py`.
@@ -192,9 +306,20 @@ La aplicación se ejecuta mediante `app.py`.
 - Se incluyen gráficos interactivos y opción para exportar los resultados a Excel.
 
 
+<<<<<<< HEAD
 ### 2. Análisis de la Descripción del Puesto
 ### 2.1 Modelo Utilizado
 
+=======
+
+
+### 2. Análisis de la Descripción del Puesto
+
+
+
+
+### 2.1 Modelo Utilizado
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 La aplicación utiliza un modelo de lenguaje grande (LLM) de OpenAI, que extrae y estandariza información clave de la descripción del puesto.
 
 ### 2.2 Proceso de Análisis
@@ -232,7 +357,15 @@ class SemanticAnalyzer(TextAnalyzer):
 ```
 
 
+<<<<<<< HEAD
 ### 3. Comparación con los CVs
+=======
+
+
+### 3. Comparación con los CVs
+
+
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 ### 3.1 Proceso de Comparación
 
 - **Estandarización de los CVs**: Se analizan los CVs utilizando el mismo modelo LLM.
@@ -265,7 +398,15 @@ class SemanticAnalyzer(TextAnalyzer):
         )
 ```
 
+<<<<<<< HEAD
 ### 4. Visualización del Ranking en Streamlit
+=======
+
+
+### 4. Visualización del Ranking en Streamlit
+
+
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 ### 4.1 Implementación en la Interfaz
 
 - Se muestra un ranking con los mejores candidatos.
@@ -294,9 +435,18 @@ async def analyze_candidates(ui_inputs, app):
 ```
 
 
+<<<<<<< HEAD
 </details>
 
 ## 3.Componentes Principales
+=======
+---
+---
+
+## 3. Componentes Principales
+
+
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 
 1. **hr_analysis_system.py**
    - Contiene la lógica de negocio principal y las estructuras de datos
@@ -332,8 +482,11 @@ async def analyze_candidates(ui_inputs, app):
 
 
 ## 4. Flujo desglosado
+<<<<<<< HEAD
 <details>
   <summary>Ver más</summary>
+=======
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 
 1. **Procesamiento de Entrada**
    ```
@@ -370,12 +523,19 @@ async def analyze_candidates(ui_inputs, app):
    - Se crean elementos interactivos
    - La visualización final se presenta al usuario
 
+<<<<<<< HEAD
 <details>
 ---
     
 ## 5. Configuración
 <details>
   <summary>Ver más</summary>
+=======
+
+---
+    
+## 5. Configuración
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 
 El sistema utiliza un módulo de configuración central (`config.py`) con los siguientes componentes:
 
@@ -392,12 +552,19 @@ El sistema utiliza un módulo de configuración central (`config.py`) con los si
    - Esquemas de color
    - Límites de vista previa
 
+<<<<<<< HEAD
 <details>  
 
     
 ## 6. Estructura de Pruebas
 <details>
   <summary>Ver más</summary>
+=======
+
+
+    
+## 6. Estructura de Pruebas
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 
 El conjunto de pruebas está organizado en los siguientes componentes:
 
@@ -412,11 +579,17 @@ El conjunto de pruebas está organizado en los siguientes componentes:
    - `conftest.py`: Fixtures compartidos de prueba
    - `pyproject.toml`: Configuración de pruebas y cobertura
   
+<<<<<<< HEAD
 <details>
 
 ## 7. Dependencias
 <details>
   <summary>Ver más</summary>
+=======
+
+
+## 7. Dependencias
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 
  Las dependencias clave están organizadas por funcionalidad:
 
@@ -437,12 +610,19 @@ El conjunto de pruebas está organizado en los siguientes componentes:
    - pytest-asyncio: Soporte de pruebas asíncronas
    - pytest-cov: Informes de cobertura
 
+<<<<<<< HEAD
 <details>
 
 
 ## 8. Manejo de Errores
 <details>
   <summary>Ver más</summary>
+=======
+
+
+
+## 8. Manejo de Errores
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 
 El sistema implementa un manejo integral de errores:
 
@@ -465,11 +645,17 @@ El sistema implementa un manejo integral de errores:
    - Validación de entrada
    - Formateo de visualización
    - Gestión de estado
+<<<<<<< HEAD
 <details>
 
 ## 9. Implicaciones de Rendimiento
 <details>
   <summary>Ver más</summary>
+=======
+
+
+## 9. Implicaciones de Rendimiento
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
 
 1. **Operaciones Asíncronas**
    - Lectura de archivos asíncrona
@@ -486,6 +672,7 @@ El sistema implementa un manejo integral de errores:
    - Procesamiento por lotes donde sea posible
    - Operaciones eficientes con DataFrame
 
+<<<<<<< HEAD
 <details>
 
 ### Prueba nuestra App
@@ -498,3 +685,134 @@ El sistema implementa un manejo integral de errores:
 La combinación de estas tecnologías y bibliotecas permitirá desarrollar una aplicación robusta y eficiente que cumpla con los objetivos de **CandidatoPerfecto**, optimizando el proceso de selección de talento mediante el uso de inteligencia artificial y garantizando un enfoque ético y normativo.
 
 
+=======
+
+
+
+---
+---
+## Prueba nuestra App
+
+### 🚀 Instrucciones de Uso
+Sigue estos pasos para instalar y ejecutar la aplicación correctamente.
+
+### 1. Clonar el Repositorio  
+```bash
+git clone https://github.com/tu_usuario/tu_repositorio.git
+cd tu_repositorio
+```
+### 2. Crear un Entorno Virtual (Opcional pero Recomendado)
+```
+python -m venv venv
+source venv/bin/activate  # En macOS/Linux
+venv\Scripts\activate      # En Windows
+```
+### 3. Instala dependencias
+```
+pip install -r requirements.txt
+
+```
+1. Debes tener una API_KEY para usar los modelos.
+2. Debes tener otra API_KEy de google para usar google Drive
+   
+
+### 4. Ejecutar la Aplicación
+```
+streamlit run src/app.py
+
+```
+
+### 5. Detener la applicación
+```
+Detener la Aplicación
+```
+
+### 6. Listo! Ahora puedes acceder a la aplicación desde tu navegador en
+- http://localhost:8501/
+
+### 7. Explicación 
+- Se clona el repositorio y se accede a la carpeta del proyecto.  
+- Se recomienda crear un entorno virtual para aislar las dependencias.  
+- Se instalan los paquetes necesarios desde `requirements.txt`.  
+- Se ejecuta la aplicación con **Streamlit**.  
+- Se indica cómo detener la aplicación cuando sea necesario.
+
+
+---
+## Ejecutar App en Docker
+
+Guía paso a paso para crear y ejecutar una app en Docker en local
+
+### Preparación del entorno
+
+1. Primero, mover los ficheros Dockerfile y .dockerignore desde el directorio src al directorio raíz del proyecto:
+   ```bash
+   mv src/Dockerfile .
+   mv src/.dockerignore .
+   ```
+
+   También asegurarse de arrancar el servicio Docker Desktop antes de continuar.
+
+### Construcción de la imagen Docker
+
+1. Desde el directorio raíz del proyecto (candidato_perfecto), construir la imagen Docker:
+   ```bash
+   docker build -t candidato-perfecto:latest .
+   ```
+
+2. Una vez construida, verificar que la imagen exista:
+   ```bash
+   docker images | Select-String "candidato-perfecto"
+   ```
+
+   **NOTA:** Hasta aquí deberá repetir el proceso cada vez que haya modificaciones a las dependencias o al código.
+
+### Ejecución del servicio
+
+1. Ejecutar el contenedor localmente:
+   ```bash
+   docker run -d -p 8501:8501 -e OPENAI_API_KEY="YOUR-OPENAI-API-KEY" --name candidato-perfecto-app candidato-perfecto:latest
+   ```
+
+2. Acceder a la aplicación:
+   * Abrir el navegador y acceder a http://localhost:8501
+
+### Gestión del contenedor
+
+Para detener el contenedor:
+```bash
+# Detener el contenedor
+docker stop candidato-perfecto-app
+```
+
+Para reiniciarlo:
+```bash
+docker start candidato-perfecto-app
+```
+
+Si se regenera un container, hay que borrar primero el existente:
+```bash
+docker rm candidato-perfecto-app
+```
+
+### Ver los ficheros de auditoría
+
+Para ver los ficheros de auditoría en ./debug/files:
+
+1. Ejecutar este comando:
+   ```bash
+   docker exec -it candidato-perfecto-app /bin/bash
+   ```
+
+2. Navegar hasta el directorio ./debug/files
+
+3. Abrir el fichero deseado con el comando:
+   ```bash
+   cat AAMMDD_HHMM [Tabulador]
+   ```
+
+------
+
+## Conclusión
+La combinación de estas tecnologías y bibliotecas permitirá desarrollar una aplicación robusta y eficiente que cumpla con los objetivos de **CandidatoPerfecto**, optimizando el proceso de selección de talento mediante el uso de inteligencia artificial y garantizando un enfoque ético y normativo.
+>>>>>>> ea7bdfb55878c232168f1c82d73081ab900a8323
